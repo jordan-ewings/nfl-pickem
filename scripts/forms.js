@@ -4,7 +4,7 @@ function submitForm(e) {
 
   // change submit button to show loading
   let submitBtn = e.target.querySelector('[type="submit"]');
-  submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+  submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
   submitBtn.setAttribute('disabled', '');
 
   let formData = new FormData(e.target);
@@ -37,7 +37,7 @@ function submitForm(e) {
         // modalMessage.classList.add('d-none');
         submitBtn.removeAttribute('disabled');
         submitBtn.innerHTML = 'Change Picks';
-      }, 500);
+      }, 300);
     })
     .catch(error => {
       console.log('error', error);
