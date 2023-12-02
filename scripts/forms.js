@@ -30,7 +30,7 @@ function submitForm(e) {
       console.log(result);
       submitBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
 
-      incorpFormData(formData);
+      // incorpFormData(formData);
       setTimeout(() => {
         let modalBS = bootstrap.Modal.getInstance(modal);
         modalBS.hide();

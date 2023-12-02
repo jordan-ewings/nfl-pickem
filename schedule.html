@@ -271,7 +271,7 @@
         btn.innerHTML = '<span class="spinner-border spinner-border-sm text-light" role="status" aria-hidden="true"></span>';
 
         await getData();
-        updateTblrows();
+        updateTblrows(update = true);
         console.log('updated');
 
         btn.innerHTML = '';
@@ -279,7 +279,7 @@
       } else {
 
         await getData();
-        updateTblrows();
+        updateTblrows(update = false);
 
         makeWeekButtons();
         // filterTable(DATA.currweek);
@@ -304,26 +304,42 @@
 
     /* ------------------------------------------------ */
 
-    function updateTblrows() {
+    function updateTblrows(update = false) {
 
       let tblGames = document.getElementById('tblGames');
       let games = DATA.tblGames.games;
 
-      let days = games.map((x) => x.gameday_long);
-      days = days.filter((c, index) => days.indexOf(c) === index);
-      days.forEach((d) => {
-        let dayDiv = document.createElement('div');
-        let day = document.createElement('h6');
-        day.classList.add('text-center', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0', 'bg-main');
-        day.textContent = d;
-        dayDiv.appendChild(day);
-        tblGames.appendChild(dayDiv);
+      if (update == false) {
+        let days = games.map((x) => x.gameday_long);
+        days = days.filter((c, index) => days.indexOf(c) === index);
+        days.forEach((d) => {
+          let dayDiv = document.createElement('div');
+          let day = document.createElement('h6');
+          day.classList.add('text-center', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0', 'bg-main');
+          day.textContent = d;
+          dayDiv.appendChild(day);
+          tblGames.appendChild(dayDiv);
 
-        games.filter((x) => x.gameday_long == d).forEach((g) => {
-          let tblrow = makeTblrowDiv(g);
-          tblGames.appendChild(tblrow);
+          games.filter((x) => x.gameday_long == d).forEach((g) => {
+            let tblrow = makeTblrowDiv(g);
+            tblGames.appendChild(tblrow);
+          });
         });
-      });
+      } else {
+        let tblrows = tblGames.getElementsByClassName('tblrow');
+        for (let i = 0; i < tblrows.length; i++) {
+          let tblrow = tblrows.item(i);
+          let game_id = tblrow.getAttribute('data-gameid');
+          let g = games.filter((x) => x.game_id == game_id)[0];
+          let newrow = makeTblrowDiv(g);
+          // if pickrow of tblrow has class show, add class show to new pickrow
+          let pickrow = tblrow.getElementsByClassName('pickrow')[0];
+          if (pickrow.classList.contains('show')) {
+            newrow.getElementsByClassName('pickrow')[0].classList.add('show');
+          }
+          tblrow.replaceWith(newrow);
+        }
+      }
 
       ['pre', 'in', 'post'].forEach((state) => {
         let num_games = games.filter((x) => x.state == state).length;
