@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/dark.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="./styles/global.css">
+  <style>
+    /* body {
+      font-size: 12pt !important;
+      color: #efefef !important;
+      background-color: #1e1e1e !important;
+      margin-top: 0;
+      margin-bottom: 150px;
+      margin-left: 0;
+      margin-right: 0;
+    } */
+
+    /* 
+    body::-webkit-scrollbar,
+    #filterCont::-webkit-scrollbar,
+    .modal-body::-webkit-scrollbar {
+      display: none;
+    } */
+
+    /* decrease padding, remove margin on modal */
+    .modal-content {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+
+    #modalFormBody {
+      padding: 0 !important;
+    }
+
+    .modal-body {
+      padding: 0 !important;
+    }
+
+    .modal-dialog {
+      margin: 0 !important;
+    }
+
+    .modal-footer {
+      padding: 8px 12px !important;
+    }
+
+    .modal-header {
+      padding: 12px 12px !important;
+    }
+
+    .text-dim {
+      color: #9b9b9b !important;
+    }
+
+    .text-smaller {
+      font-size: .75rem !important;
+    }
+
+    .bg-dim {
+      background-color: #181818 !important;
+    }
+
+    .bg-main {
+      background-color: #1e1e1e !important;
+    }
+
+    #tblGames .hide {
+      display: none !important;
+      height: 0 !important;
+      border: 0 !important;
+    }
+
+    .game-prop {
+      /* background-color: #272727 !important; */
+      border-color: #545454 !important;
+      color: #efefef !important;
+    }
+
+    #filterCont button.active {
+      color: #efefef !important;
+      opacity: 1 !important;
+      font-weight: 700 !important;
+    }
+
+    .modfooter-sticky {
+      position: sticky;
+      bottom: 0;
+      z-index: 1000;
+    }
+  </style>
+  <script>
+    window.onload = () => {
+      fetch('nav.html')
+        .then(response => response.text())
+        .then(navhtml => document.querySelector('#nav').outerHTML = navhtml);
+    }
+  </script>
+</head>
+
+
+<body class="m-0">
+  <header class="navbar navbar-expand-lg bg-main sticky-top">
+    <nav id="nav" class="container">
+      <!-- nav.html will be inserted here -->
+    </nav>
+
+  </header>
+  <div class="container mx-auto px-0" style="max-width: 600px;">
+    <div class="mx-1">
+      <div id="filterCont" class="btn-group d-flex flex-nowrap overflow-x-scroll" role="group">
+        <!-- week buttons -->
+      </div>
+
+      <div class="d-flex flex-row my-3 px-1 align-items-center">
+        <div id="progGames" class="d-none w-75 ps-1 pe-3">
+          <div class="progress-stacked">
+            <div id="progPost" class="progress" role="progressbar" style="width: 0%">
+              <div class="progress-bar bg-primary"></div>
+            </div>
+            <div id="progIn" class="progress" role="progressbar" style="width: 0%">
+              <div class="progress-bar bg-danger"></div>
+            </div>
+            <div id="progPre" class="progress" role="progressbar" style="width: 0%">
+              <div class="progress-bar bg-dim"></div>
+            </div>
+          </div>
+        </div>
+        <button id="toggle-picks-btn" class="w-25 fw-semibold btn btn-sm btn-primary text-nowrap d-none" type="button" onclick="togglePicks()">Show Picks</button>
+        <!-- add button to sendData (updating tblrows)... a small refresh icon as inner html-->
+        <button id="refresh-btn" class="w-auto mx-0 fw-light btn text-nowrap d-none" type="button" onclick="sendData()"><i class="fa-solid fa-sync-alt"></i></button>
+      </div>
+    </div>
+
+    <div id="tblGames" class="mx-1">
+      <!-- game rows-->
+
+    </div>
+    <div class="container text-smaller d-none">
+      <pre id="json-data"></pre>
+      <pre id="data-games-resp"></pre>
+      <pre id="data-livegames"></pre>
+      <pre id="data-liveweek"></pre>
+    </div>
+
+    <div class="modal fade" style="height: 90vh;" id="modalFormContainer" tabindex="-1" aria-labelledby="modalFormContainerLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header bg-dim">
+            <div class="container">
+              <!-- two cols: first col is title. second col has (a) subtitle, and (b) underneath subtitle show # games picked -->
+              <div class="row justify-content-between align-items-center">
+                <div class="col-auto text-nowrap">
+                  <h5 class="modal-title" id="modalFormContainerLabel"></h5>
+                </div>
+                <div class="col-auto ms-2">
+                  <!-- <div class="d-flex"> -->
+                  <div class="row text-dim text-smaller" id="modalFormSubtitle"></div>
+                  <!-- </div> -->
+                  <!-- <div class="d-flex w-100"> -->
+                  <div class="row text-dim text-smaller" id="modalFormSubtitle2"></div>
+                  <!-- </div> -->
+                </div>
+                <div class="col-auto ms-auto">
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-body bg-dim p-0 m-0">
+            <form id="modalForm">
+              <div id="modalFormBody" class="container m-0 pt-0">
+                <!-- make player select (options are Austin, Carly, Carter, John, Jordan, Kayla, Kristen, Kristy, Stella) -->
+                <div class="container sticky-top bg-dim w-100 py-3">
+                  <!-- make select smaller -->
+                  <select class="form-select form-select-sm bg-main m-0" name="player" id="player" required>
+                    <option selected>Player</option>
+                    <option value="Austin">Austin</option>
+                    <option value="Carly">Carly</option>
+                    <option value="Carter">Carter</option>
+                    <option value="John">John</option>
+                    <option value="Jordan">Jordan</option>
+                    <option value="Kayla">Kayla</option>
+                    <option value="Kristen">Kristen</option>
+                    <option value="Kristy">Kristy</option>
+                    <option value="Stella">Stella</option>
+                  </select>
+                </div>
+                <div id="modalFormGames" class="container pt-1">
+                  <!-- make game rows -->
+                </div>
+              </div>
+              <div class="modal-footer bg-dim d-none modfooter-sticky">
+                <div id="modalMessage" class="rounded-pill bg-success text-smaller text-white me-auto px-3 py-1 d-none">
+                  Picks updated
+                </div>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-sm btn-primary">Change Picks</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+  <script src="./scripts/getSheet.js"></script>
+  <script src="./scripts/procGames.js"></script>
+  <script src="./scripts/forms.js"></script>
+  <script>
+    var USING_LIVE = false;
+
+    // var MODAL_ENABLED = true;
+    // var FORMS_ENABLED = true;
+
+    var DATA_LOADED = false;
+    var TBL_LOADED = false;
+
+
+    async function getData() {
+
+      if (DATA_LOADED == false) {
+        let loader = document.createElement('div');
+        loader.id = 'view-loading';
+        loader.classList.add('d-flex', 'flex-column', 'justify-content-center', 'align-items-center', 'h-100', 'w-100');
+        loader.innerHTML = '<div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div><div class="mt-3"><h6>Loading...</h6></div>';
+        document.body.appendChild(loader);
+      }
+
+      const weekinfo = await getSheet('SeasonInfo');
+      const currweek = weekinfo.filter((x) => x.current == '1')[0];
+      writeData(currweek, 'data-liveweek');
+
+      const games = await getSheet('Games');
+      const picks = await getSheet('Responses');
+      const games_resp = procGames(games, picks);
+      writeData(games_resp, 'data-games-resp');
+
+      // if (USING_LIVE == true) {
+      //   // if (DATA_LOADED == false) {
+      //     let livedata = await fetchLive(currweek.week);
+      //     writeData(livedata, 'data-livegames');
+      //   // }
+      // }
+
+      let data = games_resp;
+      if (USING_LIVE == true) {
+        let livedata = await fetchLive(currweek.week)
+        data = updateData(data, livedata);
+      }
+
+      writeData(data, 'json-data');
+
+      if (DATA_LOADED == false) {
+        document.getElementById('view-loading').remove();
+        DATA_LOADED = true;
+      }
+
+      return data;
+    }
+
+    function writeData(obj, dataId) {
+      document.getElementById(dataId).textContent = JSON.stringify(obj, undefined, 2);
+    }
+    function readData(dataId) {
+      return JSON.parse(document.getElementById(dataId).textContent);
+    }
+
+    /* ------------------------------------------------ */
+
+    async function sendData() {
+
+      if (TBL_LOADED == true) {
+        let btn = document.getElementById('refresh-btn');
+        let btn_html = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm text-light" role="status" aria-hidden="true"></span>';
+
+        await getData();
+        updateTblrows();
+        console.log('updated');
+
+        btn.innerHTML = '';
+        btn.innerHTML = btn_html;
+      } else {
+
+        await getData();
+        updateTblrows();
+
+        makeWeekButtons();
+        let currweek = readData('data-liveweek');
+        filterTable(currweek.week);
+        document.getElementById("refresh-btn").classList.remove('d-none');
+        document.getElementById("toggle-picks-btn").classList.remove('d-none');
+        document.getElementById("progGames").classList.remove('d-none');
+
+        // add event listeners
+        let modalForm = document.getElementById('modalForm');
+        modalForm.addEventListener('submit', (e) => {
+          submitForm(e);
+        });
+        modalForm.querySelector('select[name="player"]').addEventListener('change', (e) => {
+          prepareForm(e);
+        });
+
+
+        TBL_LOADED = true;
+      }
+
+
+    }
+    /* ------------------------------------------------ */
+
+    // use data and supporting makeDiv functions to build rows (avoid using El objects)
+    function updateTblrows() {
+
+      let data = readData('json-data');
+      let tblGames = document.getElementById('tblGames');
+
+      // update tblrows (if they exist)
+      if (TBL_LOADED == true) {
+        let tblrows = tblGames.getElementsByClassName('tblrow');
+        for (let i = 0; i < tblrows.length; i++) {
+          let row = tblrows.item(i);
+          let gid = row.getAttribute('data-gameid');
+          let week = row.getAttribute('data-week');
+          let g = data.filter((w) => w.week == week)[0].games.filter((x) => x.game_id == gid)[0];
+          let newrow = makeTblrowDiv(g);
+
+          // check if row needs to be replaced
+          let is_same = true;
+          let oldChildren = row.childNodes;
+          let newChildren = newrow.childNodes;
+          for (let j = 0; j < oldChildren.length; j++) {
+            let oldChild = oldChildren.item(j);
+            let newChild = newChildren.item(j);
+            if (oldChild.outerHTML != newChild.outerHTML) {
+              is_same = false;
+              break;
+            }
+          }
+
+          if (!is_same) {
+            row.replaceWith(newrow);
+          }
+        }
+
+        return;
+      }
+
+      let rowdata = data.map((w) => {
+        let rows = document.createElement('div');
+        rows.classList.add('week-games');
+        rows.id = 'week-games-' + w.week;
+        let days = w.games.map((x) => x.gameday_long);
+        days = days.filter((c, index) => days.indexOf(c) === index);
+        days.forEach((d) => {
+          let dayDiv = document.createElement('div');
+          let day = document.createElement('h6');
+          day.classList.add('text-center', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0', 'bg-main');
+          day.textContent = d;
+          dayDiv.appendChild(day);
+
+          rows.appendChild(dayDiv);
+
+          let games = w.games.filter((x) => x.gameday_long == d);
+          games.forEach((g) => rows.appendChild(makeTblrowDiv(g)));
+        });
+
+        return { week: w.week, games: rows };
+      });
+
+
+      let rowSet = rowdata.map((x) => x['games']);
+      rowSet.forEach((x) => document.getElementById("tblGames").appendChild(x));
+    }
+
+    /* ------------------------------------------------ */
+
+    function makeTblrowDiv(g) {
+      let gamerow = makeGamerowDiv(g);
+
+      let tblrow = document.createElement('div');
+      tblrow.classList.add('tblrow', 'game-' + g.state);
+      tblrow.setAttribute('data-gameid', g.game_id);
+      tblrow.setAttribute('data-week', g.week);
+
+      if (g.responses) {
+        let pickrow = makePickrowDiv(g);
+        let pickrow_id = 'picks-' + g.game_id;
+        pickrow_id = pickrow_id.replace('_', '-');
+        let gamerow_alt = document.createElement('a');
+        gamerow_alt.style.color = 'inherit';
+        gamerow_alt.style.textDecoration = 'none';
+        gamerow_alt.setAttribute('role', 'button');
+        gamerow_alt.setAttribute('data-bs-toggle', 'collapse');
+        gamerow_alt.setAttribute('data-bs-target', '#' + pickrow_id);
+        gamerow_alt.appendChild(gamerow);
+        pickrow.classList.add('collapse');
+        pickrow.id = pickrow_id;
+        tblrow.appendChild(gamerow_alt);
+        tblrow.appendChild(pickrow);
+      } else {
+        tblrow.appendChild(gamerow);
+      }
+
+      return tblrow;
+    }
+
+    /* ------------------------------------------------ */
+
+    // make alt make_gamerow_input function using document.createElement instead of El object
+    // in addition, make the code more concise
+    function makeGamerowInputs(g) {
+      let state = g.state;
+      let status = g.stateshort;
+      let gdate = g.gameday;
+      let gtime = g.gametime;
+      let odds = g.spread;
+      let win_team = g.win_team;
+      let responses = [];
+      if (g.responses) responses = g.responses;
+      let info = {};
+
+      ['away', 'home'].forEach((t) => {
+        let f_win = g[t + '_team'] == win_team;
+        let name = g[t + '_teamshort'];
+        let logo = g[t + '_logo'];
+        let score = g[t + '_score'];
+        let record = g[t + '_record'];
+
+        let elogo = document.createElement('img');
+        elogo.src = logo;
+        let ename = document.createElement('span');
+        if (state == 'post' && !f_win) ename.classList.add('opacity-25');
+        ename.textContent = name;
+        let eposs = document.createElement('i');
+        if (g[t + '_poss']) {
+          if (g[t + '_poss'] == '1') {
+            eposs.classList.add("fa-solid", "fa-football", "fa-sm");
+            eposs.style.color = '#79552e';
+          }
+        }
+
+        let escore = document.createElement('span');
+        if (state == 'pre') {
+          escore.textContent = record;
+          escore.classList.add('text-dim', 'text-smaller');
+        } else {
+          escore.textContent = score;
+          escore.classList.add('fw-semibold');
+          if (state == 'post' && !f_win) {
+            escore.classList.add('opacity-25');
+          }
+        }
+
+        info[t] = { logo: elogo, name: ename, poss: eposs, score: escore }
+      });
+
+      // finish replicating make_gamerow_input function
+      let eodds = document.createElement('span');
+      eodds.textContent = odds;
+      let estat1 = document.createElement('span');
+      let estat2 = document.createElement('span');
+      let estat3 = document.createElement('span');
+      if (state == 'post') {
+        estat1.textContent = status;
+      } else if (state == 'in') {
+        estat1.textContent = status;
+        estat1.style.color = '#ff5c5c!important;';
+        if (g.poss_dd) estat2.textContent = g.poss_dd;
+        if (g.poss_loc) estat3.textContent = g.poss_loc;
+        eodds.classList.add('d-none');
+      } else if (state == 'pre') {
+        estat1.textContent = gdate;
+        estat2.textContent = gtime;
+      }
+
+      info.stat1 = estat1;
+      info.stat2 = estat2;
+      info.stat3 = estat3;
+      info.odds = eodds;
+
+      return info;
+    }
+
+    /* ------------------------------------------------ */
+
+    function makeGamerowDiv(g) {
+
+      let inputs = makeGamerowInputs(g);
+
+      // gamerow
+      let el = document.createElement('div');
+      el.classList.add('gamerow', 'row', 'align-items-start', 'pt-2', 'py-3', 'mx-0');
+      el.style.borderTop = '2px dotted #2f2f2f';
+      el.setAttribute('data-gameid', g.game_id);
+      el.setAttribute('data-week', g.week);
+      el.setAttribute('data-gametime', g.gametime_raw);
+
+      // gamerow (teams column)
+      let col1 = document.createElement('div');
+      col1.classList.add('col-9', 'ps-2');
+      col1.style.borderRight = '1px solid #2f2f2f';
+
+      // gamerow (teams column) (teams container)
+      let teamsContainer = document.createElement('div');
+      teamsContainer.classList.add('d-flex', 'flex-column', 'row-gap-1');
+
+      // gamerow (teams column) (teams container) (each team)
+      ['away', 'home'].forEach((t) => {
+        let team = document.createElement('div');
+        team.classList.add('teamrow', 'd-flex', 'align-items-center');
+
+        // team identifiers
+        team.setAttribute('data-gameid', g.game_id);
+        team.setAttribute('data-team', g[t + '_team']);
+        team.setAttribute('data-teamshort', g[t + '_teamshort']);
+        team.setAttribute('data-teamfull', g[t + '_teamfull']);
+
+        // gamerow (teams column) (teams container) (each team) (logo)
+        let logo = inputs[t].logo;
+        logo.classList.add('object-fit-contain');
+        logo.style.height = '1.2rem';
+        logo.style.width = '1.2rem';
+
+        // gamerow (teams column) (teams container) (each team) (name)
+        let name = inputs[t].name;
+        name.classList.add('ps-2', 'fw-semibold');
+
+        // gamerow (teams column) (teams container) (each team) (poss)
+        let poss = inputs[t].poss;
+        poss.classList.add('object-fit-contain', 'ps-2');
+
+        // gamerow (teams column) (teams container) (each team) (score)
+        let score = inputs[t].score;
+        score.classList.add('ms-auto');
+
+        team.appendChild(logo);
+        team.appendChild(name);
+        team.appendChild(poss);
+        team.appendChild(score);
+        teamsContainer.appendChild(team);
+      });
+
+      col1.appendChild(teamsContainer);
+
+      // gamerow (status column)
+      let col2 = document.createElement('div');
+      col2.classList.add('col-3', 'pe-1');
+
+      // gamerow (status column) (status container)
+      let statusContainer = document.createElement('div');
+      statusContainer.classList.add('d-flex', 'flex-column', 'justify-content-center', 'text-smaller');
+
+      // gamerow (status column) (status container) (status 1)
+      let status1 = inputs.stat1;
+      status1.classList.add('text-dim', 'fw-semibold');
+
+      // gamerow (status column) (status container) (status 2)
+      let status2 = inputs.stat2;
+      status2.classList.add('text-dim', 'fw-semibold');
+
+      // gamerow (status column) (status container) (status 3)
+      let status3 = inputs.stat3;
+      status3.classList.add('text-dim', 'fw-normal');
+
+      // gamerow (status column) (status container) (odds)
+      let odds = inputs.odds;
+      odds.classList.add('text-dim', 'fw-normal');
+
+      statusContainer.appendChild(status1);
+      statusContainer.appendChild(status2);
+      statusContainer.appendChild(status3);
+      statusContainer.appendChild(odds);
+      col2.appendChild(statusContainer);
+
+      el.appendChild(col1);
+      el.appendChild(col2);
+
+      return el;
+    }
+
+    /* ------------------------------------------------ */
+
+    function makePickrowDiv(g) {
+
+      let inputs = makePickrowInputs(g);
+
+      // pickrow
+      let el = document.createElement('div');
+      el.classList.add('pickrow', 'row', 'align-items-center', 'pt-0', 'pb-0', 'mx-0');
+
+      // pickrow (picks column)
+      let col1 = document.createElement('div');
+      col1.classList.add('col-9', 'ps-1', 'pe-0', 'mb-3');
+
+      // pickrow (picks column) (picks container)
+      let picksContainer = document.createElement('div');
+      picksContainer.classList.add('row', 'row-cols-3', 'rounded-end-3', 'bg-dim', 'mx-0', 'ps-2', 'pe-1', 'py-1');
+      picksContainer.style.borderLeft = '4px solid #0e0e0e';
+
+      // pickrow (picks column) (picks container) (each pick)
+      inputs.forEach((pick) => {
+        let pickdata = pick.data;
+        let pickItem = document.createElement('div');
+        pickItem.classList.add('col', 'px-1');
+
+        // pickrow (picks column) (picks container) (each pick) (pick item)
+        let pickItemDiv = document.createElement('div');
+        pickItemDiv.classList.add('pickitem', 'd-flex', 'align-items-center', 'py-1');
+
+        // player identifiers
+        Object.keys(pickdata).forEach((key) => {
+          let label = key.replace('_', '-');
+          pickItemDiv.setAttribute('data-' + label, pickdata[key]);
+        });
+
+        // pickrow (picks column) (picks container) (each pick) (pick item) (logo)
+        let logo = pick.logo;
+        logo.classList.add('object-fit-contain');
+        logo.style.height = '16px';
+        logo.style.width = '16px';
+
+        // pickrow (picks column) (picks container) (each pick) (pick item) (name)
+        let name = pick.name;
+        name.classList.add('ps-1', 'small');
+
+        pickItemDiv.appendChild(logo);
+        pickItemDiv.appendChild(name);
+
+        // instead of wrapping pickItemDiv in a link, make the pickItemDiv the link
+        pickItemDiv.setAttribute('role', 'button');
+        pickItemDiv.setAttribute('data-bs-toggle', 'modal');
+        pickItemDiv.setAttribute('data-bs-target', '#modalFormContainer');
+        pickItemDiv.addEventListener('click', (e) => {
+          // populate form using copyGameRowContentsToFormBody
+          prepareForm(e);
+        });
+        pickItemDiv.setAttribute('tabindex', '0');
+
+        pickItem.appendChild(pickItemDiv);
+        picksContainer.appendChild(pickItem);
+      });
+
+      col1.appendChild(picksContainer);
+
+      // pickrow (change pick column)
+      let col2 = document.createElement('div');
+      col2.classList.add('col-3', 'pe-1');
+
+      // col2.appendChild(changePickButton);
+
+      el.appendChild(col1);
+      el.appendChild(col2);
+
+      return el;
+    }
+    /* ------------------------------------------------ */
+
+    // make alt make_pickrow_input function using document.createElement instead of El object
+    // in addition, make the code more concise
+    function makePickrowInputs(g) {
+      if (!g.responses) return [];
+
+      let winner = g.win_team;
+      let state = g.state;
+
+      let info = g.responses.map((p) => {
+        let status = p.status;
+        let pick = p.pick_team;
+        let player = p.player;
+        let logo = p.pick_logo;
+        let logo_type = 'img';
+        if (pick == '' || status != 'OK') {
+          logo_type = 'i';
+        }
+
+        let elogo = document.createElement(logo_type);
+        elogo.src = logo;
+        // if (pick == '' || status != 'OK') {
+        //   elogo = ;
+        // } else {
+        //   elogo = document.createElement('img');
+        //   elogo.src = logo;
+        // }
+        let ename = document.createElement('span');
+        ename.setAttribute('data-status', status);
+        ename.textContent = player;
+
+        if (state != 'post') {
+          if (pick == '' || status != 'OK') {
+            elogo.classList.add('opacity-25');
+            ename.classList.add('opacity-25');
+          }
+        } else {
+          if (status != 'OK' || pick != winner) {
+            elogo.classList.add('opacity-25');
+            ename.classList.add('opacity-25');
+          }
+        }
+
+        // if (pick == '' || status != 'OK') ename.classList.add('opacity-25');
+
+        return { logo: elogo, name: ename, data: p };
+      });
+
+      return info;
+    }
+
+    /* ------------------------------------------------ */
+
+    function makeWeekButtons() {
+
+      const proc = JSON.parse(document.getElementById('json-data').textContent);
+
+      let weeks = proc;
+      let fCont = document.getElementById('filterCont');
+      weeks.forEach((wdata) => {
+        let w = wdata.week;
+        let wlab = wdata.week_label;
+        if (!document.getElementById('btn' + w)) {
+          let btn = document.createElement('button');
+          btn.type = 'button';
+          btn.setAttribute('onclick', `filterTable(${w})`);
+          btn.classList.add('btn', 'text-dim', 'opacity-50', 'fw-medium', 'text-nowrap', 'rounded-2');
+          btn.style.borderColor = 'transparent';
+          btn.innerHTML = `${wlab}`;
+          btn.id = 'btn' + w;
+          fCont.appendChild(btn);
+        }
+      });
+    }
+
+    function filterTable(week) {
+
+      let togglebtn = document.getElementById('toggle-picks-btn');
+      let is_enabled = togglebtn.classList.contains('disabled') == false;
+      let picks_on = togglebtn.innerHTML.includes('Hide');
+
+      let tbl = document.getElementById('tblGames');
+      let weeks = tbl.getElementsByClassName('week-games');
+      let num_games;
+      let num_pre;
+      let num_in;
+      let num_post;
+
+
+      for (let i = 0; i < weeks.length; i++) {
+        let wdiv = weeks.item(i);
+        let rweek = wdiv.id.replace('week-games-', '');
+        let is_week = rweek == week;
+        let is_shown = wdiv.classList.contains('hide') == false;
+        if (is_week && !is_shown) wdiv.classList.remove('hide');
+        if (!is_week && is_shown) wdiv.classList.add('hide');
+
+        if (is_week) {
+          num_games = wdiv.getElementsByClassName('tblrow').length;
+          num_pre = wdiv.getElementsByClassName('game-pre').length;
+          num_in = wdiv.getElementsByClassName('game-in').length;
+          num_post = wdiv.getElementsByClassName('game-post').length;
+        }
+      }
+
+      if (num_games > 0) {
+        let pc_pre = Math.round(100 * (num_pre / num_games));
+        let pc_in = Math.round(100 * (num_in / num_games));
+        let pc_post = Math.round(100 * (num_post / num_games));
+        let pc_offset = 100 - (pc_pre + pc_in + pc_post);
+        pc_pre = pc_pre + pc_offset;
+        document.getElementById('progPre').style.width = pc_pre.toString() + '%';
+        document.getElementById('progIn').style.width = pc_in.toString() + '%';
+        document.getElementById('progPost').style.width = pc_post.toString() + '%';
+      }
+
+      let fCont = document.getElementById('filterCont');
+      let btns = fCont.getElementsByClassName('btn');
+      for (let j = 0; j < btns.length; j++) {
+        btns[j].classList.remove('active');
+      }
+
+      let currbtn = document.getElementById('btn' + week);
+      currbtn.classList.add('active');
+      currbtn.scrollIntoView({ behavior: "smooth", block: "end", inline: "center" });
+    }
+
+    /* ------------------------------------------------ */
+
+    function togglePicks() {
+
+      let btn = document.getElementById('toggle-picks-btn');
+      let picks_on = btn.innerHTML.includes('Hide') == true;
+      if (picks_on == true) btn.innerHTML = 'Show Picks';
+      if (picks_on == false) btn.innerHTML = 'Hide Picks';
+
+      let tbl = document.getElementById('tblGames');
+      let rows = tbl.getElementsByClassName('pickrow');
+      for (let i = 0; i < rows.length; i++) {
+        let row = rows.item(i);
+        let is_shown = row.classList.contains('show') == true;
+        // let rowBS = new bootstrap.Collapse(row);
+        if (!picks_on) {
+          if (!is_shown) row.classList.add('show');
+          // if (!is_shown) rowBS.show();
+        } else {
+          if (is_shown) row.classList.remove('show');
+          // if (is_shown) rowBS.hide();
+        }
+      }
+    }
+
+
+    /* ------------------------------------------------ */
+
+    async function fetchLive(week) {
+
+      console.log('FETCHING LIVE');
+      const resp = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&dates=2023&week=' + week);
+      const raw = await resp.text();
+      const events = JSON.parse(raw)['events'];
+
+      const proc = events.map((game) => {
+
+        let comp = game.competitions[0];
+        let hid = comp.competitors[0].id;
+        let aid = comp.competitors[1].id;
+
+        let data = {};
+        data.game_id = game.id;
+        data.week = game.week.number;
+        data.home_score = game.competitions[0].competitors[0].score;
+        data.away_score = game.competitions[0].competitors[1].score;
+        data.state = game.status.type.state;
+        data.stateshort = game.status.type.shortDetail;
+        data.home_poss = '0';
+        data.away_poss = '0';
+
+        if (comp.situation) {
+          if (comp.situation.possession) {
+            let pid = comp.situation.possession;
+            if (pid == hid) data.home_poss = '1';
+            if (pid == aid) data.away_poss = '1';
+            data.poss_loc = comp.situation.possessionText;
+            data.poss_dd = comp.situation.shortDownDistanceText;
+          }
+        }
+
+        return data;
+      });
+
+      console.log(proc);
+      return proc;
+    }
+
+    /* ------------------------------------------------ */
+
+    function updateData(proc, live) {
+      console.log('UPDATING LIVE');
+      let week = live[0].week.toString();
+      let data = proc.map((w) => {
+        if (w.week == week) {
+          w.games = w.games.map((game) => {
+            let g = game;
+            let glive = live.filter((x) => x.game_id == g.game_id)[0];
+            console.log(g);
+            console.log(glive);
+            g.away_score = glive.away_score;
+            g.home_score = glive.home_score;
+            g.state = glive.state;
+            g.stateshort = glive.stateshort;
+            g.away_poss = glive.away_poss;
+            g.home_poss = glive.home_poss;
+            g.poss_loc = glive.poss_loc;
+            g.poss_dd = glive.poss_dd;
+            let ascore = parseInt(glive.away_score);
+            let hscore = parseInt(glive.home_score);
+
+            if (g.state == 'post') {
+              if (ascore > hscore) {
+                g.win_team = g.away_team;
+              } else if (hscore > ascore) {
+                g.win_team = g.home_team;
+              } else {
+                g.win_team = 'TIE';
+              }
+            }
+            return g;
+          });
+        }
+        return w;
+      });
+
+      // console.log(data);
+      return data;
+    }
+
+    sendData();
+
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+  </script>
+</body>
+
+</html>

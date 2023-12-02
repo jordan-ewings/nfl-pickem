@@ -1,0 +1,44 @@
+/* Define colors */
+:root {
+  --bg-main: #1e1e1e;
+  --bg-dim: #181818;
+  --text-main: #efefef;
+  --text-dim: #9b9b9b;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+}
+
+/* don't display webkit scrollbar */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* remove bootstrap table cell styling */
+td {
+  font-size: 11pt !important;
+  color: var(--text-main) !important;
+  background-color: var(--bg-main) !important;
+}
+
+
+.text-dim {
+  color: #9b9b9b !important;
+}
+
+.text-smaller {
+  font-size: .75rem !important;
+}
+
+.bg-dim {
+  background-color: #181818 !important;
+}
+
+.bg-main {
+  background-color: #1e1e1e !important;
+}

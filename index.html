@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark" style="height: fit-content;">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="./styles/global.css">
+  <style>
+    i {
+      animation-iteration-count: 1 !important;
+      animation-delay: 500ms !important;
+      -webkit-animation-iteration-count: 1 !important;
+      -webkit-animation-delay: 500ms !important;
+    }
+
+    /* make sure header doesn't overlap content */
+  </style>
+  <script>
+    window.onload = () => {
+      fetch('nav.html')
+        .then(response => response.text())
+        .then(navhtml => document.querySelector('#nav').outerHTML = navhtml);
+    }
+  </script>
+</head>
+
+
+<body class="m-0">
+  <header class="navbar navbar-expand-lg bg-main sticky-top">
+    <nav id="nav" class="container">
+      <!-- nav.html will be inserted here -->
+    </nav>
+
+  </header>
+
+  <div class="container mx-auto mt-3" style="max-width: 600px;">
+    <!-- heading -->
+    <h1 class="text-center text-dim fw-medium">Standings</h1>
+    <hr class="text-dim my-md-4" style="height: 3px;">
+    <div class="table-responsive">
+      <table id="mytable" class="table table-sm table-borderless align-middle m-0">
+
+      </table>
+    </div>
+  </div>
+
+
+  <div class="container d-none">
+    <pre id="data" class="">NO DATA</pre>
+  </div>
+  <!-- load getSheet.js -->
+  <script src="./scripts/getSheet.js"></script>
+  <script>
+
+    sendData();
+
+    /* ------------------------------------------------ */
+
+    async function sendData() {
+      const data = await getSheet('Standings');
+      document.getElementById("data").textContent = JSON.stringify(data, undefined, 2);
+
+      buildRows();
+    }
+
+    /* ------------------------------------------------ */
+
+    function buildRows() {
+
+      const proc = JSON.parse(document.getElementById('data').textContent);
+
+      let body = new El('tbody');
+
+      let hf = 'pt-0 pb-1 align-middle text-center text-dim opacity-50 text-smaller fw-medium px-0';
+      let header = new El('tr');
+      header.addChild(new El('td').addClass(hf).addChild(''));
+      header.addChild(new El('td').addClass(hf).addChild(''));
+      header.addChild(new El('td').addClass(hf).addChild('WK'));
+      header.addChild(new El('td').addClass(hf).addChild('TTL'));
+      header.addChild(new El('td').addClass(hf).addChild('GB'));
+      header.addChild(new El('td').addClass(hf).addChild('DOG'));
+      header.addChild(new El('td').addClass(hf).addChild('DOG W'));
+      body.addChild(header);
+
+
+      proc.forEach((g) => {
+        if (g.gb == '') g.gb = '-';
+        let eplayer = new El('div').addClass('d-flex flex-row align-items-center p-0');
+        let ename = new El('span').addClass('pe-2').addChild(g.player);
+        let eicon = new El('i');
+        let eval = new El('span').addClass('text-smaller ps-1').addChild(g.change.replace('-', ''));
+        if (parseInt(g.change) > 0) {
+          eicon.addClass('fa-regular fa-circle-up fa-sm text-success-emphasis fa-bounce');
+          eval.addClass('text-success-emphasis');
+        } else if (parseInt(g.change) < 0) {
+          eicon.addClass('fa-regular fa-circle-down fa-sm text-danger-emphasis fa-bounce');
+          eval.addClass('text-danger-emphasis');
+        } else {
+          eval.addClass('opacity-0');
+        }
+
+        eplayer.addChild(ename).addChild(eicon).addChild(eval);
+
+        let rf = 'pt-2 text-nowrap align-middle';
+        let row = new El('tr');
+        row.addChild(new El('td').addClass(rf).addClass('text-nowrap ps-0 text-end text-primary-emphasis text-smaller fw-medium')
+          .addChild(g.rank));
+        row.addChild(new El('td').addClass(rf).addClass('text-nowrap fw-medium pe-3')
+          .addChild(eplayer));
+        row.addChild(new El('td').addClass(rf).addClass('text-nowrap text-center')
+          .addChild(g.rec_week));
+        row.addChild(new El('td').addClass(rf).addClass('text-nowrap text-center')
+          .addChild(g.rec));
+        row.addChild(new El('td').addClass(rf).addClass('text-nowrap text-center text-dim')
+          .addChild(g.gb));
+        row.addChild(new El('td').addClass(rf).addClass('text-nowrap text-center text-dim')
+          .addChild(g.pc_dog_pick));
+        row.addChild(new El('td').addClass(rf).addClass('text-nowrap text-center text-dim')
+          .addChild(g.pc_dog_win));
+
+        body.addChild(row);
+      });
+
+      document.getElementById('mytable').innerHTML = body.html();
+    }
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+  </script>
+</body>
+
+</html>
