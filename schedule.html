@@ -99,7 +99,7 @@
 
   </header>
   <div class="container mx-auto px-0" style="max-width: 600px;">
-    <div id="view-loading" class="d-none">
+    <div id="view-loading" class="d-none d-flex flex-column justify-content-center align-items-center" style="height: 90vh; width:100%">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
@@ -213,13 +213,16 @@
     var USING_LIVE = false;
     var DATA_LOADED = false;
     var TBL_LOADED = false;
-    let DATA = {};
+    let DATA = {
+      LOADED: false,
+      TBL_LOADED: false
+    };
 
     sendData();
 
     async function getData() {
 
-      if (DATA_LOADED == false) document.getElementById('view-loading').classList.remove('d-none');
+      if (DATA.LOADED == false) document.getElementById('view-loading').classList.remove('d-none');
 
       let sheets = ['SeasonInfo', 'Games', 'Responses'];
       for (let i = 0; i < sheets.length; i++) {
@@ -244,15 +247,17 @@
         DATA.tblGames = DATA.full.filter((x) => x.week == tblWeek)[0];
       }
 
-      if (DATA_LOADED == false) document.getElementById('view-loading').classList.add('d-none');
-      DATA_LOADED = true;
+      if (DATA.LOADED == false) {
+        document.getElementById('view-loading').classList.add('d-none');
+        DATA.LOADED = true;
+      }
     }
 
     /* ------------------------------------------------ */
 
     async function sendData() {
 
-      if (TBL_LOADED == true) {
+      if (DATA.TBL_LOADED == true) {
         let btn = document.getElementById('refresh-btn');
         let btn_html = btn.innerHTML;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm text-light" role="status" aria-hidden="true"></span>';
@@ -284,7 +289,7 @@
         });
 
 
-        TBL_LOADED = true;
+        DATA.TBL_LOADED = true;
       }
 
     }
