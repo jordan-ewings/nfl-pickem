@@ -60,6 +60,9 @@
       font-weight: 700 !important;
     }
 
+    /* toggle picks button, don't change width when inner HTML width changes */
+
+
     .modfooter-sticky {
       position: sticky;
       bottom: 0;
@@ -98,7 +101,7 @@
       </div>
 
       <div class="d-flex flex-row my-3 px-1 align-items-center">
-        <div id="prog-games" class="d-none w-75 ps-1 pe-3">
+        <div id="prog-games" class="d-none ps-1 pe-3 me-auto" style="width: 65%;">
           <div class="progress-stacked">
             <div id="prog-post" class="progress" role="progressbar" style="width: 0%">
               <div class="progress-bar bg-primary"></div>
@@ -111,7 +114,7 @@
             </div>
           </div>
         </div>
-        <button id="toggle-picks-btn" class="w-25 fw-semibold btn btn-sm btn-primary text-nowrap d-none" type="button" onclick="togglePicks()">Show Picks</button>
+        <button id="toggle-picks-btn" style="width: 25%" class="fw-semibold btn btn-sm btn-primary text-nowrap d-none" type="button" onclick="togglePicks()">Show Picks</button>
         <!-- add button to sendData (updating tblrows)... a small refresh icon as inner html-->
         <button id="refresh-btn" class="w-auto mx-0 fw-light btn text-nowrap d-none" type="button" onclick="sendData()"><i class="fa-solid fa-sync-alt"></i></button>
       </div>
