@@ -92,14 +92,14 @@ function prepareForm(e) {
     playerSelect.value = playerValue;
 
     // store week number in modalForm
-    let weekDiv = pickitem.closest('.week-games');
-    let weekNum = weekDiv.getAttribute('id').replace('week-games-', '');
+    // let weekDiv = pickitem.closest('.week-games');
+    let weekNum = DATA.tblGames.week;
     modalForm.setAttribute('data-week', weekNum);
 
   }
 
   let weekNum = modalForm.getAttribute('data-week');
-  let tblrows = document.getElementById('week-games-' + weekNum).querySelectorAll('.tblrow');
+  let tblrows = document.querySelectorAll('.tblrow');
   modalFormGames.innerHTML = '';
   let openGames = tblrows.length;
   let pickedGames = 0;

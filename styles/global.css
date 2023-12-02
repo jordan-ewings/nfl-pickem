@@ -13,12 +13,6 @@ body {
   font-size: 11pt;
 }
 
-/* don't display webkit scrollbar */
-body::-webkit-scrollbar {
-  display: none;
-}
-
-
 /* remove bootstrap table cell styling */
 td {
   font-size: 11pt !important;

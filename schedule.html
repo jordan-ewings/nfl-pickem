@@ -9,22 +9,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="./styles/global.css">
   <style>
-    /* body {
-      font-size: 12pt !important;
-      color: #efefef !important;
-      background-color: #1e1e1e !important;
-      margin-top: 0;
-      margin-bottom: 150px;
-      margin-left: 0;
-      margin-right: 0;
-    } */
-
-    /* 
     body::-webkit-scrollbar,
-    #filterCont::-webkit-scrollbar,
-    .modal-body::-webkit-scrollbar {
+    div::-webkit-scrollbar {
       display: none;
-    } */
+    }
 
     /* decrease padding, remove margin on modal */
     .modal-content {
@@ -111,21 +99,29 @@
 
   </header>
   <div class="container mx-auto px-0" style="max-width: 600px;">
+    <div id="view-loading" class="d-none">
+      <div class="spinner-border text-light" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div class="mt-3">
+        <h6>Loading...</h6>
+      </div>
+    </div>
     <div class="mx-1">
       <div id="filterCont" class="btn-group d-flex flex-nowrap overflow-x-scroll" role="group">
         <!-- week buttons -->
       </div>
 
       <div class="d-flex flex-row my-3 px-1 align-items-center">
-        <div id="progGames" class="d-none w-75 ps-1 pe-3">
+        <div id="prog-games" class="d-none w-75 ps-1 pe-3">
           <div class="progress-stacked">
-            <div id="progPost" class="progress" role="progressbar" style="width: 0%">
+            <div id="prog-post" class="progress" role="progressbar" style="width: 0%">
               <div class="progress-bar bg-primary"></div>
             </div>
-            <div id="progIn" class="progress" role="progressbar" style="width: 0%">
+            <div id="prog-in" class="progress" role="progressbar" style="width: 0%">
               <div class="progress-bar bg-danger"></div>
             </div>
-            <div id="progPre" class="progress" role="progressbar" style="width: 0%">
+            <div id="prog-pre" class="progress" role="progressbar" style="width: 0%">
               <div class="progress-bar bg-dim"></div>
             </div>
           </div>
@@ -215,29 +211,16 @@
   <script src="./scripts/forms.js"></script>
   <script>
     var USING_LIVE = false;
-
-    // var MODAL_ENABLED = true;
-    // var FORMS_ENABLED = true;
-
     var DATA_LOADED = false;
     var TBL_LOADED = false;
-
     let DATA = {};
 
     sendData();
 
-
     async function getData() {
 
-      if (DATA_LOADED == false) {
-        let loader = document.createElement('div');
-        loader.id = 'view-loading';
-        loader.classList.add('d-flex', 'flex-column', 'justify-content-center', 'align-items-center', 'h-100', 'w-100');
-        loader.innerHTML = '<div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div><div class="mt-3"><h6>Loading...</h6></div>';
-        document.body.appendChild(loader);
-      }
+      if (DATA_LOADED == false) document.getElementById('view-loading').classList.remove('d-none');
 
-      // if data.SeasonInfo doesn't exist, assign the SeasonInfo sheet to it
       let sheets = ['SeasonInfo', 'Games', 'Responses'];
       for (let i = 0; i < sheets.length; i++) {
         let sheet = sheets[i];
@@ -254,50 +237,15 @@
         DATA.full = updateData(DATA.full, DATA.live);
       }
 
-      writeData(DATA.full, 'json-data');
-
-      if (DATA_LOADED == false) {
-        document.getElementById('view-loading').remove();
-        DATA_LOADED = true;
+      if (!DATA.tblGames) {
+        DATA.tblGames = DATA.full.filter((x) => x.week == DATA.currweek)[0];
+      } else {
+        let tblWeek = DATA.tblGames.week;
+        DATA.tblGames = DATA.full.filter((x) => x.week == tblWeek)[0];
       }
 
-      // const weekinfo = await getSheet('SeasonInfo');
-      // const currweek = weekinfo.filter((x) => x.current == '1')[0];
-      // writeData(currweek, 'data-liveweek');
-
-      // const games = await getSheet('Games');
-      // const picks = await getSheet('Responses');
-      // const games_resp = procGames(games, picks);
-      // writeData(games_resp, 'data-games-resp');
-
-      // // if (USING_LIVE == true) {
-      // //   // if (DATA_LOADED == false) {
-      // //     let livedata = await fetchLive(currweek.week);
-      // //     writeData(livedata, 'data-livegames');
-      // //   // }
-      // // }
-
-      // let data = games_resp;
-      // if (USING_LIVE == true) {
-      //   let livedata = await fetchLive(currweek.week)
-      //   data = updateData(data, livedata);
-      // }
-
-      // writeData(data, 'json-data');
-
-      // if (DATA_LOADED == false) {
-      //   document.getElementById('view-loading').remove();
-      //   DATA_LOADED = true;
-      // }
-
-      return data;
-    }
-
-    function writeData(obj, dataId) {
-      document.getElementById(dataId).textContent = JSON.stringify(obj, undefined, 2);
-    }
-    function readData(dataId) {
-      return JSON.parse(document.getElementById(dataId).textContent);
+      if (DATA_LOADED == false) document.getElementById('view-loading').classList.add('d-none');
+      DATA_LOADED = true;
     }
 
     /* ------------------------------------------------ */
@@ -321,11 +269,10 @@
         updateTblrows();
 
         makeWeekButtons();
-        // let currweek = readData('data-liveweek');
-        filterTable(DATA.currweek);
+        // filterTable(DATA.currweek);
         document.getElementById("refresh-btn").classList.remove('d-none');
         document.getElementById("toggle-picks-btn").classList.remove('d-none');
-        document.getElementById("progGames").classList.remove('d-none');
+        document.getElementById("prog-games").classList.remove('d-none');
 
         // add event listeners
         let modalForm = document.getElementById('modalForm');
@@ -340,73 +287,37 @@
         TBL_LOADED = true;
       }
 
-
     }
+
     /* ------------------------------------------------ */
 
-    // use data and supporting makeDiv functions to build rows (avoid using El objects)
     function updateTblrows() {
 
-      // let data = readData('json-data');
-      let data = DATA.full;
       let tblGames = document.getElementById('tblGames');
+      let games = DATA.tblGames.games;
 
-      // update tblrows (if they exist)
-      if (TBL_LOADED == true) {
-        let tblrows = tblGames.getElementsByClassName('tblrow');
-        for (let i = 0; i < tblrows.length; i++) {
-          let row = tblrows.item(i);
-          let gid = row.getAttribute('data-gameid');
-          let week = row.getAttribute('data-week');
-          let g = data.filter((w) => w.week == week)[0].games.filter((x) => x.game_id == gid)[0];
-          let newrow = makeTblrowDiv(g);
+      let days = games.map((x) => x.gameday_long);
+      days = days.filter((c, index) => days.indexOf(c) === index);
+      days.forEach((d) => {
+        let dayDiv = document.createElement('div');
+        let day = document.createElement('h6');
+        day.classList.add('text-center', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0', 'bg-main');
+        day.textContent = d;
+        dayDiv.appendChild(day);
+        tblGames.appendChild(dayDiv);
 
-          // check if row needs to be replaced
-          let is_same = true;
-          let oldChildren = row.childNodes;
-          let newChildren = newrow.childNodes;
-          for (let j = 0; j < oldChildren.length; j++) {
-            let oldChild = oldChildren.item(j);
-            let newChild = newChildren.item(j);
-            if (oldChild.outerHTML != newChild.outerHTML) {
-              is_same = false;
-              break;
-            }
-          }
-
-          if (!is_same) {
-            row.replaceWith(newrow);
-          }
-        }
-
-        return;
-      }
-
-      let rowdata = data.map((w) => {
-        let rows = document.createElement('div');
-        rows.classList.add('week-games');
-        rows.id = 'week-games-' + w.week;
-        let days = w.games.map((x) => x.gameday_long);
-        days = days.filter((c, index) => days.indexOf(c) === index);
-        days.forEach((d) => {
-          let dayDiv = document.createElement('div');
-          let day = document.createElement('h6');
-          day.classList.add('text-center', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0', 'bg-main');
-          day.textContent = d;
-          dayDiv.appendChild(day);
-
-          rows.appendChild(dayDiv);
-
-          let games = w.games.filter((x) => x.gameday_long == d);
-          games.forEach((g) => rows.appendChild(makeTblrowDiv(g)));
+        games.filter((x) => x.gameday_long == d).forEach((g) => {
+          let tblrow = makeTblrowDiv(g);
+          tblGames.appendChild(tblrow);
         });
-
-        return { week: w.week, games: rows };
       });
 
+      ['pre', 'in', 'post'].forEach((state) => {
+        let num_games = games.filter((x) => x.state == state).length;
+        let pc_games = Math.round(num_games / games.length * 100);
+        document.getElementById('prog-' + state).style.width = pc_games + '%';
+      });
 
-      let rowSet = rowdata.map((x) => x['games']);
-      rowSet.forEach((x) => document.getElementById("tblGames").appendChild(x));
     }
 
     /* ------------------------------------------------ */
@@ -712,12 +623,6 @@
 
         let elogo = document.createElement(logo_type);
         elogo.src = logo;
-        // if (pick == '' || status != 'OK') {
-        //   elogo = ;
-        // } else {
-        //   elogo = document.createElement('img');
-        //   elogo.src = logo;
-        // }
         let ename = document.createElement('span');
         ename.setAttribute('data-status', status);
         ename.textContent = player;
@@ -734,8 +639,6 @@
           }
         }
 
-        // if (pick == '' || status != 'OK') ename.classList.add('opacity-25');
-
         return { logo: elogo, name: ename, data: p };
       });
 
@@ -746,17 +649,19 @@
 
     function makeWeekButtons() {
 
-      const proc = JSON.parse(document.getElementById('json-data').textContent);
-
-      let weeks = proc;
       let fCont = document.getElementById('filterCont');
-      weeks.forEach((wdata) => {
+      DATA.full.forEach((wdata) => {
         let w = wdata.week;
         let wlab = wdata.week_label;
         if (!document.getElementById('btn' + w)) {
           let btn = document.createElement('button');
           btn.type = 'button';
-          btn.setAttribute('onclick', `filterTable(${w})`);
+          btn.setAttribute('data-week', w);
+          btn.addEventListener('click', (e) => {
+            let btn = e.target;
+            let week = btn.getAttribute('data-week');
+            filterTable(week);
+          });
           btn.classList.add('btn', 'text-dim', 'opacity-50', 'fw-medium', 'text-nowrap', 'rounded-2');
           btn.style.borderColor = 'transparent';
           btn.innerHTML = `${wlab}`;
@@ -764,58 +669,31 @@
           fCont.appendChild(btn);
         }
       });
+
+      // add active class to current week button, scroll into view
+      let currbtn = document.getElementById('btn' + DATA.currweek);
+      currbtn.classList.add('active');
+      currbtn.scrollIntoView({ behavior: "smooth", block: "end", inline: "center" });
     }
 
     function filterTable(week) {
 
-      let togglebtn = document.getElementById('toggle-picks-btn');
-      let is_enabled = togglebtn.classList.contains('disabled') == false;
-      let picks_on = togglebtn.innerHTML.includes('Hide');
+      DATA.tblGames = DATA.full.filter((x) => x.week == week)[0];
+      updateTblrows();
 
-      let tbl = document.getElementById('tblGames');
-      let weeks = tbl.getElementsByClassName('week-games');
-      let num_games;
-      let num_pre;
-      let num_in;
-      let num_post;
-
-
-      for (let i = 0; i < weeks.length; i++) {
-        let wdiv = weeks.item(i);
-        let rweek = wdiv.id.replace('week-games-', '');
-        let is_week = rweek == week;
-        let is_shown = wdiv.classList.contains('hide') == false;
-        if (is_week && !is_shown) wdiv.classList.remove('hide');
-        if (!is_week && is_shown) wdiv.classList.add('hide');
-
-        if (is_week) {
-          num_games = wdiv.getElementsByClassName('tblrow').length;
-          num_pre = wdiv.getElementsByClassName('game-pre').length;
-          num_in = wdiv.getElementsByClassName('game-in').length;
-          num_post = wdiv.getElementsByClassName('game-post').length;
-        }
-      }
-
-      if (num_games > 0) {
-        let pc_pre = Math.round(100 * (num_pre / num_games));
-        let pc_in = Math.round(100 * (num_in / num_games));
-        let pc_post = Math.round(100 * (num_post / num_games));
-        let pc_offset = 100 - (pc_pre + pc_in + pc_post);
-        pc_pre = pc_pre + pc_offset;
-        document.getElementById('progPre').style.width = pc_pre.toString() + '%';
-        document.getElementById('progIn').style.width = pc_in.toString() + '%';
-        document.getElementById('progPost').style.width = pc_post.toString() + '%';
-      }
-
+      // update week buttons
       let fCont = document.getElementById('filterCont');
       let btns = fCont.getElementsByClassName('btn');
       for (let j = 0; j < btns.length; j++) {
-        btns[j].classList.remove('active');
+        let btn = btns.item(j);
+        let btn_week = btn.getAttribute('data-week');
+        if (btn_week == week) {
+          btn.classList.add('active');
+          btn.scrollIntoView({ behavior: "smooth", block: "end", inline: "center" });
+        } else {
+          btn.classList.remove('active');
+        }
       }
-
-      let currbtn = document.getElementById('btn' + week);
-      currbtn.classList.add('active');
-      currbtn.scrollIntoView({ behavior: "smooth", block: "end", inline: "center" });
     }
 
     /* ------------------------------------------------ */
