@@ -41,22 +41,6 @@
       padding: 12px 12px !important;
     }
 
-    .text-dim {
-      color: #9b9b9b !important;
-    }
-
-    .text-smaller {
-      font-size: .75rem !important;
-    }
-
-    .bg-dim {
-      background-color: #181818 !important;
-    }
-
-    .bg-main {
-      background-color: #1e1e1e !important;
-    }
-
     #tblGames .hide {
       display: none !important;
       height: 0 !important;
@@ -136,12 +120,12 @@
       <!-- game rows-->
 
     </div>
-    <div class="container text-smaller d-none">
+    <!-- <div class="container text-smaller d-none">
       <pre id="json-data"></pre>
       <pre id="data-games-resp"></pre>
       <pre id="data-livegames"></pre>
       <pre id="data-liveweek"></pre>
-    </div>
+    </div> -->
 
     <div class="modal fade" style="height: 90vh;" id="modalFormContainer" tabindex="-1" aria-labelledby="modalFormContainerLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -211,8 +195,6 @@
   <script src="./scripts/forms.js"></script>
   <script>
     var USING_LIVE = false;
-    var DATA_LOADED = false;
-    var TBL_LOADED = false;
     let DATA = {
       LOADED: false,
       TBL_LOADED: false
@@ -227,10 +209,8 @@
       let sheets = ['SeasonInfo', 'Games', 'Responses'];
       for (let i = 0; i < sheets.length; i++) {
         let sheet = sheets[i];
-        if (!DATA[sheet]) {
-          let data = await getSheet(sheet);
-          DATA[sheet] = data;
-        }
+        let data = await getSheet(sheet);
+        DATA[sheet] = data;
       }
 
       DATA.currweek = DATA.SeasonInfo.filter((x) => x.current == '1')[0]['week'];
