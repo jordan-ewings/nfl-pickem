@@ -14,7 +14,7 @@ body {
 }
 
 /* don't display webkit scrollbar */
-*::-webkit-scrollbar {
+body::-webkit-scrollbar {
   display: none;
 }
 

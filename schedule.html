@@ -222,6 +222,10 @@
     var DATA_LOADED = false;
     var TBL_LOADED = false;
 
+    let DATA = {};
+
+    sendData();
+
 
     async function getData() {
 
@@ -233,34 +237,58 @@
         document.body.appendChild(loader);
       }
 
-      const weekinfo = await getSheet('SeasonInfo');
-      const currweek = weekinfo.filter((x) => x.current == '1')[0];
-      writeData(currweek, 'data-liveweek');
-
-      const games = await getSheet('Games');
-      const picks = await getSheet('Responses');
-      const games_resp = procGames(games, picks);
-      writeData(games_resp, 'data-games-resp');
-
-      // if (USING_LIVE == true) {
-      //   // if (DATA_LOADED == false) {
-      //     let livedata = await fetchLive(currweek.week);
-      //     writeData(livedata, 'data-livegames');
-      //   // }
-      // }
-
-      let data = games_resp;
-      if (USING_LIVE == true) {
-        let livedata = await fetchLive(currweek.week)
-        data = updateData(data, livedata);
+      // if data.SeasonInfo doesn't exist, assign the SeasonInfo sheet to it
+      let sheets = ['SeasonInfo', 'Games', 'Responses'];
+      for (let i = 0; i < sheets.length; i++) {
+        let sheet = sheets[i];
+        if (!DATA[sheet]) {
+          let data = await getSheet(sheet);
+          DATA[sheet] = data;
+        }
       }
 
-      writeData(data, 'json-data');
+      DATA.currweek = DATA.SeasonInfo.filter((x) => x.current == '1')[0]['week'];
+      DATA.full = procGames(DATA.Games, DATA.Responses);
+      if (USING_LIVE == true) {
+        DATA.live = await fetchLive(DATA.currweek);
+        DATA.full = updateData(DATA.full, DATA.live);
+      }
+
+      writeData(DATA.full, 'json-data');
 
       if (DATA_LOADED == false) {
         document.getElementById('view-loading').remove();
         DATA_LOADED = true;
       }
+
+      // const weekinfo = await getSheet('SeasonInfo');
+      // const currweek = weekinfo.filter((x) => x.current == '1')[0];
+      // writeData(currweek, 'data-liveweek');
+
+      // const games = await getSheet('Games');
+      // const picks = await getSheet('Responses');
+      // const games_resp = procGames(games, picks);
+      // writeData(games_resp, 'data-games-resp');
+
+      // // if (USING_LIVE == true) {
+      // //   // if (DATA_LOADED == false) {
+      // //     let livedata = await fetchLive(currweek.week);
+      // //     writeData(livedata, 'data-livegames');
+      // //   // }
+      // // }
+
+      // let data = games_resp;
+      // if (USING_LIVE == true) {
+      //   let livedata = await fetchLive(currweek.week)
+      //   data = updateData(data, livedata);
+      // }
+
+      // writeData(data, 'json-data');
+
+      // if (DATA_LOADED == false) {
+      //   document.getElementById('view-loading').remove();
+      //   DATA_LOADED = true;
+      // }
 
       return data;
     }
@@ -293,8 +321,8 @@
         updateTblrows();
 
         makeWeekButtons();
-        let currweek = readData('data-liveweek');
-        filterTable(currweek.week);
+        // let currweek = readData('data-liveweek');
+        filterTable(DATA.currweek);
         document.getElementById("refresh-btn").classList.remove('d-none');
         document.getElementById("toggle-picks-btn").classList.remove('d-none');
         document.getElementById("progGames").classList.remove('d-none');
@@ -319,7 +347,8 @@
     // use data and supporting makeDiv functions to build rows (avoid using El objects)
     function updateTblrows() {
 
-      let data = readData('json-data');
+      // let data = readData('json-data');
+      let data = DATA.full;
       let tblGames = document.getElementById('tblGames');
 
       // update tblrows (if they exist)
@@ -899,7 +928,6 @@
       return data;
     }
 
-    sendData();
 
 
   </script>
