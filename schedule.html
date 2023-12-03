@@ -66,46 +66,18 @@
     }
   </style>
   <script>
-    // window.onload = () => {
-    //   fetch('nav.html')
-    //     .then(response => response.text())
-    //     .then(navhtml => document.querySelector('#nav').outerHTML = navhtml);
-    // }
+    window.onload = () => {
+      fetch('nav.html')
+        .then(response => response.text())
+        .then(navhtml => document.querySelector('#nav').outerHTML = navhtml);
+    }
   </script>
 </head>
 
 
 <body class="m-0">
   <header class="navbar navbar-expand-sm bg-main sticky-top">
-    <!-- <nav id="nav" class="container"></nav> -->
-    <nav class="container">
-      <a class="navbar-brand" href="/">
-        <div class="d-flex align-items-center">
-          <i class="fa-solid fa-football fa-sm"></i>
-          <span class="ps-2">PICK 'EM</span>
-        </div>
-        <!-- <i class="fa-solid fa-football"></i> -->
-      </a>
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvasLg" aria-controls="navbarOffcanvasLg" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="offcanvas offcanvas-top bg-main" tabindex="-1" id="navbarOffcanvasLg" aria-labelledby="navbarOffcanvasLgLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">PICK 'EM</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-          <ul class="navbar-nav justify-content-end pe-3">
-            <li class="nav-item">
-              <a class="nav-link" href="/nfl-pickem/index.html">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/nfl-pickem/schedule.html">Schedule</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <nav id="nav" class="container"></nav>
 
   </header>
   <div class="container mx-auto px-0" style="max-width: 600px;">
@@ -220,13 +192,14 @@
   <script src="./scripts/procGames.js"></script>
   <script src="./scripts/forms.js"></script>
   <script>
-    var USING_LIVE = false;
+    var USING_LIVE = true;
     let DATA = {
       LOADED: false,
       TBL_LOADED: false
     };
 
     sendData();
+
 
     async function getData() {
 
