@@ -310,6 +310,7 @@
       let games = DATA.tblGames.games;
 
       if (update == false) {
+        tblGames.innerHTML = '';
         let days = games.map((x) => x.gameday_long);
         days = days.filter((c, index) => days.indexOf(c) === index);
         days.forEach((d) => {
@@ -348,6 +349,7 @@
       });
 
     }
+
 
     /* ------------------------------------------------ */
 
