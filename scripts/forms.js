@@ -110,8 +110,8 @@ function prepareForm(e) {
     let teamSelectValue = '';
     let pickFormatting = [];
     let pickitem = tblrow.querySelector('.pickitem[data-player="' + playerValue + '"]');
-    let is_faded = pickitem.querySelector('span').classList.contains('opacity-25');
-    let status = pickitem.querySelector('span').getAttribute('data-status');
+    let is_faded = pickitem.classList.contains('opacity-25');
+    let status = pickitem.getAttribute('data-status');
     teamSelectValue = pickitem.getAttribute('data-pick-teamfull');
 
     if (tblrow.classList.contains('game-post')) {
@@ -134,6 +134,10 @@ function prepareForm(e) {
     // wrap each team in a radio button input
     modalFormGames.appendChild(gamerow.cloneNode(true));
     let game = modalFormGames.querySelector('.gamerow[data-gameid="' + gameid + '"]');
+
+    // remove data attributes related to collapsing
+    game.removeAttribute('data-bs-toggle');
+    game.removeAttribute('data-bs-target');
 
     game.classList.add('rounded-end-3', 'mb-3', 'bg-main', 'pb-2', 'ps-1');
     game.style.borderTop = 'none';

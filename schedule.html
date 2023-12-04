@@ -176,18 +176,18 @@
             <span data-item="stateshort" class="text-dim fw-semibold"></span>
             <span data-item="poss_loc" class="text-dim fw-semibold"></span>
             <span data-item="poss_dd" class="text-dim fw-normal"></span>
-            <span data-item="spread" class="text-dim fw-normal">DAL -9.5</span>
+            <span data-item="spread" class="text-dim fw-normal"></span>
           </div>
         </div>
       </div>
       <!-- </a> -->
-      <div class="pickrow row align-items-center pt-0 pb-0 mx-0 collapse" id="picks-401547566">
+      <div class="pickrow row align-items-center pt-0 pb-0 mx-0">
         <div class="col-9 ps-1 pe-0 mb-3">
           <div class="row row-cols-3 rounded-end-3 bg-dim mx-0 ps-2 pe-1 py-1" style="border-left-width: 4px; border-left-style: solid; border-left-color: rgb(14, 14, 14);">
             <div class="col px-1">
               <div class="pickitem d-flex align-items-center py-1" role="button" data-bs-toggle="modal" data-bs-target="#modalFormContainer" tabindex="0">
                 <img data-item="pick_logo" src="" class="object-fit-contain" style="height: 16px; width: 16px;">
-                <span data-item="player" class="ps-1 small">Austin</span>
+                <span data-item="player" class="ps-1 small"></span>
               </div>
             </div>
           </div>
@@ -201,7 +201,7 @@
   <script src="./scripts/procGames.js"></script>
   <script src="./scripts/forms.js"></script>
   <script>
-    var USING_LIVE = false;
+    var USING_LIVE = true;
     let DATA = {
       LOADED: false,
       TBL_LOADED: false
@@ -264,7 +264,6 @@
         updateTblrows(update = false);
 
         makeWeekButtons();
-        // filterTable(DATA.currweek);
         document.getElementById("refresh-btn").classList.remove('d-none');
         document.getElementById("toggle-picks-btn").classList.remove('d-none');
         document.getElementById("prog-games").classList.remove('d-none');
@@ -335,9 +334,10 @@
     // use tblrow-template to make tblrow divs
     function makeTblrowDiv(g) {
       let template = document.getElementById('tblrow-template');
-      let tblrow = template.content.cloneNode(true);
-      tblrow = tblrow.querySelector('.tblrow');
+      let clone = template.content.cloneNode(true);
+      let tblrow = clone.querySelector('.tblrow');
       tblrow.setAttribute('data-gameid', g.game_id);
+      tblrow.classList.add('game-' + g.state);
 
       let gamerow = tblrow.querySelector('.gamerow');
       gamerow.setAttribute('data-gameid', g.game_id);
@@ -365,12 +365,12 @@
 
           if (item == 'score') {
             if (g.state == 'pre') el.classList.add('d-none');
-            return;
+            // return;
           }
 
           if (item == 'record') {
             if (g.state != 'pre') el.classList.add('d-none');
-            return;
+            // return;
           }
 
           el.textContent = g[t + '_' + item];
@@ -397,7 +397,10 @@
           if (key == 'gametime') el.classList.remove('d-none');
           if (key == 'spread') el.classList.remove('d-none');
         } else if (g.state == 'in') {
-          if (key == 'stateshort') el.classList.remove('d-none');
+          if (key == 'stateshort') {
+            el.classList.remove('d-none');
+            el.style.color = '#79552e';
+          }
           if (key == 'poss_loc') el.classList.remove('d-none');
           if (key == 'poss_dd') el.classList.remove('d-none');
         } else if (g.state == 'post') {
@@ -407,49 +410,55 @@
       });
 
       // fill pickrow
+      if (!g.responses) return tblrow;
 
-      if (g.responses) {
-        gamerow.setAttribute('data-bs-toggle', 'collapse');
-        gamerow.setAttribute('data-bs-target', '#picks-' + g.game_id);
-        gamerow.setAttribute('role', 'button');
+      let state = g.state;
+      let win_team = g.win_team;
 
-        let pickrow = tblrow.querySelector('.pickrow');
-        pickrow.classList.add('collapse');
-        pickrow.id = 'picks-' + g.game_id;
-        pickrow.id = pickrow.id.replace('_', '-');
+      gamerow.setAttribute('data-bs-toggle', 'collapse');
+      gamerow.setAttribute('data-bs-target', '#picks-' + g.game_id);
+      gamerow.setAttribute('role', 'button');
 
-        let pcols = pickrow.querySelector('.row-cols-3');
-        g.responses.forEach((p, index) => {
-          let col = pcols.querySelector('.col');
-          if (index > 0) {
-            let newcol = col.cloneNode(true);
-            pcols.appendChild(newcol);
-          }
+      let pickrow = tblrow.querySelector('.pickrow');
+      pickrow.classList.add('collapse');
+      pickrow.id = 'picks-' + g.game_id;
+      pickrow.id = pickrow.id.replace('_', '-');
 
-          let pickitem = pcols.querySelector('.col:nth-child(' + (index + 1) + ') .pickitem');
-          Object.keys(p).forEach((key) => {
-            let label = key.replace('_', '-');
-            pickitem.setAttribute('data-' + label, p[key]);
-          });
+      let pcols = pickrow.querySelector('.row-cols-3');
+      g.responses.forEach((p, index) => {
+        let col = pcols.querySelector('.col');
+        if (index > 0) {
+          let newcol = col.cloneNode(true);
+          pcols.appendChild(newcol);
+        }
+      });
 
-          let logo = pickitem.querySelector('[data-item="pick_logo"]');
-          logo.src = p.pick_logo;
-          if (p.pick_logo == '') logo.classList.add('opacity-0');
-          let player = pickitem.querySelector('[data-item="player"]');
-          player.textContent = p.player;
-
-          pickitem.addEventListener('click', (e) => {
-            prepareForm(e);
-          });
-
-          if (g.state == 'post') {
-            if (p.pick_team != g.win_team) {
-              pickitem.classList.add('opacity-25');
-            }
-          }
-
+      g.responses.forEach((p, index) => {
+        let pickitem = pcols.querySelector('.col:nth-child(' + (index + 1) + ') .pickitem');
+        Object.keys(p).forEach((key) => {
+          let label = key.replace('_', '-');
+          pickitem.setAttribute('data-' + label, p[key]);
         });
-      }
+
+        let logo = pickitem.querySelector('[data-item="pick_logo"]');
+        logo.src = p.pick_logo;
+        if (p.pick_logo == '') logo.classList.add('opacity-0');
+        let player = pickitem.querySelector('[data-item="player"]');
+        player.textContent = p.player;
+
+        let pick_team = p.pick_team;
+        if (state == 'post') {
+          if (pick_team == win_team) {
+            pickitem.classList.add('opacity-100');
+          } else {
+            pickitem.classList.add('opacity-25');
+          }
+        }
+
+        pickitem.addEventListener('click', (e) => {
+          prepareForm(e);
+        });
+      });
 
       return tblrow;
 
