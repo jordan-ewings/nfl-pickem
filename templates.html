@@ -1,0 +1,49 @@
+<template id="tblrow-template">
+  <div class="tblrow">
+    <a role="button" data-bs-toggle="collapse" data-bs-target="" style="color: inherit; text-decoration: none;">
+      <div class="gamerow row align-items-start pt-2 py-3 mx-0" style="border-top-width: 2px; border-top-style: dotted; border-top-color: rgb(47, 47, 47);">
+        <div class="teamcol col-9 ps-2" style="border-right-width: 1px; border-right-style: solid; border-right-color: rgb(47, 47, 47);">
+          <div class="d-flex flex-column row-gap-1">
+            <div class="teamrow teamrow-away d-flex align-items-center">
+              <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
+              <span data-item="teamshort" class="ps-2 fw-semibold"></span>
+              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2" style="color:#79552e"></i>
+              <span data-item="score" class="fw-semibold ms-auto"></span>
+              <span data-item="record" class="text-dim text-smaller opacity-25 ms-auto"></span>
+            </div>
+            <div class="teamrow teamrow-home d-flex align-items-center">
+              <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
+              <span data-item="teamshort" class="ps-2 fw-semibold"></span>
+              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2" style="color:#79552e"></i>
+              <span data-item="score" class="fw-semibold ms-auto"></span>
+              <span data-item="record" class="text-dim text-smaller opacity-25 ms-auto"></span>
+            </div>
+          </div>
+        </div>
+        <div class="statcol col-3 pe-1">
+          <div class="d-flex flex-column justify-content-center text-smaller">
+            <span data-item="gameday" class="text-dim fw-semibold"></span>
+            <span data-item="gametime" class="text-dim fw-semibold"></span>
+            <span data-item="stateshort" class="text-dim fw-semibold"></span>
+            <span data-item="poss_loc" class="text-dim fw-semibold"></span>
+            <span data-item="poss_dd" class="text-dim fw-normal"></span>
+            <span data-item="spread" class="text-dim fw-normal">DAL -9.5</span>
+          </div>
+        </div>
+      </div>
+    </a>
+    <div class="pickrow row align-items-center pt-0 pb-0 mx-0 collapse" id="picks-401547566">
+      <div class="col-9 ps-1 pe-0 mb-3">
+        <div class="row row-cols-3 rounded-end-3 bg-dim mx-0 ps-2 pe-1 py-1" style="border-left-width: 4px; border-left-style: solid; border-left-color: rgb(14, 14, 14);">
+          <div class="col px-1">
+            <div class="pickitem d-flex align-items-center py-1" role="button" data-bs-toggle="modal" data-bs-target="#modalFormContainer" tabindex="0">
+              <img data-item="pick_logo" src="" class="object-fit-contain" style="height: 16px; width: 16px;">
+              <span data-item="player" class="ps-1 small">Austin</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-3 pe-1"></div>
+    </div>
+  </div>
+</template>

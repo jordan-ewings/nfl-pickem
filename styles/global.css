@@ -6,6 +6,12 @@
   --text-dim: #9b9b9b;
 }
 
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+div::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   background-color: var(--bg-main);
   color: var(--text-main);
@@ -13,13 +19,11 @@ body {
   font-size: 11pt;
 }
 
-/* remove bootstrap table cell styling */
 td {
   font-size: 11pt !important;
   color: var(--text-main) !important;
   background-color: var(--bg-main) !important;
 }
-
 
 .text-dim {
   color: #9b9b9b !important;

@@ -9,12 +9,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="./styles/global.css">
   <style>
-    html::-webkit-scrollbar,
-    body::-webkit-scrollbar,
-    div::-webkit-scrollbar {
-      display: none;
-    }
-
     /* decrease padding, remove margin on modal */
     .modal-content {
       padding: 0 !important;
@@ -38,26 +32,11 @@
       padding: 12px 12px !important;
     }
 
-    #tblGames .hide {
-      display: none !important;
-      height: 0 !important;
-      border: 0 !important;
-    }
-
-    .game-prop {
-      /* background-color: #272727 !important; */
-      border-color: #545454 !important;
-      color: #efefef !important;
-    }
-
     #filterCont button.active {
       color: #efefef !important;
       opacity: 1 !important;
       font-weight: 700 !important;
     }
-
-    /* toggle picks button, don't change width when inner HTML width changes */
-
 
     .modfooter-sticky {
       position: sticky;
@@ -91,9 +70,8 @@
     </div>
     <div class="mx-1">
       <div id="filterCont" class="btn-group d-flex flex-nowrap overflow-x-scroll" role="group">
-        <!-- week buttons -->
-      </div>
 
+      </div>
       <div class="d-flex flex-row my-3 px-1 align-items-center">
         <div id="prog-games" class="d-none ps-1 pe-3 me-auto" style="width: 65%;">
           <div class="progress-stacked">
@@ -109,39 +87,25 @@
           </div>
         </div>
         <button id="toggle-picks-btn" style="width: 25%" class="fw-semibold btn btn-sm btn-primary text-nowrap d-none" type="button" onclick="togglePicks()">Show Picks</button>
-        <!-- add button to sendData (updating tblrows)... a small refresh icon as inner html-->
         <button id="refresh-btn" class="w-auto mx-0 fw-light btn text-nowrap d-none" type="button" onclick="sendData()"><i class="fa-solid fa-sync-alt"></i></button>
       </div>
     </div>
-
     <div id="tblGames" class="mx-1">
       <!-- game rows-->
 
     </div>
-    <!-- <div class="container text-smaller d-none">
-      <pre id="json-data"></pre>
-      <pre id="data-games-resp"></pre>
-      <pre id="data-livegames"></pre>
-      <pre id="data-liveweek"></pre>
-    </div> -->
-
     <div class="modal fade" id="modalFormContainer" tabindex="-1" aria-labelledby="modalFormContainerLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header bg-dim">
             <div class="container">
-              <!-- two cols: first col is title. second col has (a) subtitle, and (b) underneath subtitle show # games picked -->
               <div class="row justify-content-between align-items-center">
                 <div class="col-auto text-nowrap">
                   <h5 class="modal-title" id="modalFormContainerLabel"></h5>
                 </div>
                 <div class="col-auto ms-2">
-                  <!-- <div class="d-flex"> -->
                   <div class="row text-dim text-smaller" id="modalFormSubtitle"></div>
-                  <!-- </div> -->
-                  <!-- <div class="d-flex w-100"> -->
                   <div class="row text-dim text-smaller" id="modalFormSubtitle2"></div>
-                  <!-- </div> -->
                 </div>
                 <div class="col-auto ms-auto">
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -152,9 +116,7 @@
           <div class="modal-body bg-dim p-0 m-0">
             <form id="modalForm">
               <div id="modalFormBody" class="container m-0 pt-0">
-                <!-- make player select (options are Austin, Carly, Carter, John, Jordan, Kayla, Kristen, Kristy, Stella) -->
                 <div class="container sticky-top bg-dim w-100 py-3">
-                  <!-- make select smaller -->
                   <select class="form-select form-select-sm bg-main m-0" name="player" id="player" required>
                     <option selected>Player</option>
                     <option value="Austin">Austin</option>
@@ -169,7 +131,6 @@
                   </select>
                 </div>
                 <div id="modalFormGames" class="container pt-1">
-                  <!-- make game rows -->
                 </div>
               </div>
               <div class="modal-footer bg-dim d-none modfooter-sticky">
@@ -181,18 +142,66 @@
               </div>
             </form>
           </div>
-
         </div>
       </div>
     </div>
 
-
   </div>
+  <template id="tblrow-template">
+    <div class="tblrow">
+      <!-- <a role="button" data-bs-toggle="collapse" data-bs-target="" style="color: inherit; text-decoration: none;"> -->
+      <div class="gamerow row align-items-start pt-2 py-3 mx-0" style="border-top-width: 2px; border-top-style: dotted; border-top-color: rgb(47, 47, 47);">
+        <div class="teamcol col-9 ps-2" style="border-right-width: 1px; border-right-style: solid; border-right-color: rgb(47, 47, 47);">
+          <div class="d-flex flex-column row-gap-1">
+            <div class="teamrow teamrow-away d-flex align-items-center">
+              <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
+              <span data-item="teamshort" class="ps-2 fw-semibold"></span>
+              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2" style="color:#79552e"></i>
+              <span data-item="score" class="fw-semibold ms-auto"></span>
+              <span data-item="record" class="text-dim text-smaller opacity-25 ms-auto"></span>
+            </div>
+            <div class="teamrow teamrow-home d-flex align-items-center">
+              <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
+              <span data-item="teamshort" class="ps-2 fw-semibold"></span>
+              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2" style="color:#79552e"></i>
+              <span data-item="score" class="fw-semibold ms-auto"></span>
+              <span data-item="record" class="text-dim text-smaller opacity-25 ms-auto"></span>
+            </div>
+          </div>
+        </div>
+        <div class="statcol col-3 pe-1">
+          <div class="d-flex flex-column justify-content-center text-smaller">
+            <span data-item="gameday" class="text-dim fw-semibold"></span>
+            <span data-item="gametime" class="text-dim fw-semibold"></span>
+            <span data-item="stateshort" class="text-dim fw-semibold"></span>
+            <span data-item="poss_loc" class="text-dim fw-semibold"></span>
+            <span data-item="poss_dd" class="text-dim fw-normal"></span>
+            <span data-item="spread" class="text-dim fw-normal">DAL -9.5</span>
+          </div>
+        </div>
+      </div>
+      <!-- </a> -->
+      <div class="pickrow row align-items-center pt-0 pb-0 mx-0 collapse" id="picks-401547566">
+        <div class="col-9 ps-1 pe-0 mb-3">
+          <div class="row row-cols-3 rounded-end-3 bg-dim mx-0 ps-2 pe-1 py-1" style="border-left-width: 4px; border-left-style: solid; border-left-color: rgb(14, 14, 14);">
+            <div class="col px-1">
+              <div class="pickitem d-flex align-items-center py-1" role="button" data-bs-toggle="modal" data-bs-target="#modalFormContainer" tabindex="0">
+                <img data-item="pick_logo" src="" class="object-fit-contain" style="height: 16px; width: 16px;">
+                <span data-item="player" class="ps-1 small">Austin</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-3 pe-1"></div>
+      </div>
+    </div>
+  </template>
+
   <script src="./scripts/getSheet.js"></script>
   <script src="./scripts/procGames.js"></script>
   <script src="./scripts/forms.js"></script>
   <script>
-    var USING_LIVE = true;
+    var USING_LIVE = false;
     let DATA = {
       LOADED: false,
       TBL_LOADED: false
@@ -295,7 +304,7 @@
           tblGames.appendChild(dayDiv);
 
           games.filter((x) => x.gameday_long == d).forEach((g) => {
-            let tblrow = makeTblrowDiv(g);
+            let tblrow = makeTblrowDivAlt(g);
             tblGames.appendChild(tblrow);
           });
         });
@@ -322,6 +331,129 @@
       });
 
     }
+
+    /* ------------------------------------------------ */
+    // use tblrow-template to make tblrow divs
+    function makeTblrowDivAlt(g) {
+      let template = document.getElementById('tblrow-template');
+      let tblrow = template.content.cloneNode(true);
+
+      let gamerow = tblrow.querySelector('.gamerow');
+      gamerow.setAttribute('data-gameid', g.game_id);
+      gamerow.setAttribute('data-week', g.week);
+      gamerow.setAttribute('data-gametime', g.gametime_raw);
+
+      ['away', 'home'].forEach((t) => {
+        let teamrow = gamerow.querySelector('.teamrow-' + t);
+        teamrow.setAttribute('data-gameid', g.game_id);
+        teamrow.setAttribute('data-team', g[t + '_team']);
+        teamrow.setAttribute('data-teamshort', g[t + '_teamshort']);
+        teamrow.setAttribute('data-teamfull', g[t + '_teamfull']);
+
+        ['logo', 'teamshort', 'poss', 'score', 'record'].forEach((item) => {
+          let el = teamrow.querySelector('[data-item="' + item + '"]');
+          if (item == 'logo') {
+            el.src = g[t + '_logo'];
+            return;
+          }
+
+          if (item == 'poss') {
+            if (g[t + '_poss'] != '1') el.classList.add('d-none');
+            return;
+          }
+
+          if (item == 'score') {
+            if (g.state == 'pre') el.classList.add('d-none');
+            return;
+          }
+
+          if (item == 'record') {
+            if (g.state != 'pre') el.classList.add('d-none');
+            return;
+          }
+
+          el.textContent = g[t + '_' + item];
+        });
+
+        // add opacity-25 class to teamrow if team didn't win (keep logo at full opacity)
+        if (g.state == 'post') {
+          if (g[t + '_team'] != g.win_team) {
+            let spanEls = teamrow.querySelectorAll('span');
+            spanEls.forEach((el) => {
+              el.classList.add('opacity-25');
+            });
+          }
+        }
+      });
+
+      // fill statcol
+      ['gameday', 'gametime', 'stateshort', 'poss_loc', 'poss_dd', 'spread'].forEach((key) => {
+        let el = gamerow.querySelector('[data-item="' + key + '"]');
+        el.textContent = g[key];
+        el.classList.add('d-none');
+        if (g.state == 'pre') {
+          if (key == 'gameday') el.classList.remove('d-none');
+          if (key == 'gametime') el.classList.remove('d-none');
+          if (key == 'spread') el.classList.remove('d-none');
+        } else if (g.state == 'in') {
+          if (key == 'stateshort') el.classList.remove('d-none');
+          if (key == 'poss_loc') el.classList.remove('d-none');
+          if (key == 'poss_dd') el.classList.remove('d-none');
+        } else if (g.state == 'post') {
+          if (key == 'stateshort') el.classList.remove('d-none');
+          if (key == 'spread') el.classList.remove('d-none');
+        }
+      });
+
+      // fill pickrow
+
+      if (g.responses) {
+        gamerow.setAttribute('data-bs-toggle', 'collapse');
+        gamerow.setAttribute('data-bs-target', '#picks-' + g.game_id);
+        gamerow.setAttribute('role', 'button');
+
+        let pickrow = tblrow.querySelector('.pickrow');
+        pickrow.classList.add('collapse');
+        pickrow.id = 'picks-' + g.game_id;
+        pickrow.id = pickrow.id.replace('_', '-');
+
+        let pcols = pickrow.querySelector('.row-cols-3');
+        g.responses.forEach((p, index) => {
+          let col = pcols.querySelector('.col');
+          if (index > 0) {
+            let newcol = col.cloneNode(true);
+            pcols.appendChild(newcol);
+          }
+
+          let pickitem = pcols.querySelector('.col:nth-child(' + (index + 1) + ') .pickitem');
+          Object.keys(p).forEach((key) => {
+            let label = key.replace('_', '-');
+            pickitem.setAttribute('data-' + label, p[key]);
+          });
+
+          let logo = pickitem.querySelector('[data-item="pick_logo"]');
+          logo.src = p.pick_logo;
+          if (p.pick_logo == '') logo.classList.add('opacity-0');
+          let player = pickitem.querySelector('[data-item="player"]');
+          player.textContent = p.player;
+
+          pickitem.addEventListener('click', (e) => {
+            prepareForm(e);
+          });
+
+          if (g.state == 'post') {
+            if (p.pick_team != g.win_team) {
+              pickitem.classList.add('opacity-25');
+            }
+          }
+
+        });
+      }
+
+      return tblrow;
+
+    }
+
 
 
     /* ------------------------------------------------ */
@@ -416,7 +548,7 @@
         estat1.textContent = status;
       } else if (state == 'in') {
         estat1.textContent = status;
-        estat1.style.color = '#ff5c5c!important;';
+        estat1.style.color = '#ff5c5c';
         if (g.poss_dd) estat2.textContent = g.poss_dd;
         if (g.poss_loc) estat3.textContent = g.poss_loc;
         eodds.classList.add('d-none');
@@ -504,7 +636,7 @@
 
       // gamerow (status column) (status container) (status 1)
       let status1 = inputs.stat1;
-      status1.classList.add('text-dim', 'fw-semibold');
+      status1.classList.add('fw-semibold');
 
       // gamerow (status column) (status container) (status 2)
       let status2 = inputs.stat2;
@@ -607,37 +739,29 @@
     }
     /* ------------------------------------------------ */
 
-    // make alt make_pickrow_input function using document.createElement instead of El object
-    // in addition, make the code more concise
     function makePickrowInputs(g) {
+
       if (!g.responses) return [];
 
-      let winner = g.win_team;
-      let state = g.state;
-
       let info = g.responses.map((p) => {
-        let status = p.status;
-        let pick = p.pick_team;
-        let player = p.player;
-        let logo = p.pick_logo;
         let logo_type = 'img';
-        if (pick == '' || status != 'OK') {
+        if (p.pick_team == '' || p.status != 'OK') {
           logo_type = 'i';
         }
 
         let elogo = document.createElement(logo_type);
-        elogo.src = logo;
+        elogo.src = p.pick_logo;
         let ename = document.createElement('span');
-        ename.setAttribute('data-status', status);
-        ename.textContent = player;
+        ename.setAttribute('data-status', p.status);
+        ename.textContent = p.player;
 
-        if (state != 'post') {
-          if (pick == '' || status != 'OK') {
+        if (g.state != 'post') {
+          if (p.pick_team == '' || p.status != 'OK') {
             elogo.classList.add('opacity-25');
             ename.classList.add('opacity-25');
           }
         } else {
-          if (status != 'OK' || pick != winner) {
+          if (p.status != 'OK' || p.pick_team != g.win_team) {
             elogo.classList.add('opacity-25');
             ename.classList.add('opacity-25');
           }
@@ -674,7 +798,6 @@
         }
       });
 
-      // add active class to current week button, scroll into view
       let currbtn = document.getElementById('btn' + DATA.currweek);
       currbtn.classList.add('active');
       currbtn.scrollIntoView({ behavior: "smooth", block: "end", inline: "center" });
@@ -685,7 +808,6 @@
       DATA.tblGames = DATA.full.filter((x) => x.week == week)[0];
       updateTblrows();
 
-      // update week buttons
       let fCont = document.getElementById('filterCont');
       let btns = fCont.getElementsByClassName('btn');
       for (let j = 0; j < btns.length; j++) {
@@ -714,106 +836,15 @@
       for (let i = 0; i < rows.length; i++) {
         let row = rows.item(i);
         let is_shown = row.classList.contains('show') == true;
-        // let rowBS = new bootstrap.Collapse(row);
         if (!picks_on) {
           if (!is_shown) row.classList.add('show');
-          // if (!is_shown) rowBS.show();
         } else {
           if (is_shown) row.classList.remove('show');
-          // if (is_shown) rowBS.hide();
         }
       }
     }
 
-
-    /* ------------------------------------------------ */
-
-    async function fetchLive(week) {
-
-      console.log('FETCHING LIVE');
-      const resp = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&dates=2023&week=' + week);
-      const raw = await resp.text();
-      const events = JSON.parse(raw)['events'];
-
-      const proc = events.map((game) => {
-
-        let comp = game.competitions[0];
-        let hid = comp.competitors[0].id;
-        let aid = comp.competitors[1].id;
-
-        let data = {};
-        data.game_id = game.id;
-        data.week = game.week.number;
-        data.home_score = game.competitions[0].competitors[0].score;
-        data.away_score = game.competitions[0].competitors[1].score;
-        data.state = game.status.type.state;
-        data.stateshort = game.status.type.shortDetail;
-        data.home_poss = '0';
-        data.away_poss = '0';
-
-        if (comp.situation) {
-          if (comp.situation.possession) {
-            let pid = comp.situation.possession;
-            if (pid == hid) data.home_poss = '1';
-            if (pid == aid) data.away_poss = '1';
-            data.poss_loc = comp.situation.possessionText;
-            data.poss_dd = comp.situation.shortDownDistanceText;
-          }
-        }
-
-        return data;
-      });
-
-      console.log(proc);
-      return proc;
-    }
-
-    /* ------------------------------------------------ */
-
-    function updateData(proc, live) {
-      console.log('UPDATING LIVE');
-      let week = live[0].week.toString();
-      let data = proc.map((w) => {
-        if (w.week == week) {
-          w.games = w.games.map((game) => {
-            let g = game;
-            let glive = live.filter((x) => x.game_id == g.game_id)[0];
-            console.log(g);
-            console.log(glive);
-            g.away_score = glive.away_score;
-            g.home_score = glive.home_score;
-            g.state = glive.state;
-            g.stateshort = glive.stateshort;
-            g.away_poss = glive.away_poss;
-            g.home_poss = glive.home_poss;
-            g.poss_loc = glive.poss_loc;
-            g.poss_dd = glive.poss_dd;
-            let ascore = parseInt(glive.away_score);
-            let hscore = parseInt(glive.home_score);
-
-            if (g.state == 'post') {
-              if (ascore > hscore) {
-                g.win_team = g.away_team;
-              } else if (hscore > ascore) {
-                g.win_team = g.home_team;
-              } else {
-                g.win_team = 'TIE';
-              }
-            }
-            return g;
-          });
-        }
-        return w;
-      });
-
-      // console.log(data);
-      return data;
-    }
-
-
-
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
   </script>
 </body>
