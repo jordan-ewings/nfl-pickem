@@ -43,6 +43,14 @@
       bottom: 0;
       z-index: 1000;
     }
+
+    /* tblDetails  sticky */
+    #tblDetails {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #1f1f1f;
+    }
   </style>
   <script>
     window.onload = () => {
@@ -68,7 +76,7 @@
         <h6>Loading...</h6>
       </div>
     </div>
-    <div class="mx-1">
+    <div id="tblDetails">
       <div id="filterCont" class="btn-group d-flex flex-nowrap overflow-x-scroll" role="group">
 
       </div>
@@ -90,7 +98,7 @@
         <button id="refresh-btn" class="w-auto mx-0 fw-light btn text-nowrap d-none" type="button" onclick="sendData()"><i class="fa-solid fa-sync-alt"></i></button>
       </div>
     </div>
-    <div id="tblGames" class="mx-1">
+    <div id="tblGames">
       <!-- game rows-->
 
     </div>
@@ -149,7 +157,6 @@
   </div>
   <template id="tblrow-template">
     <div class="tblrow">
-      <!-- <a role="button" data-bs-toggle="collapse" data-bs-target="" style="color: inherit; text-decoration: none;"> -->
       <div class="gamerow row align-items-start pt-2 py-3 mx-0" style="border-top-width: 2px; border-top-style: dotted; border-top-color: rgb(47, 47, 47);">
         <div class="teamcol col-9 ps-2" style="border-right-width: 1px; border-right-style: solid; border-right-color: rgb(47, 47, 47);">
           <div class="d-flex flex-column row-gap-1">
@@ -158,14 +165,14 @@
               <span data-item="teamshort" class="ps-2 fw-semibold"></span>
               <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2" style="color:#79552e"></i>
               <span data-item="score" class="fw-semibold ms-auto"></span>
-              <span data-item="record" class="text-dim text-smaller opacity-25 ms-auto"></span>
+              <span data-item="record" class="text-dim text-smaller ms-auto"></span>
             </div>
             <div class="teamrow teamrow-home d-flex align-items-center">
               <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
               <span data-item="teamshort" class="ps-2 fw-semibold"></span>
               <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2" style="color:#79552e"></i>
               <span data-item="score" class="fw-semibold ms-auto"></span>
-              <span data-item="record" class="text-dim text-smaller opacity-25 ms-auto"></span>
+              <span data-item="record" class="text-dim text-smaller ms-auto"></span>
             </div>
           </div>
         </div>
@@ -180,7 +187,6 @@
           </div>
         </div>
       </div>
-      <!-- </a> -->
       <div class="pickrow row align-items-center pt-0 pb-0 mx-0">
         <div class="col-9 ps-1 pe-0 mb-3">
           <div class="row row-cols-3 rounded-end-3 bg-dim mx-0 ps-2 pe-1 py-1" style="border-left-width: 4px; border-left-style: solid; border-left-color: rgb(14, 14, 14);">
@@ -410,7 +416,11 @@
       });
 
       // fill pickrow
-      if (!g.responses) return tblrow;
+      if (!g.responses) {
+        let pickrow = tblrow.querySelector('.pickrow');
+        pickrow.remove();
+        return tblrow;
+      }
 
       let state = g.state;
       let win_team = g.win_team;
