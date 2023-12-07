@@ -257,14 +257,9 @@ function prepareForm(e) {
   mSub2.appendChild(document.createTextNode(subtext2));
 
   updateTimeRemainingDivs();
-  if (modal.hasAttribute('data-dlclocklistener') == false) {
-    modal.setAttribute('data-dlclocklistener', '');
-    modal.addEventListener('shown.bs.modal', (e) => {
-      setInterval(updateTimeRemainingDivs, 5000);
-    })
-    modal.addEventListener('hidden.bs.modal', (e) => {
-      clearInterval(updateTimeRemainingDivs);
-    });
+  if (modal.hasAttribute('data-clockInt') == false) {
+    setInterval(updateTimeRemainingDivs, 5000);
+    modal.setAttribute('data-clockInt', 'true');
   }
 }
 
