@@ -207,7 +207,7 @@
   <script src="./scripts/procGames.js"></script>
   <script src="./scripts/forms.js"></script>
   <script>
-    var USING_LIVE = true;
+    var USING_LIVE = false;
     let DATA = {
       LOADED: false,
       TBL_LOADED: false
@@ -220,12 +220,9 @@
 
       if (DATA.LOADED == false) document.getElementById('view-loading').classList.remove('d-none');
 
-      let sheets = ['SeasonInfo', 'Games', 'Responses'];
-      for (let i = 0; i < sheets.length; i++) {
-        let sheet = sheets[i];
-        let data = await getSheet(sheet);
-        DATA[sheet] = data;
-      }
+      DATA['SeasonInfo'] = await getSheet('SeasonInfo');
+      DATA['Games'] = await getSheet('Games');
+      DATA['Responses'] = await getSheet('Responses');
 
       DATA.currweek = DATA.SeasonInfo.filter((x) => x.current == '1')[0]['week'];
       DATA.full = procGames(DATA.Games, DATA.Responses);
@@ -337,7 +334,7 @@
     }
 
     /* ------------------------------------------------ */
-    // use tblrow-template to make tblrow divs
+
     function makeTblrowDiv(g) {
       let template = document.getElementById('tblrow-template');
       let clone = template.content.cloneNode(true);
