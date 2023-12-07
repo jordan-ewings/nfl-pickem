@@ -49,7 +49,13 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      background-color: #1f1f1f;
+      background-color: #1e1e1e;
+    }
+
+    /* tblDetails box shadow on bottom after scroll */
+    #tblDetails.scrolled {
+      box-shadow: 0 10px 6px -6px rgba(0, 0, 0, 0.5);
+      /* background-color: #79552e!important; */
     }
   </style>
   <script>
@@ -67,7 +73,7 @@
     <nav id="nav" class="container"></nav>
 
   </header>
-  <div class="container mx-auto px-0" style="max-width: 600px;">
+  <div id="main" class="container mx-auto px-0" style="max-width: 600px;">
     <div id="view-loading" class="d-none d-flex flex-column justify-content-center align-items-center" style="height: 90vh; width:100%">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -76,7 +82,7 @@
         <h6>Loading...</h6>
       </div>
     </div>
-    <div id="tblDetails">
+    <div id="tblDetails" class="pb-1">
       <div id="filterCont" class="btn-group d-flex flex-nowrap overflow-x-scroll" role="group">
 
       </div>
@@ -125,7 +131,7 @@
             <form id="modalForm">
               <div id="modalFormBody" class="container m-0 pt-0">
                 <div class="container sticky-top bg-dim w-100 py-3">
-                  <select class="form-select form-select-sm bg-main m-0" name="player" id="player" required>
+                  <select class="form-select bg-main m-0" name="player" id="player" required>
                     <option selected>Player</option>
                     <option value="Austin">Austin</option>
                     <option value="Carly">Carly</option>
@@ -278,6 +284,17 @@
         });
         modalForm.querySelector('select[name="player"]').addEventListener('change', (e) => {
           prepareForm(e);
+        });
+
+        // add scroll event listener
+        window.addEventListener('scroll', (e) => {
+          let tblDetails = document.getElementById('tblDetails');
+          let scrolled = tblDetails.classList.contains('scrolled') == true;
+          if (window.scrollY > 0) {
+            if (scrolled == false) tblDetails.classList.add('scrolled');
+          } else {
+            if (scrolled == true) tblDetails.classList.remove('scrolled');
+          }
         });
 
 
