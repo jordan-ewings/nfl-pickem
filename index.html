@@ -17,23 +17,39 @@
 
     /* make sure header doesn't overlap content */
   </style>
-  <script>
+  <!-- <script>
     window.onload = () => {
       fetch('nav.html')
         .then(response => response.text())
         .then(navhtml => document.querySelector('#nav').outerHTML = navhtml);
     }
-  </script>
+  </script> -->
 </head>
 
 
 <body class="m-0">
-  <header class="navbar navbar-expand-lg bg-main sticky-top">
-    <nav id="nav" class="container">
-      <!-- nav.html will be inserted here -->
-    </nav>
+  <!-- <header class="navbar navbar-expand-lg bg-main sticky-top"> -->
+  <nav class="navbar navbar-expand">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/nfl-pickem/index.html">
+        <div class="d-flex align-items-center mx-0 px-0">
+          <i class="fa-solid fa-football fa-sm d-inline-block align-text-top"></i>
+          <span class="ps-2">PICK 'EM</span>
+        </div>
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a id="nav-home" class="nav-link" href="/nfl-pickem/index.html">Home</a>
+          <a id="nav-schedule" class="nav-link" href="/nfl-pickem/schedule.html">Schedule</a>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-  </header>
+  <!-- </header> -->
 
   <div class="container mx-auto mt-3" style="max-width: 600px;">
     <!-- heading -->
