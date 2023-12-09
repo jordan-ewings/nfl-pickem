@@ -26,7 +26,11 @@ td {
 }
 
 .text-dim {
-  color: #9b9b9b !important;
+  color: var(--text-dim) !important;
+}
+
+.text-main {
+  color: var(--text-main) !important;
 }
 
 .text-smaller {
@@ -34,9 +38,13 @@ td {
 }
 
 .bg-dim {
-  background-color: #181818 !important;
+  background-color: var(--bg-dim) !important;
 }
 
 .bg-main {
-  background-color: #1e1e1e !important;
+  background-color: var(--bg-main) !important;
+}
+
+.border-dim {
+  border-color: var(--bg-dim) !important;
 }

@@ -53,23 +53,23 @@ function submitForm(e) {
 
 }
 
-function incorpFormData(formData) {
-  let player = formData.get('player');
-  let gameids = [...formData.keys()];
-  // filter out non-gameid keys (gameid keys only contain numbers)
-  gameids = gameids.filter((x) => !isNaN(x));
-  gameids.forEach((gameid) => {
-    let teamname = formData.get(gameid);
-    let gamerow = document.querySelector('.gamerow[data-gameid="' + gameid + '"]');
-    let teamrow = gamerow.querySelector('.teamrow[data-teamfull="' + teamname + '"]');
-    let tblrow = gamerow.closest('.tblrow');
-    let pickitem = tblrow.querySelector('.pickitem[data-player="' + player + '"]');
-    pickitem.setAttribute('data-pick-teamfull', teamrow.getAttribute('data-teamfull'));
-    pickitem.setAttribute('data-pick-teamshort', teamrow.getAttribute('data-teamshort'));
-    pickitem.setAttribute('data-pick-team', teamrow.getAttribute('data-team'));
-    pickitem.querySelector('img').src = teamrow.querySelector('img').src;
-  });
-}
+// function incorpFormData(formData) {
+//   let player = formData.get('player');
+//   let gameids = [...formData.keys()];
+//   // filter out non-gameid keys (gameid keys only contain numbers)
+//   gameids = gameids.filter((x) => !isNaN(x));
+//   gameids.forEach((gameid) => {
+//     let teamname = formData.get(gameid);
+//     let gamerow = document.querySelector('.gamerow[data-gameid="' + gameid + '"]');
+//     let teamrow = gamerow.querySelector('.teamrow[data-teamfull="' + teamname + '"]');
+//     let tblrow = gamerow.closest('.tblrow');
+//     let pickitem = tblrow.querySelector('.pickitem[data-player="' + player + '"]');
+//     pickitem.setAttribute('data-pick-teamfull', teamrow.getAttribute('data-teamfull'));
+//     pickitem.setAttribute('data-pick-teamshort', teamrow.getAttribute('data-teamshort'));
+//     pickitem.setAttribute('data-pick-team', teamrow.getAttribute('data-team'));
+//     pickitem.querySelector('img').src = teamrow.querySelector('img').src;
+//   });
+// }
 
 
 function prepareForm(e) {
@@ -85,20 +85,17 @@ function prepareForm(e) {
   let playerSelect = modal.querySelector('#player');
 
   let playerValue = playerSelect.value;
-  let f_playerSet = playerSelect.value != 'Player';
   let f_pickitem = e.target.parentElement.classList.contains('pickitem');
   if (f_pickitem) {
     let pickitem = e.target.parentElement;
     playerValue = pickitem.getAttribute('data-player');
     playerSelect.value = playerValue;
 
-    // store week number in modalForm
-    // let weekDiv = pickitem.closest('.week-games');
     let weekNum = DATA.tblGames.week;
     modalForm.setAttribute('data-week', weekNum);
-
   }
 
+  modalFormGames.classList.add('mb-3');
   let weekNum = modalForm.getAttribute('data-week');
   let tblrows = document.querySelectorAll('.tblrow');
   modalFormGames.innerHTML = '';
@@ -139,8 +136,9 @@ function prepareForm(e) {
     game.removeAttribute('data-bs-toggle');
     game.removeAttribute('data-bs-target');
 
-    game.classList.add('rounded-end-3', 'mb-3', 'bg-main', 'pb-2', 'ps-1');
-    game.style.borderTop = 'none';
+    // game.classList.add('rounded-end-3', 'mb-3', 'bg-main', 'pb-2', 'ps-1');
+    // game.style.borderTop = 'none';
+    game.classList.replace('px-2', 'px-0');
     game.style.borderLeft = '3px solid #0e0e0e';
     game.classList.add(...pickFormatting);
     game.setAttribute('data-picked', 'false')
@@ -283,11 +281,6 @@ function calcTimeRemaining(deadline) {
   let now = new Date();
   let start = new Date(deadline);
   if (now > start) {
-    // return;
-    // let e = document.createElement('span');
-    // e.classList.add('text-dim');
-    // e.textContent = 'Closed';
-    // eLab.appendChild(e);
     return eLab;
   }
 

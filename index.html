@@ -27,9 +27,12 @@
 </head>
 
 
-<body class="m-0">
-  <!-- <header class="navbar navbar-expand-lg bg-main sticky-top"> -->
-  <nav class="navbar navbar-expand">
+<body class="m-0 p-0 mx-auto" style="max-width: 600px;">
+  <!-- <nav id="navCont" class="nav nav-fill m-1 bg-main">
+    <a id="nav-home" class="nav-link text-dim fw-medium border border-dim mx-1" href="/nfl-pickem/index.html">Standings</a>
+    <a id="nav-schedule" class="nav-link text-dim fw-medium border border-dim mx-1 active" href="/nfl-pickem/schedule.html">Schedule</a>
+  </nav> -->
+  <nav id="navCont" class="navbar">
     <div class="container-fluid">
       <a class="navbar-brand" href="/nfl-pickem/index.html">
         <div class="d-flex align-items-center mx-0 px-0">
@@ -37,24 +40,17 @@
           <span class="ps-2">PICK 'EM</span>
         </div>
       </a>
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a id="nav-home" class="nav-link" href="/nfl-pickem/index.html">Home</a>
-          <a id="nav-schedule" class="nav-link" href="/nfl-pickem/schedule.html">Schedule</a>
-        </div>
+      <div class="navbar-nav d-flex flex-row nav-underline">
+        <a id="nav-standings" class="nav-link fw-medium active" href="/nfl-pickem/index.html">Standings</a>
+        <a id="nav-schedule" class="nav-link fw-medium" href="/nfl-pickem/schedule.html">Schedule</a>
       </div>
     </div>
   </nav>
 
   <!-- </header> -->
-
-  <div class="container mx-auto mt-3" style="max-width: 600px;">
-    <!-- heading -->
-    <h1 class="text-center text-dim fw-medium my-4">Standings</h1>
-    <hr class="text-dim my-4" style="height: 3px;">
+  <div id="main" class="container-fluid px-2 mt-4">
+    <h4 class="text-start text-dim fw-medium ms-2">STANDINGS</h4>
+    <hr class="text-dim mb-4" style="height: 3px;">
     <div class="table-responsive">
       <table id="mytable" class="table table-sm table-borderless align-middle m-0">
         <tbody>
@@ -73,9 +69,9 @@
   </div>
   <template id="row-template">
     <tr>
-      <td data-item="rank" class="pt-2 text-nowrap align-middle text-nowrap ps-0 text-end text-primary-emphasis text-smaller fw-medium"></td>
-      <td data-item="player-cont" class="pt-2 ps-2 text-nowrap align-middle text-nowrap fw-medium pe-3">
-        <div class="d-flex flex-row align-items-center p-0 bg-main">
+      <td data-item="rank" class="pt-2 text-nowrap align-middle text-nowrap text-end text-primary-emphasis text-smaller fw-medium"></td>
+      <td data-item="player-cont" class="pt-2 text-nowrap align-middle text-nowrap fw-medium pe-3">
+        <div class="d-flex flex-row align-items-center py-0 pe-0 ps-2 bg-main">
           <span data-item="player" class="pe-2"></span>
           <i data-item="change-icon" class="d-none"></i>
           <span data-item="change" class="d-none text-smaller ps-1"></span>

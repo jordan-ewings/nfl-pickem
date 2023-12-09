@@ -33,10 +33,15 @@
     }
 
     #filterCont button.active {
-      color: #efefef !important;
+      color: var(--text-main) !important;
       opacity: 1 !important;
       font-weight: 700 !important;
     }
+
+    /* #navCont a.active {
+      background-color: var(--bg-dim);
+      color: var(--text-main) !important;
+    } */
 
     .modfooter-sticky {
       position: sticky;
@@ -44,17 +49,14 @@
       z-index: 1000;
     }
 
-    /* tblDetails  sticky */
     #tblDetails {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background-color: #1e1e1e;
     }
 
-    /* tblDetails box shadow on bottom after scroll */
     #tblDetails.scrolled {
-      box-shadow: 0 10px 6px -6px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 10px -10px var(--bg-dim);
     }
   </style>
   <!-- <script>
@@ -66,10 +68,12 @@
   </script> -->
 </head>
 
-
-<body class="m-0 p-0">
-  <!-- <header class="navbar navbar-expand-sm bg-main sticky-top"> -->
-  <nav class="navbar navbar-expand">
+<body class="m-0 p-0 mx-auto" style="max-width: 600px;">
+  <!-- <nav id="navCont" class="nav nav-fill m-1 bg-main">
+    <a id="nav-home" class="nav-link text-dim fw-medium border border-dim mx-1" href="/nfl-pickem/index.html">Standings</a>
+    <a id="nav-schedule" class="nav-link text-dim fw-medium border border-dim mx-1 active" href="/nfl-pickem/schedule.html">Schedule</a>
+  </nav> -->
+  <nav id="navCont" class="navbar">
     <div class="container-fluid">
       <a class="navbar-brand" href="/nfl-pickem/index.html">
         <div class="d-flex align-items-center mx-0 px-0">
@@ -77,20 +81,13 @@
           <span class="ps-2">PICK 'EM</span>
         </div>
       </a>
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a id="nav-home" class="nav-link" href="/nfl-pickem/index.html">Home</a>
-          <a id="nav-schedule" class="nav-link" href="/nfl-pickem/schedule.html">Schedule</a>
-        </div>
+      <div class="navbar-nav d-flex flex-row nav-underline">
+        <a id="nav-standings" class="nav-link fw-medium" href="/nfl-pickem/index.html">Standings</a>
+        <a id="nav-schedule" class="nav-link fw-medium active" href="/nfl-pickem/schedule.html">Schedule</a>
       </div>
     </div>
   </nav>
-
-  <!-- </header> -->
-  <div id="main" class="container mx-auto px-0" style="max-width: 600px;">
+  <div id="main" class="container-fluid mx-0 px-0">
     <div id="view-loading" class="d-none d-flex flex-column justify-content-center align-items-center" style="height: 90vh; width:100%">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -99,11 +96,11 @@
         <h6>Loading...</h6>
       </div>
     </div>
-    <div id="tblDetails" class="pb-1">
+    <div id="tblDetails" class="pb-1 px-1 bg-main">
       <div id="filterCont" class="btn-group d-flex flex-nowrap overflow-x-scroll" role="group">
 
       </div>
-      <div class="d-flex flex-row my-3 px-1 align-items-center">
+      <div class="d-flex flex-row my-2 align-items-center">
         <div id="prog-games" class="d-none ps-1 pe-3 me-auto" style="width: 65%;">
           <div class="progress-stacked">
             <div id="prog-post" class="progress" role="progressbar" style="width: 0%">
@@ -180,8 +177,8 @@
   </div>
   <template id="tblrow-template">
     <div class="tblrow">
-      <div class="gamerow row align-items-start pt-2 py-3 mx-0" style="border-top-width: 2px; border-top-style: dotted; border-top-color: rgb(47, 47, 47);">
-        <div class="teamcol col-9 ps-2" style="border-right-width: 1px; border-right-style: solid; border-right-color: rgb(47, 47, 47);">
+      <div class="gamerow row align-items-start pt-2 py-3 mx-0 px-2" style="border-top-width: 2px; border-top-style: dotted; border-top-color: rgb(47, 47, 47) !important;">
+        <div class="teamcol col-9" style="border-right-width: 1px; border-right-style: solid; border-right-color: rgb(47, 47, 47);">
           <div class="d-flex flex-column row-gap-1">
             <div class="teamrow teamrow-away d-flex align-items-center">
               <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
@@ -199,7 +196,7 @@
             </div>
           </div>
         </div>
-        <div class="statcol col-3 pe-1">
+        <div class="statcol col-3">
           <div class="d-flex flex-column justify-content-center text-smaller">
             <span data-item="gameday" class="text-dim fw-semibold"></span>
             <span data-item="gametime" class="text-dim fw-semibold"></span>
@@ -210,8 +207,8 @@
           </div>
         </div>
       </div>
-      <div class="pickrow row align-items-center pt-0 pb-0 mx-0">
-        <div class="col-9 ps-1 pe-0 mb-3">
+      <div class="pickrow row align-items-center pt-0 pb-0 mx-0 px-3">
+        <div class="col-9 px-0 mb-3">
           <div class="row row-cols-3 rounded-end-3 bg-dim mx-0 ps-2 pe-1 py-1" style="border-left-width: 4px; border-left-style: solid; border-left-color: rgb(14, 14, 14);">
             <div class="col px-1">
               <div class="pickitem d-flex align-items-center py-1" role="button" data-bs-toggle="modal" data-bs-target="#modalFormContainer" tabindex="0">
@@ -237,7 +234,6 @@
     };
 
     sendData();
-
 
     async function getData() {
 
@@ -307,13 +303,12 @@
         window.addEventListener('scroll', (e) => {
           let tblDetails = document.getElementById('tblDetails');
           let scrolled = tblDetails.classList.contains('scrolled') == true;
-          if (window.scrollY > 0) {
+          if (tblDetails.getBoundingClientRect().top <= 0) {
             if (scrolled == false) tblDetails.classList.add('scrolled');
           } else {
             if (scrolled == true) tblDetails.classList.remove('scrolled');
           }
         });
-
 
         DATA.TBL_LOADED = true;
       }
@@ -340,7 +335,7 @@
           tblGames.appendChild(dayDiv);
 
           games.filter((x) => x.gameday_long == d).forEach((g) => {
-            let tblrow = makeTblrowDiv(g);
+            let tblrow = makeTblrow(g);
             tblGames.appendChild(tblrow);
           });
         });
@@ -350,7 +345,7 @@
           let tblrow = tblrows.item(i);
           let game_id = tblrow.getAttribute('data-gameid');
           let g = games.filter((x) => x.game_id == game_id)[0];
-          let newrow = makeTblrowDiv(g);
+          let newrow = makeTblrow(g);
           // if pickrow of tblrow has class show, add class show to new pickrow
           let pickrow = tblrow.getElementsByClassName('pickrow')[0];
           if (pickrow.classList.contains('show')) {
@@ -369,7 +364,7 @@
 
     /* ------------------------------------------------ */
 
-    function makeTblrowDiv(g) {
+    function makeTblrow(g) {
       let template = document.getElementById('tblrow-template');
       let clone = template.content.cloneNode(true);
       let tblrow = clone.querySelector('.tblrow');
@@ -453,6 +448,8 @@
         return tblrow;
       }
 
+
+
       let state = g.state;
       let win_team = g.win_team;
 
@@ -493,6 +490,12 @@
             pickitem.classList.add('opacity-100');
           } else {
             pickitem.classList.add('opacity-25');
+          }
+        } else {
+          if (pick_team == '') {
+            pickitem.classList.add('opacity-25');
+          } else {
+            pickitem.classList.add('opacity-100');
           }
         }
 
