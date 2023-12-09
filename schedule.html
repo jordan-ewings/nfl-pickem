@@ -38,10 +38,9 @@
       font-weight: 700 !important;
     }
 
-    /* #navCont a.active {
-      background-color: var(--bg-dim);
-      color: var(--text-main) !important;
-    } */
+    .pickcont {
+      background-color: rgb(15, 15, 15) !important;
+    }
 
     .modfooter-sticky {
       position: sticky;
@@ -96,7 +95,7 @@
         <h6>Loading...</h6>
       </div>
     </div>
-    <div id="tblDetails" class="pb-1 px-1 bg-main">
+    <div id="tblDetails" class="pb-1 px-1 bg-dim">
       <div id="filterCont" class="btn-group d-flex flex-nowrap overflow-x-scroll" role="group">
 
       </div>
@@ -110,7 +109,7 @@
               <div class="progress-bar bg-danger"></div>
             </div>
             <div id="prog-pre" class="progress" role="progressbar" style="width: 0%">
-              <div class="progress-bar bg-dim"></div>
+              <div class="progress-bar bg-main"></div>
             </div>
           </div>
         </div>
@@ -176,7 +175,7 @@
 
   </div>
   <template id="tblrow-template">
-    <div class="tblrow mx-2">
+    <div class="tblrow mx-1">
       <div class="gamerow row align-items-start pt-2 py-3 mx-0" style="border-top-width: 2px; border-top-style: dotted; border-top-color: rgb(47, 47, 47) !important;">
         <div class="teamcol col-9" style="border-right-width: 1px; border-right-style: solid; border-right-color: rgb(47, 47, 47);">
           <div class="d-flex flex-column row-gap-1">
@@ -209,7 +208,7 @@
       </div>
       <div class="pickrow row align-items-center pt-0 pb-0 mx-0">
         <div class="col-9 px-0 mb-3 ps-2">
-          <div class="row row-cols-3 rounded-end-3 bg-dim mx-0 ps-2 pe-1 py-1" style="border-left-width: 4px; border-left-style: solid; border-left-color: rgb(14, 14, 14);">
+          <div class="pickcont row row-cols-3 rounded-end-3 bg-dim mx-0 ps-2 pe-1 py-1">
             <div class="col px-1">
               <div class="pickitem d-flex align-items-center py-1" role="button" data-bs-toggle="modal" data-bs-target="#modalFormContainer" tabindex="0">
                 <img data-item="pick_logo" src="" class="object-fit-contain" style="height: 16px; width: 16px;">
@@ -330,7 +329,7 @@
         days.forEach((d) => {
           let dayDiv = document.createElement('div');
           let day = document.createElement('h6');
-          day.classList.add('text-center', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0', 'bg-main');
+          day.classList.add('text-center', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0');
           day.textContent = d;
           dayDiv.appendChild(day);
           tblGames.appendChild(dayDiv);
