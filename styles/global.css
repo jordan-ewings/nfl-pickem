@@ -26,7 +26,7 @@ td {
 }
 
 .text-dim {
-  color: var(--text-dim) !important;
+  color: var(--text-dim);
 }
 
 .text-main {

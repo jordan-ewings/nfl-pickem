@@ -436,7 +436,10 @@
           if (key == 'poss_loc') el.classList.remove('d-none');
           if (key == 'poss_dd') el.classList.remove('d-none');
         } else if (g.state == 'post') {
-          if (key == 'stateshort') el.classList.remove('d-none');
+          if (key == 'stateshort') {
+            el.classList.remove('d-none');
+            el.classList.add('text-primary-emphasis');
+          }
           if (key == 'spread') el.classList.remove('d-none');
         }
       });
