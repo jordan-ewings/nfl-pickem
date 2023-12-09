@@ -138,7 +138,7 @@ function prepareForm(e) {
 
     // game.classList.add('rounded-end-3', 'mb-3', 'bg-main', 'pb-2', 'ps-1');
     // game.style.borderTop = 'none';
-    game.classList.replace('px-2', 'px-0');
+    // game.classList.replace('px-2', 'px-0');
     game.style.borderLeft = '3px solid #0e0e0e';
     game.classList.add(...pickFormatting);
     game.setAttribute('data-picked', 'false')

@@ -176,8 +176,8 @@
 
   </div>
   <template id="tblrow-template">
-    <div class="tblrow">
-      <div class="gamerow row align-items-start pt-2 py-3 mx-0 px-2" style="border-top-width: 2px; border-top-style: dotted; border-top-color: rgb(47, 47, 47) !important;">
+    <div class="tblrow mx-2">
+      <div class="gamerow row align-items-start pt-2 py-3 mx-0" style="border-top-width: 2px; border-top-style: dotted; border-top-color: rgb(47, 47, 47) !important;">
         <div class="teamcol col-9" style="border-right-width: 1px; border-right-style: solid; border-right-color: rgb(47, 47, 47);">
           <div class="d-flex flex-column row-gap-1">
             <div class="teamrow teamrow-away d-flex align-items-center">
@@ -207,18 +207,21 @@
           </div>
         </div>
       </div>
-      <div class="pickrow row align-items-center pt-0 pb-0 mx-0 px-3">
-        <div class="col-9 px-0 mb-3">
+      <div class="pickrow row align-items-center pt-0 pb-0 mx-0">
+        <div class="col-9 px-0 mb-3 ps-2">
           <div class="row row-cols-3 rounded-end-3 bg-dim mx-0 ps-2 pe-1 py-1" style="border-left-width: 4px; border-left-style: solid; border-left-color: rgb(14, 14, 14);">
             <div class="col px-1">
               <div class="pickitem d-flex align-items-center py-1" role="button" data-bs-toggle="modal" data-bs-target="#modalFormContainer" tabindex="0">
                 <img data-item="pick_logo" src="" class="object-fit-contain" style="height: 16px; width: 16px;">
                 <span data-item="player" class="ps-1 small"></span>
+                <span data-item="status" class="ps-1 small text-danger-emphasis fw-medium d-none"></span>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-3 pe-1"></div>
+        <div class="pickdist col-3">
+
+        </div>
       </div>
     </div>
   </template>
@@ -303,11 +306,9 @@
         window.addEventListener('scroll', (e) => {
           let tblDetails = document.getElementById('tblDetails');
           let scrolled = tblDetails.classList.contains('scrolled') == true;
-          if (tblDetails.getBoundingClientRect().top <= 0) {
-            if (scrolled == false) tblDetails.classList.add('scrolled');
-          } else {
-            if (scrolled == true) tblDetails.classList.remove('scrolled');
-          }
+          let is_top = tblDetails.getBoundingClientRect().top <= 0;
+          if (is_top == true && scrolled == false) tblDetails.classList.add('scrolled');
+          if (is_top == false && scrolled == true) tblDetails.classList.remove('scrolled');
         });
 
         DATA.TBL_LOADED = true;
@@ -448,7 +449,8 @@
         return tblrow;
       }
 
-
+      // pickdist will have donut chart of picks
+      // let pickdist = tblrow.querySelector('.pickdist');
 
       let state = g.state;
       let win_team = g.win_team;
@@ -485,17 +487,20 @@
         player.textContent = p.player;
 
         let pick_team = p.pick_team;
-        if (state == 'post') {
-          if (pick_team == win_team) {
-            pickitem.classList.add('opacity-100');
-          } else {
-            pickitem.classList.add('opacity-25');
+        if (p.status != 'OK') {
+          pickitem.classList.add('opacity-25');
+          let status = pickitem.querySelector('[data-item="status"]');
+          if (p.status == 'LATE') {
+            status.textContent = 'L';
+            status.classList.remove('d-none');
           }
         } else {
-          if (pick_team == '') {
-            pickitem.classList.add('opacity-25');
-          } else {
-            pickitem.classList.add('opacity-100');
+          if (state == 'post') {
+            if (pick_team == win_team) {
+              pickitem.classList.add('opacity-100');
+            } else {
+              pickitem.classList.add('opacity-25');
+            }
           }
         }
 
