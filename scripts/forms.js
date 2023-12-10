@@ -7,6 +7,10 @@ function submitForm(e) {
   submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
   submitBtn.setAttribute('disabled', '');
 
+  // hide cancel button
+  let cancelBtn = e.target.querySelector('[type="button"]');
+  cancelBtn.classList.add('d-none');
+
   let formData = new FormData(e.target);
   formData.append('timestamp', new Date().toLocaleString());
   let formUrlParams = new URLSearchParams(formData).toString();
@@ -30,13 +34,14 @@ function submitForm(e) {
       console.log(result);
       submitBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
 
-      // incorpFormData(formData);
+      incorpFormData(formData);
       setTimeout(() => {
         let modalBS = bootstrap.Modal.getInstance(modal);
         modalBS.hide();
         // modalMessage.classList.add('d-none');
         submitBtn.removeAttribute('disabled');
         submitBtn.innerHTML = 'Change Picks';
+        cancelBtn.classList.remove('d-none');
       }, 300);
     })
     .catch(error => {
@@ -48,28 +53,37 @@ function submitForm(e) {
         modalMessage.classList.add('d-none');
         submitBtn.removeAttribute('disabled');
         submitBtn.innerHTML = 'Change Picks';
+        cancelBtn.classList.remove('d-none');
       }, 3000);
     });
 
 }
 
-// function incorpFormData(formData) {
-//   let player = formData.get('player');
-//   let gameids = [...formData.keys()];
-//   // filter out non-gameid keys (gameid keys only contain numbers)
-//   gameids = gameids.filter((x) => !isNaN(x));
-//   gameids.forEach((gameid) => {
-//     let teamname = formData.get(gameid);
-//     let gamerow = document.querySelector('.gamerow[data-gameid="' + gameid + '"]');
-//     let teamrow = gamerow.querySelector('.teamrow[data-teamfull="' + teamname + '"]');
-//     let tblrow = gamerow.closest('.tblrow');
-//     let pickitem = tblrow.querySelector('.pickitem[data-player="' + player + '"]');
-//     pickitem.setAttribute('data-pick-teamfull', teamrow.getAttribute('data-teamfull'));
-//     pickitem.setAttribute('data-pick-teamshort', teamrow.getAttribute('data-teamshort'));
-//     pickitem.setAttribute('data-pick-team', teamrow.getAttribute('data-team'));
-//     pickitem.querySelector('img').src = teamrow.querySelector('img').src;
-//   });
-// }
+function incorpFormData(formData) {
+  let player = formData.get('player');
+  let gameids = [...formData.keys()];
+  // filter out non-gameid keys (gameid keys only contain numbers)
+  gameids = gameids.filter((x) => !isNaN(x));
+  gameids.forEach((gameid) => {
+    let teamname = formData.get(gameid);
+    let gamerow = document.querySelector('.gamerow[data-gameid="' + gameid + '"]');
+    let teamrow = gamerow.querySelector('.teamrow[data-teamfull="' + teamname + '"]');
+    let tblrow = gamerow.closest('.tblrow');
+    let pickitem = tblrow.querySelector('.pickitem[data-player="' + player + '"]');
+    // if new pick is same as old pick, do nothing
+    if (pickitem.getAttribute('data-pick-teamfull') == teamrow.getAttribute('data-teamfull')) {
+      return;
+    }
+
+    pickitem.setAttribute('data-pick-teamfull', teamrow.getAttribute('data-teamfull'));
+    pickitem.setAttribute('data-pick-teamshort', teamrow.getAttribute('data-teamshort'));
+    pickitem.setAttribute('data-pick-team', teamrow.getAttribute('data-team'));
+    pickitem.querySelector('img').src = teamrow.querySelector('img').src;
+    if (pickitem.querySelector('img').classList.contains('opacity-0')) {
+      pickitem.querySelector('img').classList.remove('opacity-0');
+    }
+  });
+}
 
 
 function prepareForm(e) {
