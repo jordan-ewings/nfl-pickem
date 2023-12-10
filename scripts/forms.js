@@ -122,6 +122,7 @@ function prepareForm(e) {
     let gamerow = tblrow.querySelector('.gamerow');
     let gameid = gamerow.getAttribute('data-gameid');
     let gametime_raw = gamerow.getAttribute('data-gametime');
+    let deadline_raw = gamerow.getAttribute('data-deadline');
     let gametime = new Date(gametime_raw);
     let currtime = new Date();
     let time_diff = (currtime - gametime) / 1000 / 60;
@@ -146,9 +147,9 @@ function prepareForm(e) {
 
     let timeRemainingDiv = document.createElement('div');
     timeRemainingDiv.classList.add('dl-clock');
-    timeRemainingDiv.classList.add('d-flex', 'flex-row', 'flex-nowrap', 'justify-content-start', 'text-smaller');
+    timeRemainingDiv.classList.add('d-flex', 'flex-row', 'flex-nowrap', 'justify-content-start', 'text-sm5');
     if (is_open) timeRemainingDiv.classList.add('mt-2');
-    timeRemainingDiv.setAttribute('data-deadline', gametime_raw);
+    timeRemainingDiv.setAttribute('data-deadline', deadline_raw);
     game.querySelector('.col-9').appendChild(timeRemainingDiv);
 
     if (status == 'LATE') {

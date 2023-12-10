@@ -10,7 +10,7 @@ function procGames(dbGames, dbResponses) {
     game.away_logo = (game.away_team != 'TBD') ? game.away_logo.replace('500', '500-dark') : game.away_logo;
     game.home_logo = (game.home_team != 'TBD') ? game.home_logo.replace('500', '500-dark') : game.home_logo;
     let rec = [
-      'game_id', 'gametime_raw', 'week', 'week_label', 'gameday_long', 'gameday', 'gametime', 'state', 'stateshort',
+      'game_id', 'gametime_raw', 'deadline', 'week', 'week_label', 'gameday_long', 'gameday', 'gametime', 'state', 'stateshort',
       'away_team', 'away_teamshort', 'away_teamfull', 'away_record', 'away_logo', 'away_score', 'away_color',
       'home_team', 'home_teamshort', 'home_teamfull', 'home_record', 'home_logo', 'home_score', 'home_color',
       'spread', 'win_team']

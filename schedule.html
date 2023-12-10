@@ -221,7 +221,7 @@
   <script src="./scripts/procGames.js"></script>
   <script src="./scripts/forms.js"></script>
   <script>
-    var USING_LIVE = false;
+    var USING_LIVE = true;
     let DATA = {
       LOADED: false,
       TBL_LOADED: false
@@ -367,6 +367,7 @@
       gamerow.setAttribute('data-gameid', g.game_id);
       gamerow.setAttribute('data-week', g.week);
       gamerow.setAttribute('data-gametime', g.gametime_raw);
+      gamerow.setAttribute('data-deadline', g.deadline);
 
       ['away', 'home'].forEach((t) => {
         let teamrow = gamerow.querySelector('.teamrow-' + t);
