@@ -40,7 +40,7 @@ function submitForm(e) {
         modalBS.hide();
         // modalMessage.classList.add('d-none');
         submitBtn.removeAttribute('disabled');
-        submitBtn.innerHTML = 'Change Picks';
+        submitBtn.innerHTML = 'Submit';
         cancelBtn.classList.remove('d-none');
       }, 300);
     })
@@ -52,7 +52,7 @@ function submitForm(e) {
       setTimeout(() => {
         modalMessage.classList.add('d-none');
         submitBtn.removeAttribute('disabled');
-        submitBtn.innerHTML = 'Change Picks';
+        submitBtn.innerHTML = 'Submit';
         cancelBtn.classList.remove('d-none');
       }, 3000);
     });
