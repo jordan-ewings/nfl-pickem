@@ -54,13 +54,6 @@
       box-shadow: 0 20px 10px -10px var(--ios-bg);
     }
   </style>
-  <!-- <script>
-    window.onload = () => {
-      fetch('nav.html')
-        .then(response => response.text())
-        .then(navhtml => document.querySelector('#nav').outerHTML = navhtml);
-    }
-  </script> -->
 </head>
 
 <body class="m-0 p-0 mx-auto" style="max-width: 600px;">
@@ -174,14 +167,14 @@
             <div class="teamrow teamrow-away d-flex align-items-center">
               <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
               <span data-item="teamshort" class="ps-2 fw-semibold"></span>
-              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2" style="color:#79552e"></i>
+              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2 text-dim2"></i>
               <span data-item="score" class="fw-semibold ms-auto"></span>
               <span data-item="record" class="text-dim1 text-sm5 ms-auto"></span>
             </div>
             <div class="teamrow teamrow-home d-flex align-items-center">
               <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
               <span data-item="teamshort" class="ps-2 fw-semibold"></span>
-              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2" style="color:#79552e"></i>
+              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2 text-dim2"></i>
               <span data-item="score" class="fw-semibold ms-auto"></span>
               <span data-item="record" class="text-dim1 text-sm5 ms-auto"></span>
             </div>
@@ -220,6 +213,14 @@
   <script src="./scripts/getSheet.js"></script>
   <script src="./scripts/procGames.js"></script>
   <script src="./scripts/forms.js"></script>
+  <script>
+    function setDataAttrs(element, data) {
+      Object.keys(data).forEach((key) => {
+        let label = key.replace('_', '-');
+        element.setAttribute('data-' + label, data[key]);
+      });
+    }
+  </script>
   <script>
     var USING_LIVE = true;
     let DATA = {
@@ -292,15 +293,6 @@
         modalForm.querySelector('select[name="player"]').addEventListener('change', (e) => {
           prepareForm(e);
         });
-
-        // add scroll event listener
-        // window.addEventListener('scroll', (e) => {
-        //   let tblDetails = document.getElementById('tblDetails');
-        //   let scrolled = tblDetails.classList.contains('scrolled') == true;
-        //   let is_top = tblDetails.getBoundingClientRect().top <= 0;
-        //   if (is_top == true && scrolled == false) tblDetails.classList.add('scrolled');
-        //   if (is_top == false && scrolled == true) tblDetails.classList.remove('scrolled');
-        // });
 
         DATA.TBL_LOADED = true;
       }
@@ -424,7 +416,7 @@
         } else if (g.state == 'in') {
           if (key == 'stateshort') {
             el.classList.remove('d-none');
-            el.style.color = '#79552e';
+            el.classList.add('text-danger');
           }
           if (key == 'poss_loc') el.classList.remove('d-none');
           if (key == 'poss_dd') el.classList.remove('d-none');
