@@ -256,7 +256,7 @@ function prepareForm(e) {
 
   updateTimeRemainingDivs();
   if (modal.hasAttribute('data-clockInt') == false) {
-    setInterval(updateTimeRemainingDivs, 5000);
+    setInterval(updateTimeRemainingDivs, 1000);
     modal.setAttribute('data-clockInt', 'true');
   }
 }
@@ -298,7 +298,7 @@ function calcTimeRemaining(deadline) {
   if (remD != 0) {
     vshow.M = 'd-none';
     vshow.S = 'd-none';
-    eColor += 'text-dim';
+    eColor += 'text-dim1';
   } else if (remD == 0 && remH != 0) {
     vshow.D = 'd-none';
     vshow.S = 'd-none';
@@ -314,7 +314,7 @@ function calcTimeRemaining(deadline) {
     eColor += 'text-danger';
   }
 
-  let durClasses = ['text-smaller', 'opacity-75', 'fw-light'];
+  let durClasses = ['text-sm5', 'fw-light'];
   let eSuffs = { 'D': 'DAY', 'H': 'HOUR', 'M': 'MIN', 'S': 'SEC' };
   let eVals = { 'D': remD, 'H': remH, 'M': remM, 'S': remS };
   ['D', 'H', 'M', 'S'].forEach((x) => {

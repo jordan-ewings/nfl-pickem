@@ -15,23 +15,27 @@
       -webkit-animation-delay: 500ms !important;
     }
 
-    /* make sure header doesn't overlap content */
-  </style>
-  <!-- <script>
-    window.onload = () => {
-      fetch('nav.html')
-        .then(response => response.text())
-        .then(navhtml => document.querySelector('#nav').outerHTML = navhtml);
+    .table td {
+      background-color: var(--ios-bg);
+      color: var(--ios-text);
+      font-size: var(--font-sm2);
     }
-  </script> -->
+
+    .table tbody tr:first-child td {
+      color: var(--ios-text2);
+      font-size: var(--font-sm5);
+      font-weight: 500;
+    }
+
+    /* table row borders */
+    .table tbody tr td {
+      border-bottom: 1px solid var(--ios-bg2);
+    }
+  </style>
 </head>
 
 
 <body class="m-0 p-0 mx-auto" style="max-width: 600px;">
-  <!-- <nav id="navCont" class="nav nav-fill m-1 bg-main">
-    <a id="nav-home" class="nav-link text-dim fw-medium border border-dim mx-1" href="/nfl-pickem/index.html">Standings</a>
-    <a id="nav-schedule" class="nav-link text-dim fw-medium border border-dim mx-1 active" href="/nfl-pickem/schedule.html">Schedule</a>
-  </nav> -->
   <nav id="navCont" class="navbar">
     <div class="container-fluid">
       <a class="navbar-brand" href="/nfl-pickem/index.html">
@@ -49,19 +53,19 @@
 
   <!-- </header> -->
   <div id="main" class="container-fluid px-2 mt-4">
-    <h4 class="text-start text-dim fw-medium ms-2">STANDINGS</h4>
-    <hr class="text-dim mb-4" style="height: 3px;">
+    <!-- <h4 class="text-center text-dim1 fw-medium ms-2 mb-4">STANDINGS</h4> -->
+    <!-- <hr class="text-dim2 mb-4" style="height: 3px;"> -->
     <div class="table-responsive">
-      <table id="mytable" class="table table-sm table-borderless align-middle m-0">
+      <table id="mytable" class="table align-middle text-center">
         <tbody>
           <tr>
-            <td class="pt-0 pb-1 align-middle text-center text-dim opacity-50 text-smaller fw-medium px-0"></td>
-            <td class="pt-0 pb-1 align-middle text-center text-dim opacity-50 text-smaller fw-medium px-0"></td>
-            <td class="pt-0 pb-1 align-middle text-center text-dim opacity-50 text-smaller fw-medium px-0">WK</td>
-            <td class="pt-0 pb-1 align-middle text-center text-dim opacity-50 text-smaller fw-medium px-0">TTL</td>
-            <td class="pt-0 pb-1 align-middle text-center text-dim opacity-50 text-smaller fw-medium px-0">GB</td>
-            <td class="pt-0 pb-1 align-middle text-center text-dim opacity-50 text-smaller fw-medium px-0">DOG</td>
-            <td class="pt-0 pb-1 align-middle text-center text-dim opacity-50 text-smaller fw-medium px-0">DOG W</td>
+            <td></td>
+            <td></td>
+            <td>WK</td>
+            <td>TTL</td>
+            <td>GB</td>
+            <td>D%</td>
+            <td>DW%</td>
           </tr>
         </tbody>
       </table>
@@ -69,18 +73,18 @@
   </div>
   <template id="row-template">
     <tr>
-      <td data-item="rank" class="pt-2 text-nowrap align-middle text-nowrap text-end text-primary-emphasis text-smaller fw-medium"></td>
-      <td data-item="player-cont" class="pt-2 text-nowrap align-middle text-nowrap fw-medium pe-3">
-        <div class="d-flex flex-row align-items-center py-0 pe-0 ps-1 bg-dim">
-          <span data-item="player" class="pe-2"></span>
-          <i data-item="change-icon" class="d-none"></i>
-          <span data-item="change" class="d-none text-smaller ps-1"></span>
-      </td>
-      <td data-item="rec_week" class="pt-2 text-nowrap align-middle text-nowrap text-center"></td>
-      <td data-item="rec" class="pt-2 text-nowrap align-middle text-nowrap text-center"></td>
-      <td data-item="gb" class="pt-2 text-nowrap align-middle text-nowrap text-center text-dim"></td>
-      <td data-item="pc_dog_pick" class="pt-2 text-nowrap align-middle text-nowrap text-center text-dim"></td>
-      <td data-item="pc_dog_win" class="pt-2 text-nowrap align-middle text-nowrap text-center text-dim"></td>
+      <td data-item="rank" class="text-end text-primary-emphasis text-sm5 fw-medium pe-0"></td>
+      <td data-item="player-cont" class="fw-medium text-start pe-4">
+        <!-- <div class="d-flex flex-row align-items-center py-0 pe-0 ps-1 pe-3 bg-main"> -->
+        <span data-item="player" class="pe-2"></span>
+        <i data-item="change-icon" class="d-none"></i>
+        <span data-item="change" class="d-none text-sm5 ps-1"></span>
+        <!-- </td> -->
+      <td data-item="rec_week" class=""></td>
+      <td data-item="rec" class=""></td>
+      <td data-item="gb" class="text-dim1"></td>
+      <td data-item="pc_dog_pick" class="text-dim1"></td>
+      <td data-item="pc_dog_win" class="text-dim1"></td>
     </tr>
   </template>
   <script src="./scripts/getSheet.js"></script>
@@ -103,7 +107,7 @@
 
     function appendData() {
       let data = dataSTANDINGS;
-      let tbl = document.getElementById('mytable');
+      let tbl = document.getElementById('mytable').querySelector('tbody');
       let template = document.getElementById('row-template');
 
       data.forEach((g) => {

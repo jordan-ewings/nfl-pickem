@@ -1,9 +1,44 @@
-/* Define colors */
+/* define apple ios colors */
 :root {
-  --bg-main: #1e1e1e;
-  --bg-dim: #181818;
-  --text-main: #efefef;
-  --text-dim: #9b9b9b;
+  --ios-blue: rgb(10, 132, 255);
+  --ios-green: rgb(48, 209, 88);
+  --ios-indigo: rgb(94, 92, 230);
+  --ios-orange: rgb(255, 159, 10);
+  --ios-pink: rgb(255, 55, 95);
+  --ios-purple: rgb(191, 90, 242);
+  --ios-red: rgb(255, 69, 58);
+  --ios-teal: rgb(100, 210, 255);
+  --ios-yellow: rgb(255, 214, 10);
+
+  --ios-bg: rgb(24, 24, 24);
+  --ios-bg1: rgb(28, 28, 30);
+  --ios-bg2: rgb(44, 44, 46);
+  --ios-bg3: rgb(58, 58, 60);
+  --ios-bg4: rgb(72, 72, 74);
+  --ios-bg5: rgb(99, 99, 102);
+  --ios-bg6: rgb(142, 142, 147);
+
+  --ios-text: rgb(255, 255, 255, .85);
+  --ios-text1: rgb(255, 255, 255, .6);
+  --ios-text2: rgb(255, 255, 255, .3);
+  --ios-text3: rgb(255, 255, 255, .15);
+  --ios-text4: rgb(255, 255, 255, .05);
+
+  --ios-separator: rgb(255, 255, 255, .12);
+
+  --font: 11pt;
+
+  --font-sm1: .95rem !important;
+  --font-sm2: .9rem !important;
+  --font-sm3: .85rem !important;
+  --font-sm4: .8rem !important;
+  --font-sm5: .75rem !important;
+
+  --font-lg1: 12pt;
+  --font-lg2: 13pt;
+  --font-lg3: 14pt;
+  --font-lg4: 15pt;
+  --font-lg5: 16pt;
 }
 
 html::-webkit-scrollbar,
@@ -13,38 +48,96 @@ div::-webkit-scrollbar {
 }
 
 body {
-  background-color: var(--bg-dim);
-  color: var(--text-main);
+  background-color: var(--ios-bg);
+  color: var(--ios-text);
   font-family: system-ui, -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 11pt;
-}
-
-td {
-  font-size: 11pt !important;
-  color: var(--text-main) !important;
-  background-color: var(--bg-dim) !important;
-}
-
-.text-dim {
-  color: var(--text-dim);
+  font-size: var(--font);
 }
 
 .text-main {
-  color: var(--text-main) !important;
+  color: var(--ios-text) !important;
 }
 
-.text-smaller {
-  font-size: .75rem !important;
+.text-dim1 {
+  color: var(--ios-text1) !important;
 }
 
-.bg-dim {
-  background-color: var(--bg-dim) !important;
+.text-dim2 {
+  color: var(--ios-text2) !important;
+}
+
+.text-dim3 {
+  color: var(--ios-text3) !important;
+}
+
+.text-dim4 {
+  color: var(--ios-text4) !important;
+}
+
+.text-sm1 {
+  font-size: var(--font-sm1) !important;
+}
+
+.text-sm2 {
+  font-size: var(--font-sm2) !important;
+}
+
+.text-sm3 {
+  font-size: var(--font-sm3) !important;
+}
+
+.text-sm4 {
+  font-size: var(--font-sm4) !important;
+}
+
+.text-sm5 {
+  font-size: var(--font-sm5) !important;
+}
+
+.text-lg1 {
+  font-size: var(--font-lg1) !important;
+}
+
+.text-lg2 {
+  font-size: var(--font-lg2) !important;
+}
+
+.text-lg3 {
+  font-size: var(--font-lg3) !important;
+}
+
+.text-lg4 {
+  font-size: var(--font-lg4) !important;
+}
+
+.text-lg5 {
+  font-size: var(--font-lg5) !important;
 }
 
 .bg-main {
-  background-color: var(--bg-main) !important;
+  background-color: var(--ios-bg) !important;
 }
 
-.border-dim {
-  border-color: var(--bg-dim) !important;
+.bg-1 {
+  background-color: var(--ios-bg1) !important;
+}
+
+.bg-2 {
+  background-color: var(--ios-bg2) !important;
+}
+
+.bg-3 {
+  background-color: var(--ios-bg3) !important;
+}
+
+.bg-4 {
+  background-color: var(--ios-bg4) !important;
+}
+
+.bg-5 {
+  background-color: var(--ios-bg5) !important;
+}
+
+.bg-6 {
+  background-color: var(--ios-bg6) !important;
 }
