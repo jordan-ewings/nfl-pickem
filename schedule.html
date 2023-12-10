@@ -52,11 +52,12 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-    }
-
-    #tblDetails.scrolled {
       box-shadow: 0 20px 10px -10px var(--bg-dim);
     }
+
+    /* #tblDetails.scrolled {
+      box-shadow: 0 20px 10px -10px var(--bg-dim);
+    } */
   </style>
   <!-- <script>
     window.onload = () => {
@@ -67,11 +68,16 @@
   </script> -->
   <script>
     // when page loads, make ios toolbar disappear
-    window.addEventListener("load", function () {
-      setTimeout(function () {
-        window.scrollTo(0, 50);
-      }, 1000);
-    });
+    // this happens when user drags screen down, so need to emulate that
+    window.onload = () => {
+      let body = document.getElementsByTagName('body')[0];
+      body.style.height = '100vh';
+      body.style.overflow = 'hidden';
+      setTimeout(() => {
+        body.style.height = '';
+        body.style.overflow = '';
+      }, 500);
+    }
   </script>
 </head>
 
@@ -310,13 +316,13 @@
         });
 
         // add scroll event listener
-        window.addEventListener('scroll', (e) => {
-          let tblDetails = document.getElementById('tblDetails');
-          let scrolled = tblDetails.classList.contains('scrolled') == true;
-          let is_top = tblDetails.getBoundingClientRect().top <= 0;
-          if (is_top == true && scrolled == false) tblDetails.classList.add('scrolled');
-          if (is_top == false && scrolled == true) tblDetails.classList.remove('scrolled');
-        });
+        // window.addEventListener('scroll', (e) => {
+        //   let tblDetails = document.getElementById('tblDetails');
+        //   let scrolled = tblDetails.classList.contains('scrolled') == true;
+        //   let is_top = tblDetails.getBoundingClientRect().top <= 0;
+        //   if (is_top == true && scrolled == false) tblDetails.classList.add('scrolled');
+        //   if (is_top == false && scrolled == true) tblDetails.classList.remove('scrolled');
+        // });
 
         DATA.TBL_LOADED = true;
       }
