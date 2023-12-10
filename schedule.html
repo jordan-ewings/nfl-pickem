@@ -65,6 +65,14 @@
         .then(navhtml => document.querySelector('#nav').outerHTML = navhtml);
     }
   </script> -->
+  <script>
+    // when page loads, make ios toolbar disappear
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        window.scrollTo(0, 1);
+      }, 0);
+    });
+  </script>
 </head>
 
 <body class="m-0 p-0 mx-auto" style="max-width: 600px;">
@@ -229,7 +237,7 @@
   <script src="./scripts/procGames.js"></script>
   <script src="./scripts/forms.js"></script>
   <script>
-    var USING_LIVE = true;
+    var USING_LIVE = false;
     let DATA = {
       LOADED: false,
       TBL_LOADED: false
