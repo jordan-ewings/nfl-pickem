@@ -29,7 +29,7 @@
 
     /* table row borders */
     .table tbody tr td {
-      border-bottom: 1px solid var(--ios-bg2);
+      border-bottom: 1px solid var(--ios-bg1);
     }
   </style>
 </head>
@@ -51,12 +51,9 @@
     </div>
   </nav>
 
-  <!-- </header> -->
   <div id="main" class="container-fluid px-2 mt-4">
-    <!-- <h4 class="text-center text-dim1 fw-medium ms-2 mb-4">STANDINGS</h4> -->
-    <!-- <hr class="text-dim2 mb-4" style="height: 3px;"> -->
     <div class="table-responsive">
-      <table id="mytable" class="table align-middle text-center text-nowrap">
+      <table id="tblStandings" class="table align-middle text-center text-nowrap">
         <tbody>
           <tr>
             <td></td>
@@ -91,24 +88,120 @@
   <script src="./scripts/getSheet.js"></script>
   <script>
 
-    let dataSTANDINGS = null;
+    let DATA = {};
 
     sendData();
 
     /* ------------------------------------------------ */
 
     async function sendData() {
-      const data = await getSheet('Standings');
-      dataSTANDINGS = data;
+      const data = await getSheet('PlayerStats');
+      DATA.Stats = procStats(data);
+      DATA.tblStandings = procStandings();
+      // previewData('tblStandings');
+      updateTblStandings();
+    }
 
-      appendData();
+    function previewData(dataset) {
+      document.body.innerHTML = '<pre>' + JSON.stringify(DATA[dataset], null, 2) + '</pre>';
     }
 
     /* ------------------------------------------------ */
 
-    function appendData() {
-      let data = dataSTANDINGS;
-      let tbl = document.getElementById('mytable').querySelector('tbody');
+    function procStandings() {
+      let raw = DATA.Stats;
+
+      let weeks = [...new Set(raw.map((g) => g.week))];
+      let players = [...new Set(raw.map((g) => g.player))];
+      let data = {};
+      players.forEach((p) => {
+        let playerData = raw.filter((g) => g.player == p);
+        data[p] = [];
+        weeks.forEach((w) => {
+          let weekData = playerData.find((g) => g.week == w);
+          data[p].push(weekData);
+        });
+      });
+
+      let currWeek = weeks[weeks.length - 1];
+      let standings = [];
+      Object.keys(data).forEach((p) => {
+        let playerData = data[p];
+        let sData = playerData.find((g) => g.week == currWeek);
+        let s = {
+          rankOrder: sData.rankOrder,
+          rank: sData.rank,
+          player: sData.player,
+          changeVal: sData.change,
+          change: sData.change == 0 ? '-' : sData.change.toFixed(0),
+          rec_week: sData.wk_wins + '-' + sData.wk_losses,
+          rec: sData.wins + '-' + sData.losses,
+          gb: sData.games_back == 0 ? '-' : sData.games_back.toFixed(0),
+          pc_dog_pick: (sData.dog_pct * 100).toFixed(0) + '%',
+          pc_dog_win: (sData.dog_wpct * 100).toFixed(0) + '%',
+          history: playerData
+        };
+        standings.push(s);
+      });
+
+      standings.sort((a, b) => {
+        if (a.rankOrder < b.rankOrder) {
+          return -1;
+        } else if (a.rankOrder > b.rankOrder) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+
+      return standings;
+    }
+
+    /* ------------------------------------------------ */
+
+    function procStats(PlayerStats) {
+      let raw = PlayerStats;
+      raw.forEach((x) => {
+        let fields = Object.keys(x);
+        let fieldsStr = ['player', 'rank'];
+        let fieldsInt = fields.filter((f) => !fieldsStr.includes(f));
+        let fieldsPct = fields.filter((f) => f.includes('pct'));
+        fieldsInt = fieldsInt.filter((f) => !fieldsPct.includes(f));
+        fieldsInt.forEach((f) => {
+          x[f] = parseInt(x[f]);
+        });
+        fieldsPct.forEach((f) => {
+          x[f] = parseFloat(x[f]);
+        });
+      });
+
+      let weeks = [...new Set(raw.map((g) => g.week))];
+      let data = [];
+      weeks.forEach((w, index) => {
+        let weekData = raw.filter((g) => g.week == w);
+        if (index > 0) {
+          let lastWeek = data[index - 1];
+          weekData.forEach((g) => {
+            let last = lastWeek.find((x) => x.player == g.player);
+            if (last) {
+              g.change = last.rankVal - g.rankVal;
+            } else {
+              g.change = '-';
+            }
+          });
+        }
+        data.push(weekData);
+      });
+
+      data = data.flat();
+      return data;
+    }
+
+    /* ------------------------------------------------ */
+
+    function updateTblStandings() {
+      let data = DATA.tblStandings;
+      let tbl = document.getElementById('tblStandings').querySelector('tbody');
       let template = document.getElementById('row-template');
 
       data.forEach((g) => {
@@ -143,7 +236,6 @@
 
         tbl.appendChild(clone);
       });
-
     }
 
   </script>
