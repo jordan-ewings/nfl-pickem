@@ -56,7 +56,7 @@
     <!-- <h4 class="text-center text-dim1 fw-medium ms-2 mb-4">STANDINGS</h4> -->
     <!-- <hr class="text-dim2 mb-4" style="height: 3px;"> -->
     <div class="table-responsive">
-      <table id="mytable" class="table align-middle text-center">
+      <table id="mytable" class="table align-middle text-center text-nowrap">
         <tbody>
           <tr>
             <td></td>
@@ -75,11 +75,12 @@
     <tr>
       <td data-item="rank" class="text-end text-primary-emphasis text-sm5 fw-medium pe-0"></td>
       <td data-item="player-cont" class="fw-medium text-start pe-4">
-        <!-- <div class="d-flex flex-row align-items-center py-0 pe-0 ps-1 pe-3 bg-main"> -->
-        <span data-item="player" class="pe-2"></span>
-        <i data-item="change-icon" class="d-none"></i>
-        <span data-item="change" class="d-none text-sm5 ps-1"></span>
-        <!-- </td> -->
+        <div class="d-flex flex-row align-items-center py-0 bg-main">
+          <span data-item="player" class="pe-2"></span>
+          <i data-item="change-icon" class="d-none"></i>
+          <span data-item="change" class="d-none text-sm5 ps-1"></span>
+        </div>
+      </td>
       <td data-item="rec_week" class=""></td>
       <td data-item="rec" class=""></td>
       <td data-item="gb" class="text-dim1"></td>
