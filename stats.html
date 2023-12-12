@@ -63,6 +63,11 @@
     // let ctx = document.getElementById('chart').getContext('2d');
     let chart;
 
+    // make page long enough so mobile user doesnt have ios safari address bar at bottom
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+
     sendData();
 
     /* ------------------------------------------------ */
@@ -101,47 +106,23 @@
           max: Math.max(...data.map((x) => x.games_back)),
           reverse: true,
         },
-        // {
-        //   field: 'wpct',
-        //   label: 'Win %',
-        //   min: .4,
-        //   max: .6,
-        //   // reverse: false,
-        // },
-        // {
-        //   field: 'dog_pct',
-        //   label: 'Dog %',
-        //   min: 0,
-        //   max: .5,
-        //   // reverse: false,
-        // },
-        // {
-        //   field: 'dog_wpct',
-        //   label: 'Dog Win %',
-        //   min: 0,
-        //   max: .5,
-        //   // reverse: false,
-        // },
         {
           field: 'cum_wpct',
           label: 'Win % (cumul.)',
           min: .4,
           max: .6,
-          // reverse: false,
         },
         {
           field: 'cum_dog_pct',
           label: 'Dog % (cumul.)',
-          min: .4,
-          max: .6,
-          // reverse: false,
+          min: .1,
+          max: .2,
         },
         {
           field: 'cum_dog_wpct',
           label: 'Dog Win % (cumul.)',
-          min: .4,
-          max: .6,
-          // reverse: false,
+          min: .2,
+          max: .4,
         },
       ];
 
@@ -175,6 +156,21 @@
           let playerData = limdata.filter((x) => x.player == p);
           let playerValues = playerData.map((x) => x.value);
           dataset.data[p] = playerData;
+        });
+
+        // add 'Average' line
+        let weeks = [...new Set(data.map((x) => x.week))];
+        dataset.data['Average'] = [];
+        weeks.forEach((w) => {
+          let weekData = limdata.filter((x) => x.week == w);
+          let weekValues = weekData.map((x) => x.value);
+          let sum = weekValues.reduce((a, b) => a + b, 0);
+          let avg = sum / weekValues.length;
+          dataset.data['Average'].push({
+            player: 'Average',
+            week: w,
+            value: avg,
+          });
         });
 
         chartData.datasets.push(dataset);
@@ -233,6 +229,7 @@
       option.innerText = 'All Players';
       playerSelector.appendChild(option);
       players.forEach((p) => {
+        if (p == 'Average') return;
         let option = document.createElement('option');
         option.setAttribute('value', p);
         option.innerText = p;
@@ -248,12 +245,21 @@
       let playerNames = document.getElementById('playerSelector').value;
       if (playerNames == 'All Players') {
         playerNames = Object.keys(chartData.datasets[0].data);
+        playerNames = playerNames.filter((x) => x != 'Average');
       } else {
         playerNames = [playerNames];
+        playerNames.push('Average');
       }
       let fieldName = document.getElementById('fieldSelector').value;
+      // remove average if field is rank
+      // if (fieldName == 'Rank') {
+      //   playerNames = playerNames.filter((x) => x != 'Average');
+      // }
       DATA.ChartFilters.players = playerNames;
       DATA.ChartFilters.field = fieldName;
+
+
+
 
       let config = chart.config;
       config.data.datasets = [];
@@ -314,30 +320,40 @@
       let colorMain = 'rgb(13, 110, 253, .8)';
       let colorMainAlpha = 'rgb(13, 110, 253, .2)';
 
+      let color = 'rgb(255, 255, 255, .4)';
+      let colorAlpha = 'rgb(255, 255, 255, .2)';
+
       let playerColors = getPlayerColors();
-      let c = playerColors[dataset.label];
-      let color = c.color;
-      let colorAlpha = c.colorAlpha;
+      if (dataset.label != 'Average') {
+        let c = playerColors[dataset.label];
+        color = c.color;
+        colorAlpha = c.colorAlpha;
+      }
 
       let d = dataset;
       d.fill = false;
-      d.backgroundColor = colorAlpha;
+      d.backgroundColor = color;
       d.borderColor = color;
       d.borderWidth = 3;
-      d.tension = 0.3;
-      d.pointRadius = 4;
+      d.tension = 0.2;
+      d.pointRadius = 3;
       d.pointBackgroundColor = colorAlpha;
       d.pointBorderColor = color;
-      d.pointBorderWidth = 2;
+      d.pointBorderWidth = 3;
       d.pointHoverRadius = 6;
       d.pointHoverBackgroundColor = color;
+
+      // if (dataset.label == 'Average') {
+      //   d.pointRadius = 0;
+      //   d.pointHoverRadius = 0;
+      // }
 
       return d;
     }
 
     function generateChart() {
 
-      Chart.defaults.font.size = 11;
+      Chart.defaults.font.size = 12;
       Chart.defaults.font.weight = '500';
       Chart.defaults.color = 'rgba(255, 255, 255, .85)';
 
@@ -364,10 +380,10 @@
               align: 'center',
               labels: {
                 color: colorAx,
-                padding: 15,
+                padding: 20,
                 usePointStyle: true,
                 font: {
-                  size: 13,
+                  size: 14,
                   weight: '500',
                 },
               },
@@ -466,36 +482,16 @@
 
       config.options.onClick = function (event, elements) {
         let chart = this;
-        let activePoints = chart.getElementsAtEventForMode(event, 'nearest', {
-          intersect: true
-        }, true);
         let playerColors = getPlayerColors();
-        if (activePoints.length > 0) {
-          let clickedDatasetIndex = activePoints[0].datasetIndex;
-          let clickedDataset = chart.data.datasets[clickedDatasetIndex];
-          let c = playerColors[clickedDataset.label];
-          clickedDataset.borderColor = c.color;
-          clickedDataset.backgroundColor = c.colorAlpha;
-          clickedDataset.pointBorderColor = c.color;
-          clickedDataset.pointBackgroundColor = c.colorAlpha;
 
-          let otherDatasets = chart.data.datasets.filter((x) => x.label != clickedDataset.label);
-          otherDatasets.forEach((d) => {
-            d.borderColor = 'rgba(255, 255, 255, .2)';
-            d.backgroundColor = 'rgba(255, 255, 255, .05)';
-            d.pointBorderColor = 'rgba(255, 255, 255, .2)';
-            d.pointBackgroundColor = 'rgba(255, 255, 255, .05)';
-          });
-        } else {
-          chart.data.datasets.forEach((d) => {
-            let c = playerColors[d.label];
-            d.borderColor = c.color;
-            d.backgroundColor = c.colorAlpha;
-            d.pointBorderColor = c.color;
-            d.pointBackgroundColor = c.colorAlpha;
+        chart.data.datasets.forEach((d) => {
+          let c = playerColors[d.label];
+          d.borderColor = c.color;
+          d.backgroundColor = c.colorAlpha;
+          d.pointBorderColor = c.color;
+          d.pointBackgroundColor = c.colorAlpha;
 
-          });
-        }
+        });
         chart.update();
       };
 
@@ -515,13 +511,11 @@
         otherDatasets.forEach((d) => {
           d.borderColor = 'rgba(255, 255, 255, .2)';
           d.backgroundColor = 'rgba(255, 255, 255, .05)';
-          d.pointBorderColor = 'rgba(255, 255, 255, .2)';
-          d.pointBackgroundColor = 'rgba(255, 255, 255, .05)';
+          d.pointBorderColor = 'rgba(255, 255, 255, .05)';
+          d.pointBackgroundColor = 'rgba(255, 255, 255, 0)';
         });
         chart.update();
       };
-
-
 
       chart = new Chart(ctx, config);
       // styleChart(chart);
