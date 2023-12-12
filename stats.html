@@ -30,22 +30,22 @@
     </div>
   </nav>
 
-  <div id="main" class="container-fluid px-2 mt-4">
-    <div id="chartFilters" class="row px-0 mb-3">
-      <div class="col">
+  <div id="main" class="container-fluid mx-0 mt-4">
+    <div id="chartFilters" class="row mx-0 mb-3">
+      <div class="col px-1">
         <label for="playerSelector" class="form-label text-dim1 text-sm3">PLAYER</label>
-        <select id="playerSelector" class="form-select form-select-sm bg-main" aria-label="Player Selector">
+        <select id="playerSelector" class="form-select bg-main" aria-label="Player Selector">
         </select>
       </div>
-      <div class="col">
+      <div class="col px-1">
         <label for="fieldSelector" class="form-label text-dim1 text-sm3">FIELD</label>
-        <select id="fieldSelector" class="form-select form-select-sm bg-main" aria-label="Field Selector">
+        <select id="fieldSelector" class="form-select bg-main" aria-label="Field Selector">
         </select>
       </div>
     </div>
 
-    <div id="chartDiv" class="chart-container px-0">
-      <canvas id="chart" width="400" height="500"></canvas>
+    <div id="chartDiv" class="chart-container">
+      <canvas id="chart" width="300" height="500"></canvas>
     </div>
   </div>
 
@@ -157,18 +157,6 @@
 
         let label = f.label;
 
-        // calculate min/max for each field
-        // if only a couple outliers, set min/max to be 10% above/below min/max
-        // let min = Math.min(...limdata.map((x) => x.value));
-        // let max = Math.max(...limdata.map((x) => x.value));
-        // let range = max - min;
-        // let minLim = min - range * 0.1;
-        // let maxLim = max + range * 0.1;
-        // if (minLim < f.min) minLim = f.min;
-        // if (maxLim > f.max) maxLim = f.max;
-        // if (minLim < 0) minLim = 0;
-        // if (maxLim > 1) maxLim = 1;
-
         let dataset = {
           label: label,
           options: {
@@ -176,8 +164,6 @@
               y: {
                 min: f.min,
                 max: f.max,
-                // min: minLim,
-                // max: max,
                 reverse: f.reverse,
               }
             }
@@ -378,12 +364,10 @@
               align: 'center',
               labels: {
                 color: colorAx,
-                // boxWidth: 10,
-                // boxHeight: 10,
                 padding: 15,
                 usePointStyle: true,
                 font: {
-                  size: 12,
+                  size: 13,
                   weight: '500',
                 },
               },
