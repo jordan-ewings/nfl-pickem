@@ -492,8 +492,43 @@
           d.pointBackgroundColor = c.colorAlpha;
 
         });
+
+
         chart.update();
       };
+
+      // enable zooming
+      // limit to 4 weeks
+      config.options.plugins.zoom = {
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          drag: {
+            enabled: true,
+          },
+          mode: 'x',
+          speed: 0.05,
+          threshold: 2,
+          sensitivity: 3,
+          limits: {
+            x: {
+              min: 'original',
+              max: 'original',
+            },
+            y: {
+              min: 'original',
+              max: 'original',
+            },
+          },
+
+        },
+      };
+
+      // if player zooms, limit to 4 weeks
+
+
+
 
       // do the same thing when legend is clicked
       config.options.plugins.legend.onClick = function (event, legendItem, legend) {
@@ -516,6 +551,9 @@
         });
         chart.update();
       };
+
+      // allow user to zoom in on chart (show fewer weeks)
+
 
       chart = new Chart(ctx, config);
       // styleChart(chart);
