@@ -70,14 +70,15 @@
     </div>
 
     <!-- chart.js of rank by week (on player row click)-->
-    <div id="chartDiv" class="container d-none mt-3">
-      <div id="chartSeriesPicker" class="d-flex flex-row">
-        <h5 class="player-name fw-medium ps-3 align-self-bottom">
-          </h6>
-          <!-- add btn group-->
-          <div class="btn-group d-inline-flex ms-auto">
-            <!-- choices added here -->
-          </div>
+    <div id="chartDiv" class="container d-none mt-1 px-0">
+      <hr class="mb-4 mt-0 text-dim1">
+      <div id="chartSeriesPicker" class="d-flex flex-row align-items-center">
+        <span class="player-name fw-medium pe-0 ps-1 py-auto">
+        </span>
+        <!-- add btn group-->
+        <div class="btn-group ms-auto">
+          <!-- choices added here -->
+        </div>
       </div>
       <!-- series picker -->
       <canvas id="chart" width="400" height="250"></canvas>
@@ -136,8 +137,8 @@
       fields.forEach((f) => {
         let btn = document.createElement('button');
         // btn.classList.add('btn', 'btn-sm', 'btn-outline-secondary');
-        btn.classList.add('btn', 'btn-sm', 'btn-outline-secondary', 'fw-normal', 'text-nowrap', 'rounded-2', 'mx-1');
-        // btn.style.borderColor = 'transparent';
+        btn.classList.add('btn', 'btn-sm', 'btn-outline-secondary', 'fw-normal', 'text-nowrap', 'rounded-2', 'mx-0');
+        btn.style.borderColor = 'transparent';
         btn.textContent = f.name;
         btn.setAttribute('data-field', f.field);
         btn.setAttribute('data-fieldLabel', f.name);
@@ -283,7 +284,7 @@
                 display: false,
               },
               ticks: {
-
+                padding: 0,
               },
               title: {
                 display: true,
@@ -307,7 +308,7 @@
               },
               ticks: {
                 // color: 'rgba(255, 255, 255, .85)',
-                padding: 10,
+                padding: 5,
               },
               title: {
                 display: false,
@@ -322,7 +323,7 @@
 
       // add room at top of y-axis
       config.options.scales.y.offset = true;
-      config.options.scales.x.offset = true;
+      // config.options.scales.x.offset = true;
 
 
 
