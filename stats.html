@@ -44,8 +44,8 @@
       </div>
     </div>
 
-    <div id="chartDiv" class="chart-container px-0" style="position: relative; height:60dvh; width:100vw">
-      <canvas id="chart" width="400" height="300"></canvas>
+    <div id="chartDiv" class="chart-container px-0">
+      <canvas id="chart" width="400" height="500"></canvas>
     </div>
   </div>
 
@@ -465,7 +465,7 @@
               },
               ticks: {
                 color: colorAx,
-                padding: 8,
+                padding: 0,
               },
               border: {
                 display: false,
@@ -474,6 +474,7 @@
           },
         }
       };
+
 
       // when a line/point is clicked, dim others
       // when another line/point is clicked, dim others
