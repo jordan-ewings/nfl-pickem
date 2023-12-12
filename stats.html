@@ -31,8 +31,20 @@
   </nav>
 
   <div id="main" class="container-fluid px-2 mt-4">
-    <!-- chart.js of rank by week (on player row click)-->
-    <div id="chartDiv" class="container mt-1 px-0">
+    <div id="chartFilters" class="row px-1 mb-3">
+      <div class="col">
+        <label for="playerSelector" class="form-label text-dim1 text-sm3">PLAYER</label>
+        <select id="playerSelector" class="form-select form-select-sm bg-main" aria-label="Player Selector">
+        </select>
+      </div>
+      <div class="col">
+        <label for="fieldSelector" class="form-label text-dim1 text-sm3">FIELD</label>
+        <select id="fieldSelector" class="form-select form-select-sm bg-main" aria-label="Field Selector">
+        </select>
+      </div>
+    </div>
+
+    <div id="chartDiv" class="chart-container" style="position: relative; height:60dvh; width:100vw">
       <canvas id="chart" width="400" height="300"></canvas>
     </div>
   </div>
@@ -43,9 +55,10 @@
       Stats: [],
       Chart: {},
       ChartFilters: {
-        players: [],
-        field: '',
+        player: 'All Players',
+        field: 'Rank',
       },
+      PlayerColors: {}
     };
     // let ctx = document.getElementById('chart').getContext('2d');
     let chart;
@@ -61,8 +74,8 @@
 
       // previewData('Chart');
       makeChartFilters();
-      // generateChart();
-      updateChart(['Jordan'], 'Win %');
+      generateChart();
+      updateChart();
     }
 
     function procChartData(data) {
@@ -91,17 +104,45 @@
         {
           field: 'wpct',
           label: 'Win %',
-          min: 0,
-          max: 1,
-          reverse: false,
+          // min: 0,
+          // max: 1,
+          // reverse: false,
         },
         {
           field: 'dog_pct',
           label: 'Dog %',
-          min: 0,
-          max: 1,
-          reverse: false,
-        }
+          // min: 0,
+          // max: 1,
+          // reverse: false,
+        },
+        {
+          field: 'dog_wpct',
+          label: 'Dog Win %',
+          // min: 0,
+          // max: 1,
+          // reverse: false,
+        },
+        {
+          field: 'cum_wpct',
+          label: 'Win % (cumul.)',
+          // min: 0,
+          // max: 1,
+          // reverse: false,
+        },
+        {
+          field: 'cum_dog_pct',
+          label: 'Dog % (cumul.)',
+          // min: 0,
+          // max: 1,
+          // reverse: false,
+        },
+        {
+          field: 'cum_dog_wpct',
+          label: 'Dog Win %',
+          // min: 0,
+          // max: 1,
+          // reverse: false,
+        },
       ];
 
       let players = [...new Set(data.map((x) => x.player))];
@@ -116,6 +157,18 @@
 
         let label = f.label;
 
+        // calculate min/max for each field
+        // if only a couple outliers, set min/max to be 10% above/below min/max
+        // let min = Math.min(...limdata.map((x) => x.value));
+        // let max = Math.max(...limdata.map((x) => x.value));
+        // let range = max - min;
+        // let minLim = min - range * 0.1;
+        // let maxLim = max + range * 0.1;
+        // if (minLim < f.min) minLim = f.min;
+        // if (maxLim > f.max) maxLim = f.max;
+        // if (minLim < 0) minLim = 0;
+        // if (maxLim > 1) maxLim = 1;
+
         let dataset = {
           label: label,
           options: {
@@ -123,6 +176,8 @@
               y: {
                 min: f.min,
                 max: f.max,
+                // min: minLim,
+                // max: max,
                 reverse: f.reverse,
               }
             }
@@ -133,13 +188,28 @@
         players.forEach((p) => {
           let playerData = limdata.filter((x) => x.player == p);
           let playerValues = playerData.map((x) => x.value);
-          dataset.data[p] = playerValues;
+          dataset.data[p] = playerData;
         });
 
         chartData.datasets.push(dataset);
       });
 
       return chartData;
+    }
+
+    function getPlayerColors() {
+      let players = [...new Set(DATA.Stats.map((x) => x.player))];
+      let colors = ['#0d6efd', '#6f42c1', '#d63384', '#dc3545', '#fd7e14', '#ffc107', '#198754', '#20c997', '#0dcaf0', '#6c757d', '#adb5bd', '#212529'];
+      let playerColors = {};
+      players.forEach((p, i) => {
+        let c = colors[i];
+        playerColors[p] = {
+          // dim color slightly
+          color: c + 'cc',
+          colorAlpha: c + '33',
+        };
+      });
+      return playerColors;
     }
 
 
@@ -149,72 +219,55 @@
     // add buttons or dropdowns to chartDiv
     // on click, updateChart(playerName, fieldName)
     function makeChartFilters() {
-      let chartDiv = document.getElementById('chartDiv');
+      let chartDiv = document.getElementById('chartFilters');
       let chartData = DATA.Chart;
       let fields = chartData.datasets.map((x) => x.label);
       let players = Object.keys(chartData.datasets[0].data);
 
       // field selector (only one field at a time)
-      let fieldSelector = document.createElement('select');
-      fieldSelector.setAttribute('id', 'fieldSelector');
-      fieldSelector.setAttribute('class', 'form-select form-select-sm');
-      fieldSelector.setAttribute('aria-label', 'Field Selector');
+      let fieldSelector = document.getElementById('fieldSelector');
       fieldSelector.addEventListener('change', function () {
-        let fieldName = this.value;
-        updateChart(playerNames = null, fieldName = fieldName);
+        updateChart();
       });
       fields.forEach((f) => {
         let option = document.createElement('option');
         option.setAttribute('value', f);
+        if (f == 'Rank') option.setAttribute('selected', true);
         option.innerText = f;
         fieldSelector.appendChild(option);
       });
-      chartDiv.appendChild(fieldSelector);
 
-      // player selector (multiple players at a time)
-      let playerSelector = document.createElement('select');
-      playerSelector.setAttribute('id', 'playerSelector');
-      playerSelector.setAttribute('class', 'form-select form-select-sm');
-      playerSelector.setAttribute('aria-label', 'Player Selector');
-      playerSelector.setAttribute('multiple', '');
+      let playerSelector = document.getElementById('playerSelector');
       playerSelector.addEventListener('change', function () {
-        let playerNames = Array.from(this.selectedOptions).map((x) => x.value);
-        updateChart(playerNames = playerNames, fieldName = null);
+        updateChart();
       });
+      let option = document.createElement('option');
+      option.setAttribute('value', 'All Players');
+      option.setAttribute('selected', true);
+      option.innerText = 'All Players';
+      playerSelector.appendChild(option);
       players.forEach((p) => {
         let option = document.createElement('option');
         option.setAttribute('value', p);
         option.innerText = p;
         playerSelector.appendChild(option);
       });
-      chartDiv.appendChild(playerSelector);
-
-      // add button to clear chart
-      let clearBtn = document.createElement('button');
-      clearBtn.setAttribute('id', 'clearBtn');
-      clearBtn.setAttribute('class', 'btn btn-sm btn-outline-secondary');
-      clearBtn.innerText = 'Clear Chart';
-      clearBtn.addEventListener('click', function () {
-        chart.config.data.datasets = [];
-        chart.update();
-      });
-      chartDiv.appendChild(clearBtn);
-
-
-
     }
 
     /* ------------------------------------------------ */
 
-    function updateChart(playerNames, fieldName) {
+    function updateChart() {
 
       let chartData = DATA.Chart;
-      if (playerNames) {
-        DATA.ChartFilters.players = playerNames;
+      let playerNames = document.getElementById('playerSelector').value;
+      if (playerNames == 'All Players') {
+        playerNames = Object.keys(chartData.datasets[0].data);
+      } else {
+        playerNames = [playerNames];
       }
-      if (fieldName) {
-        DATA.ChartFilters.field = fieldName;
-      }
+      let fieldName = document.getElementById('fieldSelector').value;
+      DATA.ChartFilters.players = playerNames;
+      DATA.ChartFilters.field = fieldName;
 
       let config = chart.config;
       config.data.datasets = [];
@@ -224,62 +277,48 @@
         let playerData = chartData.datasets.filter((x) => x.label == field)[0].data[p];
         let dataset = {
           label: p,
-          data: playerData,
+          data: playerData.map((x) => {
+            return {
+              x: x.week,
+              y: x.value,
+            };
+
+          })
         };
         dataset = styleDataset(dataset);
         config.data.datasets.push(dataset);
       });
 
       let fieldData = chartData.datasets.filter((x) => x.label == field)[0];
-      config.options.scales.y.min = fieldData.options.scales.y.min;
-      config.options.scales.y.max = fieldData.options.scales.y.max;
-      config.options.scales.y.reverse = fieldData.options.scales.y.reverse;
+      let scales = fieldData.options.scales;
+      if (scales.y.min != null) {
+        config.options.scales.y.min = scales.y.min;
+      } else {
+        config.options.scales.y.min = null;
+      }
+      if (scales.y.max != null) {
+        config.options.scales.y.max = scales.y.max;
+      } else {
+        config.options.scales.y.max = null;
+      }
+      if (scales.y.reverse != null) {
+        config.options.scales.y.reverse = scales.y.reverse;
+      } else {
+        config.options.scales.y.reverse = false;
+      }
 
       if (field.includes('%')) {
         config.options.scales.y.ticks.callback = function (value, index, values) {
-          return value * 100 + '%';
+          return Math.round(value * 100) + '%';
+        };
+      } else {
+        config.options.scales.y.ticks.callback = function (value, index, values) {
+          return value;
         };
       }
 
       chart.update();
-
-      // let fieldData;
-      // if (fieldName) {
-      //   DATA.ChartFilters.field = fieldName;
-      // }
-
-      // if (playerNames) {
-      //   DATA.ChartFilters.players = playerNames;
-      // }
-
-      // let fieldData = chartData.datasets.filter((x) => x.label == fieldName)[0];
-      // let playerData = fieldData.data[playerName];
-      // let dataset = {
-      //   label: playerName,
-      //   data: playerData,
-      // };
-      // dataset = styleDataset(dataset);
-
-      // let config = chart.config;
-      // if (!config.data.datasets) {
-      //   config.data.datasets = [dataset];
-      // } else {
-      //   config.data.datasets.push(dataset);
-      // }
-
-      // config.options.scales.y.min = fieldData.options.scales.y.min;
-      // config.options.scales.y.max = fieldData.options.scales.y.max;
-      // config.options.scales.y.reverse = fieldData.options.scales.y.reverse;
-
-      // if (fieldName.includes('%')) {
-      //   config.options.scales.y.ticks.callback = function(value, index, values) {
-      //     return value * 100 + '%';
-      //   };
-      // }
-
-      // chart.update();
     }
-
     /* ------------------------------------------------ */
 
     function styleDataset(dataset) {
@@ -289,25 +328,30 @@
       let colorMain = 'rgb(13, 110, 253, .8)';
       let colorMainAlpha = 'rgb(13, 110, 253, .2)';
 
+      let playerColors = getPlayerColors();
+      let c = playerColors[dataset.label];
+      let color = c.color;
+      let colorAlpha = c.colorAlpha;
+
       let d = dataset;
       d.fill = false;
-      d.backgroundColor = colorMainAlpha;
-      d.borderColor = colorMain;
+      d.backgroundColor = colorAlpha;
+      d.borderColor = color;
       d.borderWidth = 3;
       d.tension = 0.3;
       d.pointRadius = 4;
-      d.pointBackgroundColor = colorMainAlpha;
-      d.pointBorderColor = colorMain;
+      d.pointBackgroundColor = colorAlpha;
+      d.pointBorderColor = color;
       d.pointBorderWidth = 2;
       d.pointHoverRadius = 6;
-      d.pointHoverBackgroundColor = colorMain;
+      d.pointHoverBackgroundColor = color;
 
       return d;
     }
 
     function generateChart() {
 
-      Chart.defaults.font.size = 10;
+      Chart.defaults.font.size = 11;
       Chart.defaults.font.weight = '500';
       Chart.defaults.color = 'rgba(255, 255, 255, .85)';
 
@@ -322,17 +366,22 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
           plugins: {
             legend: {
               display: true,
               position: 'top',
-              align: 'end',
+              align: 'center',
               labels: {
                 color: colorAx,
                 // boxWidth: 10,
                 // boxHeight: 10,
-                padding: 8,
-                // usePointStyle: true,
+                padding: 15,
+                usePointStyle: true,
                 font: {
                   size: 12,
                   weight: '500',
@@ -344,6 +393,8 @@
             },
             tooltip: {
               // make tooltip look better
+              // sort players by value
+
               enabled: true,
               callbacks: {
                 label: function (context) {
@@ -352,21 +403,28 @@
                     label += ': ';
                   }
                   if (context.parsed.y !== null) {
-                    if (context.dataset.label.includes('%')) {
+                    // format as percent if field is a percent
+                    if (DATA.ChartFilters.field.includes('%')) {
                       label += Math.round(context.parsed.y * 100) + '%';
                     } else {
                       label += context.parsed.y;
                     }
                   }
                   return label;
-                }
+                },
+                title: function (context) {
+                  let title = context[0].label || '';
+                  return title;
+                },
+
               },
+
               // format tooltip container
               backgroundColor: 'rgba(0, 0, 0, .8)',
               titleColor: 'rgba(255, 255, 255, .85)',
               bodyColor: 'rgba(255, 255, 255, .85)',
               titleFont: {
-                size: 12,
+                size: 14,
                 weight: '500',
               },
               bodyFont: {
@@ -375,7 +433,7 @@
               },
               padding: 8,
               cornerRadius: 4,
-              displayColors: false,
+              // displayColors: false,
               borderWidth: 0,
 
             }
@@ -416,6 +474,69 @@
           },
         }
       };
+
+      // when a line/point is clicked, dim others
+      // when another line/point is clicked, dim others
+      // when there's a click on the canvas, but not on a line/point, reset all lines/points to normal
+
+      config.options.onClick = function (event, elements) {
+        let chart = this;
+        let activePoints = chart.getElementsAtEventForMode(event, 'nearest', {
+          intersect: true
+        }, true);
+        let playerColors = getPlayerColors();
+        if (activePoints.length > 0) {
+          let clickedDatasetIndex = activePoints[0].datasetIndex;
+          let clickedDataset = chart.data.datasets[clickedDatasetIndex];
+          let c = playerColors[clickedDataset.label];
+          clickedDataset.borderColor = c.color;
+          clickedDataset.backgroundColor = c.colorAlpha;
+          clickedDataset.pointBorderColor = c.color;
+          clickedDataset.pointBackgroundColor = c.colorAlpha;
+
+          let otherDatasets = chart.data.datasets.filter((x) => x.label != clickedDataset.label);
+          otherDatasets.forEach((d) => {
+            d.borderColor = 'rgba(255, 255, 255, .2)';
+            d.backgroundColor = 'rgba(255, 255, 255, .05)';
+            d.pointBorderColor = 'rgba(255, 255, 255, .2)';
+            d.pointBackgroundColor = 'rgba(255, 255, 255, .05)';
+          });
+        } else {
+          chart.data.datasets.forEach((d) => {
+            let c = playerColors[d.label];
+            d.borderColor = c.color;
+            d.backgroundColor = c.colorAlpha;
+            d.pointBorderColor = c.color;
+            d.pointBackgroundColor = c.colorAlpha;
+
+          });
+        }
+        chart.update();
+      };
+
+      // do the same thing when legend is clicked
+      config.options.plugins.legend.onClick = function (event, legendItem, legend) {
+        let chart = this.chart;
+        let playerColors = getPlayerColors();
+        let clickedDataset = chart.data.datasets[legendItem.datasetIndex];
+        let c = playerColors[clickedDataset.label];
+        clickedDataset.borderColor = c.color;
+        clickedDataset.backgroundColor = c.colorAlpha;
+        clickedDataset.pointBorderColor = c.color;
+        clickedDataset.pointBackgroundColor = c.colorAlpha;
+
+        let otherDatasets = chart.data.datasets.filter((x) => x.label != clickedDataset.label);
+
+        otherDatasets.forEach((d) => {
+          d.borderColor = 'rgba(255, 255, 255, .2)';
+          d.backgroundColor = 'rgba(255, 255, 255, .05)';
+          d.pointBorderColor = 'rgba(255, 255, 255, .2)';
+          d.pointBackgroundColor = 'rgba(255, 255, 255, .05)';
+        });
+        chart.update();
+      };
+
+
 
       chart = new Chart(ctx, config);
       // styleChart(chart);
