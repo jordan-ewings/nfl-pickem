@@ -7,7 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="./styles/global.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     i {
       animation-iteration-count: 1 !important;
@@ -61,10 +61,11 @@
 
   <script src="./scripts/getSheet.js"></script>
   <script>
-    let DATA = {};
+    let DATA = {
+      Stats: [],
+      Chart: {}
+    };
     let chart;
-    // Chart.defaults.color = 'rgba(255, 255, 255, .6)';
-    // Chart.defaults.plugins.legend.display = false;
 
     sendData();
 
@@ -73,10 +74,88 @@
     async function sendData() {
       const data = await getSheet('PlayerStats');
       DATA.Stats = procStats(data);
-      // previewData('Stats');
+      DATA.Chart = procChartData(DATA.Stats);
 
+      // previewData('Chart');
       generateChart();
-      updateChart('Jordan', 'rankVal');
+      updateChart('Jordan', 'Rank');
+    }
+
+    function procChartData(data) {
+      let chartData = {
+        labels: [],
+        datasets: [],
+      };
+
+      let weeks = [...new Set(data.map((x) => 'WK ' + x.week))];
+      chartData.labels = weeks;
+      let fields = [
+        {
+          field: 'rankVal',
+          label: 'Rank',
+          min: 1,
+          max: 9,
+          reverse: true,
+        },
+        {
+          field: 'games_back',
+          label: 'GB',
+          min: 0,
+          max: Math.max(...data.map((x) => x.games_back)),
+          reverse: true,
+        },
+        {
+          field: 'wpct',
+          label: 'Win %',
+          min: 0,
+          max: 1,
+          reverse: false,
+        },
+        {
+          field: 'dog_pct',
+          label: 'Dog %',
+          min: 0,
+          max: 1,
+          reverse: false,
+        }
+      ];
+
+      let players = [...new Set(data.map((x) => x.player))];
+      fields.forEach((f) => {
+        let limdata = data.map((x) => {
+          return {
+            player: x.player,
+            week: x.week,
+            value: x[f.field],
+          };
+        });
+
+        let label = f.label;
+
+        let dataset = {
+          label: label,
+          options: {
+            scales: {
+              y: {
+                min: f.min,
+                max: f.max,
+                reverse: f.reverse,
+              }
+            }
+          },
+          data: {}
+        };
+
+        players.forEach((p) => {
+          let playerData = limdata.filter((x) => x.player == p);
+          let playerValues = playerData.map((x) => x.value);
+          dataset.data[p] = playerValues;
+        });
+
+        chartData.datasets.push(dataset);
+      });
+
+      return chartData;
     }
 
 
@@ -87,13 +166,33 @@
       // chartDiv.setAttribute('data-player', playerName);
       // chartDiv.setAttribute('data-field', fieldName);
 
-      let playerData = DATA.Stats.filter((x) => x.player == playerName);
-      let labels = playerData.map((x) => x.week);
-      let dataset = playerData.map((x) => x[fieldName]);
+      let colorAx = 'rgb(255, 255, 255, .4)';
+      let colorMain = 'rgb(13, 110, 253, .8)';
+      let colorMainAlpha = 'rgb(13, 110, 253, .2)';
+
+      let chartData = DATA.Chart;
+      let fieldData = chartData.datasets.filter((x) => x.label == fieldName)[0];
+      let playerData = fieldData.data[playerName];
+      let dataset = {
+        label: fieldName,
+        data: playerData,
+        // backgroundColor: colorMainAlpha,
+        // borderColor: colorMain,
+        // borderWidth: 2,
+        // tension: 0.3,
+        // pointRadius: 3,
+        // pointBackgroundColor: colorMain,
+        // pointBorderColor: colorMain,
+        // pointBorderWidth: 2,
+        // pointHoverRadius: 6,
+        // pointHoverBackgroundColor: colorMain,
+      };
 
       let config = chart.config;
-      config.data.labels = labels;
-      config.data.datasets[0].data = dataset;
+      config.data.datasets = [dataset];
+      config.options.scales.y.min = fieldData.options.scales.y.min;
+      config.options.scales.y.max = fieldData.options.scales.y.max;
+      config.options.scales.y.reverse = fieldData.options.scales.y.reverse;
 
       chart.update();
     }
@@ -101,21 +200,29 @@
     /* ------------------------------------------------ */
 
     function generateChart() {
-      // let colorMain = 'rgb(10, 132, 255, 1)';
-      // let colorMainAlpha = colorMain.replace('1)', '.2)');
+
+      // Chart.defaults.font.size = 10;
+      // Chart.defaults.font.weight = 500;
+      // Chart.defaults.color = 'rgba(255, 255, 255, .5)';
+      // Chart.defaults.borderColor = 'rgba(255, 255, 255, .1)';
+      // Chart.defaults.plugins.tooltip.enabled = false;
+      // Chart.defaults.elements.point.radius = 3;
+      // Chart.defaults.elements.point.hoverRadius = 6;
+      // Chart.defaults.global.elements.point.backgroundColor = 'rgb(13, 110, 253, .8)';
+
 
       let ctx = document.getElementById('chart').getContext('2d');
       let config = {
         type: 'line',
         data: {
-          labels: [],
+          labels: DATA.Chart.labels,
           datasets: [],
         },
         options: {
           responsive: true,
           plugins: {
             legend: {
-              display: false
+              display: true
             },
             title: {
               display: false,
@@ -123,9 +230,34 @@
             tooltip: {
               enabled: false,
             }
-          }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                // color: 'rgba(255, 255, 255, .6)',
+                font: {
+                  size: 10,
+                },
+              },
+            },
+            y: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                // color: 'rgba(255, 255, 255, .6)',
+                font: {
+                  size: 10,
+                },
+              },
+            }
+          },
         }
       };
+
 
       chart = new Chart(ctx, config);
     }
@@ -149,12 +281,25 @@
 
       });
 
+      let fields = Object.keys(raw[0]);
+      let wkFields = fields.filter((f) => f.includes('wk_'));
+      wkFields.forEach((f) => {
+        let cumField = f.replace('wk_', '');
+        let newCumFieldName = 'cum_' + cumField;
+        raw.forEach((x) => {
+          x[newCumFieldName] = x[cumField];
+          x[cumField] = x[f];
+          delete x[f];
+        });
+      });
+
       let data = raw;
       return data;
     }
 
     function previewData(dataset) {
-      document.body.innerHTML = '<pre>' + JSON.stringify(DATA[dataset], null, 2) + '</pre>';
+      let code = '<div><pre>' + JSON.stringify(DATA[dataset], null, 2) + '</pre></div>';
+      document.body.appendChild(document.createRange().createContextualFragment(code));
     }
 
   </script>
