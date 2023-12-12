@@ -31,7 +31,7 @@
   </nav>
 
   <div id="main" class="container-fluid px-2 mt-4">
-    <div id="chartFilters" class="row px-1 mb-3">
+    <div id="chartFilters" class="row px-0 mb-3">
       <div class="col">
         <label for="playerSelector" class="form-label text-dim1 text-sm3">PLAYER</label>
         <select id="playerSelector" class="form-select form-select-sm bg-main" aria-label="Player Selector">
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div id="chartDiv" class="chart-container" style="position: relative; height:60dvh; width:100vw">
+    <div id="chartDiv" class="chart-container px-0" style="position: relative; height:60dvh; width:100vw">
       <canvas id="chart" width="400" height="300"></canvas>
     </div>
   </div>
@@ -101,46 +101,46 @@
           max: Math.max(...data.map((x) => x.games_back)),
           reverse: true,
         },
-        {
-          field: 'wpct',
-          label: 'Win %',
-          // min: 0,
-          // max: 1,
-          // reverse: false,
-        },
-        {
-          field: 'dog_pct',
-          label: 'Dog %',
-          // min: 0,
-          // max: 1,
-          // reverse: false,
-        },
-        {
-          field: 'dog_wpct',
-          label: 'Dog Win %',
-          // min: 0,
-          // max: 1,
-          // reverse: false,
-        },
+        // {
+        //   field: 'wpct',
+        //   label: 'Win %',
+        //   min: .4,
+        //   max: .6,
+        //   // reverse: false,
+        // },
+        // {
+        //   field: 'dog_pct',
+        //   label: 'Dog %',
+        //   min: 0,
+        //   max: .5,
+        //   // reverse: false,
+        // },
+        // {
+        //   field: 'dog_wpct',
+        //   label: 'Dog Win %',
+        //   min: 0,
+        //   max: .5,
+        //   // reverse: false,
+        // },
         {
           field: 'cum_wpct',
           label: 'Win % (cumul.)',
-          // min: 0,
-          // max: 1,
+          min: .4,
+          max: .6,
           // reverse: false,
         },
         {
           field: 'cum_dog_pct',
           label: 'Dog % (cumul.)',
-          // min: 0,
-          // max: 1,
+          min: .4,
+          max: .6,
           // reverse: false,
         },
         {
           field: 'cum_dog_wpct',
-          label: 'Dog Win %',
-          // min: 0,
-          // max: 1,
+          label: 'Dog Win % (cumul.)',
+          min: .4,
+          max: .6,
           // reverse: false,
         },
       ];
@@ -292,14 +292,14 @@
       let fieldData = chartData.datasets.filter((x) => x.label == field)[0];
       let scales = fieldData.options.scales;
       if (scales.y.min != null) {
-        config.options.scales.y.min = scales.y.min;
+        config.options.scales.y.suggestedMin = scales.y.min;
       } else {
-        config.options.scales.y.min = null;
+        config.options.scales.y.suggestedMin = null;
       }
       if (scales.y.max != null) {
-        config.options.scales.y.max = scales.y.max;
+        config.options.scales.y.suggestedMax = scales.y.max;
       } else {
-        config.options.scales.y.max = null;
+        config.options.scales.y.suggestedMax = null;
       }
       if (scales.y.reverse != null) {
         config.options.scales.y.reverse = scales.y.reverse;
@@ -367,10 +367,10 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          interaction: {
-            mode: 'index',
-            intersect: false,
-          },
+          // interaction: {
+          //   mode: 'index',
+          //   intersect: false,
+          // },
           plugins: {
             legend: {
               display: true,
