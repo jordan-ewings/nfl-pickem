@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark" style="height: fit-content;">
+<html lang="en" data-bs-theme="dark">
 
 <head>
   <meta charset="utf-8">
@@ -7,31 +7,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="./styles/global.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
-    i {
-      animation-iteration-count: 1 !important;
-      animation-delay: 500ms !important;
-      -webkit-animation-iteration-count: 1 !important;
-      -webkit-animation-delay: 500ms !important;
-    }
 
-    .table td {
-      background-color: var(--ios-bg);
-      color: var(--ios-text);
-      font-size: var(--font-sm2);
-    }
-
-    .table tbody tr:first-child td {
-      color: var(--ios-text2);
-      font-size: var(--font-sm5);
-      font-weight: 500;
-    }
-
-    /* table row borders */
-    .table tbody tr td {
-      border-bottom: 1px solid var(--ios-bg1);
-    }
   </style>
 </head>
 
@@ -63,8 +41,13 @@
   <script>
     let DATA = {
       Stats: [],
-      Chart: {}
+      Chart: {},
+      ChartFilters: {
+        players: [],
+        field: '',
+      },
     };
+    // let ctx = document.getElementById('chart').getContext('2d');
     let chart;
 
     sendData();
@@ -77,8 +60,9 @@
       DATA.Chart = procChartData(DATA.Stats);
 
       // previewData('Chart');
-      generateChart();
-      updateChart('Jordan', 'Rank');
+      makeChartFilters();
+      // generateChart();
+      updateChart(['Jordan'], 'Win %');
     }
 
     function procChartData(data) {
@@ -161,105 +145,280 @@
 
     /* ------------------------------------------------ */
 
-    function updateChart(playerName, fieldName) {
-      // let chartDiv = document.getElementById('chartDiv');
-      // chartDiv.setAttribute('data-player', playerName);
-      // chartDiv.setAttribute('data-field', fieldName);
-
-      let colorAx = 'rgb(255, 255, 255, .4)';
-      let colorMain = 'rgb(13, 110, 253, .8)';
-      let colorMainAlpha = 'rgb(13, 110, 253, .2)';
-
+    // want to give user option to switch field on chart, and player(s) on chart
+    // add buttons or dropdowns to chartDiv
+    // on click, updateChart(playerName, fieldName)
+    function makeChartFilters() {
+      let chartDiv = document.getElementById('chartDiv');
       let chartData = DATA.Chart;
-      let fieldData = chartData.datasets.filter((x) => x.label == fieldName)[0];
-      let playerData = fieldData.data[playerName];
-      let dataset = {
-        label: fieldName,
-        data: playerData,
-        // backgroundColor: colorMainAlpha,
-        // borderColor: colorMain,
-        // borderWidth: 2,
-        // tension: 0.3,
-        // pointRadius: 3,
-        // pointBackgroundColor: colorMain,
-        // pointBorderColor: colorMain,
-        // pointBorderWidth: 2,
-        // pointHoverRadius: 6,
-        // pointHoverBackgroundColor: colorMain,
-      };
+      let fields = chartData.datasets.map((x) => x.label);
+      let players = Object.keys(chartData.datasets[0].data);
 
-      let config = chart.config;
-      config.data.datasets = [dataset];
-      config.options.scales.y.min = fieldData.options.scales.y.min;
-      config.options.scales.y.max = fieldData.options.scales.y.max;
-      config.options.scales.y.reverse = fieldData.options.scales.y.reverse;
+      // field selector (only one field at a time)
+      let fieldSelector = document.createElement('select');
+      fieldSelector.setAttribute('id', 'fieldSelector');
+      fieldSelector.setAttribute('class', 'form-select form-select-sm');
+      fieldSelector.setAttribute('aria-label', 'Field Selector');
+      fieldSelector.addEventListener('change', function () {
+        let fieldName = this.value;
+        updateChart(playerNames = null, fieldName = fieldName);
+      });
+      fields.forEach((f) => {
+        let option = document.createElement('option');
+        option.setAttribute('value', f);
+        option.innerText = f;
+        fieldSelector.appendChild(option);
+      });
+      chartDiv.appendChild(fieldSelector);
 
-      chart.update();
+      // player selector (multiple players at a time)
+      let playerSelector = document.createElement('select');
+      playerSelector.setAttribute('id', 'playerSelector');
+      playerSelector.setAttribute('class', 'form-select form-select-sm');
+      playerSelector.setAttribute('aria-label', 'Player Selector');
+      playerSelector.setAttribute('multiple', '');
+      playerSelector.addEventListener('change', function () {
+        let playerNames = Array.from(this.selectedOptions).map((x) => x.value);
+        updateChart(playerNames = playerNames, fieldName = null);
+      });
+      players.forEach((p) => {
+        let option = document.createElement('option');
+        option.setAttribute('value', p);
+        option.innerText = p;
+        playerSelector.appendChild(option);
+      });
+      chartDiv.appendChild(playerSelector);
+
+      // add button to clear chart
+      let clearBtn = document.createElement('button');
+      clearBtn.setAttribute('id', 'clearBtn');
+      clearBtn.setAttribute('class', 'btn btn-sm btn-outline-secondary');
+      clearBtn.innerText = 'Clear Chart';
+      clearBtn.addEventListener('click', function () {
+        chart.config.data.datasets = [];
+        chart.update();
+      });
+      chartDiv.appendChild(clearBtn);
+
+
+
     }
 
     /* ------------------------------------------------ */
 
+    function updateChart(playerNames, fieldName) {
+
+      let chartData = DATA.Chart;
+      if (playerNames) {
+        DATA.ChartFilters.players = playerNames;
+      }
+      if (fieldName) {
+        DATA.ChartFilters.field = fieldName;
+      }
+
+      let config = chart.config;
+      config.data.datasets = [];
+      let players = DATA.ChartFilters.players;
+      let field = DATA.ChartFilters.field;
+      players.forEach((p) => {
+        let playerData = chartData.datasets.filter((x) => x.label == field)[0].data[p];
+        let dataset = {
+          label: p,
+          data: playerData,
+        };
+        dataset = styleDataset(dataset);
+        config.data.datasets.push(dataset);
+      });
+
+      let fieldData = chartData.datasets.filter((x) => x.label == field)[0];
+      config.options.scales.y.min = fieldData.options.scales.y.min;
+      config.options.scales.y.max = fieldData.options.scales.y.max;
+      config.options.scales.y.reverse = fieldData.options.scales.y.reverse;
+
+      if (field.includes('%')) {
+        config.options.scales.y.ticks.callback = function (value, index, values) {
+          return value * 100 + '%';
+        };
+      }
+
+      chart.update();
+
+      // let fieldData;
+      // if (fieldName) {
+      //   DATA.ChartFilters.field = fieldName;
+      // }
+
+      // if (playerNames) {
+      //   DATA.ChartFilters.players = playerNames;
+      // }
+
+      // let fieldData = chartData.datasets.filter((x) => x.label == fieldName)[0];
+      // let playerData = fieldData.data[playerName];
+      // let dataset = {
+      //   label: playerName,
+      //   data: playerData,
+      // };
+      // dataset = styleDataset(dataset);
+
+      // let config = chart.config;
+      // if (!config.data.datasets) {
+      //   config.data.datasets = [dataset];
+      // } else {
+      //   config.data.datasets.push(dataset);
+      // }
+
+      // config.options.scales.y.min = fieldData.options.scales.y.min;
+      // config.options.scales.y.max = fieldData.options.scales.y.max;
+      // config.options.scales.y.reverse = fieldData.options.scales.y.reverse;
+
+      // if (fieldName.includes('%')) {
+      //   config.options.scales.y.ticks.callback = function(value, index, values) {
+      //     return value * 100 + '%';
+      //   };
+      // }
+
+      // chart.update();
+    }
+
+    /* ------------------------------------------------ */
+
+    function styleDataset(dataset) {
+
+      let colorAx = 'rgb(255, 255, 255, .4)';
+      let colorGrid = 'rgb(255, 255, 255, .1)';
+      let colorMain = 'rgb(13, 110, 253, .8)';
+      let colorMainAlpha = 'rgb(13, 110, 253, .2)';
+
+      let d = dataset;
+      d.fill = false;
+      d.backgroundColor = colorMainAlpha;
+      d.borderColor = colorMain;
+      d.borderWidth = 3;
+      d.tension = 0.3;
+      d.pointRadius = 4;
+      d.pointBackgroundColor = colorMainAlpha;
+      d.pointBorderColor = colorMain;
+      d.pointBorderWidth = 2;
+      d.pointHoverRadius = 6;
+      d.pointHoverBackgroundColor = colorMain;
+
+      return d;
+    }
+
     function generateChart() {
 
-      // Chart.defaults.font.size = 10;
-      // Chart.defaults.font.weight = 500;
-      // Chart.defaults.color = 'rgba(255, 255, 255, .5)';
-      // Chart.defaults.borderColor = 'rgba(255, 255, 255, .1)';
-      // Chart.defaults.plugins.tooltip.enabled = false;
-      // Chart.defaults.elements.point.radius = 3;
-      // Chart.defaults.elements.point.hoverRadius = 6;
-      // Chart.defaults.global.elements.point.backgroundColor = 'rgb(13, 110, 253, .8)';
+      Chart.defaults.font.size = 10;
+      Chart.defaults.font.weight = '500';
+      Chart.defaults.color = 'rgba(255, 255, 255, .85)';
 
+      let colorAx = 'rgb(255, 255, 255, .6)';
+      let colorGrid = 'rgb(255, 255, 255, .05)';
 
       let ctx = document.getElementById('chart').getContext('2d');
       let config = {
         type: 'line',
         data: {
           labels: DATA.Chart.labels,
-          datasets: [],
         },
         options: {
           responsive: true,
           plugins: {
             legend: {
-              display: true
+              display: true,
+              position: 'top',
+              align: 'end',
+              labels: {
+                color: colorAx,
+                // boxWidth: 10,
+                // boxHeight: 10,
+                padding: 8,
+                // usePointStyle: true,
+                font: {
+                  size: 12,
+                  weight: '500',
+                },
+              },
             },
             title: {
               display: false,
             },
             tooltip: {
-              enabled: false,
+              // make tooltip look better
+              enabled: true,
+              callbacks: {
+                label: function (context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    if (context.dataset.label.includes('%')) {
+                      label += Math.round(context.parsed.y * 100) + '%';
+                    } else {
+                      label += context.parsed.y;
+                    }
+                  }
+                  return label;
+                }
+              },
+              // format tooltip container
+              backgroundColor: 'rgba(0, 0, 0, .8)',
+              titleColor: 'rgba(255, 255, 255, .85)',
+              bodyColor: 'rgba(255, 255, 255, .85)',
+              titleFont: {
+                size: 12,
+                weight: '500',
+              },
+              bodyFont: {
+                size: 12,
+                weight: '500',
+              },
+              padding: 8,
+              cornerRadius: 4,
+              displayColors: false,
+              borderWidth: 0,
+
             }
           },
           scales: {
             x: {
+              offset: true,
               grid: {
                 display: false,
+                color: colorGrid,
               },
               ticks: {
-                // color: 'rgba(255, 255, 255, .6)',
-                font: {
-                  size: 10,
-                },
+                color: colorAx,
+                padding: 8,
+                maxRotation: 90,
+                minRotation: 0,
+              },
+              border: {
+                display: false,
+
               },
             },
             y: {
+              offset: true,
               grid: {
-                display: false,
+                color: colorGrid,
+                drawTicks: false,
+                drawBorder: false,
               },
               ticks: {
-                // color: 'rgba(255, 255, 255, .6)',
-                font: {
-                  size: 10,
-                },
+                color: colorAx,
+                padding: 8,
+              },
+              border: {
+                display: false,
               },
             }
           },
         }
       };
 
-
       chart = new Chart(ctx, config);
+      // styleChart(chart);
     }
 
     /* ------------------------------------------------ */
