@@ -110,6 +110,10 @@
         // playerNames.push('Average');
       }
       let fieldName = document.getElementById('fieldSelector').value;
+      // if (fieldName.includes('rank')) {
+      //   // remove average
+      //   playerNames = playerNames.filter((x) => x != 'Average');
+      // }
 
       let config = chart.config;
       config.data.datasets = [];
@@ -131,33 +135,35 @@
       });
 
       // average
-      // if (playerNames.length == 1) {
-      let weeks = chartData.data.map((x) => x.week.v);
-      weeks = [...new Set(weeks)];
-      let avgData = weeks.map((w) => {
-        let weekData = chartData.data.filter((x) => x.week.v == w);
-        let avg = weekData.reduce((a, b) => a + b[fieldName].v, 0) / weekData.length;
-        avg = (fieldName.includes('pct')) ? Math.round(avg * 100) / 100 : Math.round(avg);
-        return {
-          x: w,
-          y: avg,
-          display: (fieldName.includes('pct')) ? Math.round(avg * 100) + '%' : avg,
+      if (!fieldName.includes('rank')) {
+        let weeks = chartData.data.map((x) => x.week.v);
+        weeks = [...new Set(weeks)];
+        let avgData = weeks.map((w) => {
+          let weekData = chartData.data.filter((x) => x.week.v == w);
+          let avg = weekData.reduce((a, b) => a + b[fieldName].v, 0) / weekData.length;
+          avg = (fieldName.includes('pct')) ? Math.round(avg * 100) / 100 : Math.round(avg);
+          return {
+            x: w,
+            y: avg,
+            display: (fieldName.includes('pct')) ? Math.round(avg * 100) + '%' : avg,
+          };
+        });
+        let avgDataset = {
+          type: 'line',
+          label: 'Average',
+          data: avgData,
         };
-      });
-      let avgDataset = {
-        type: 'line',
-        label: 'Average',
-        data: avgData,
-      };
-      avgDataset = styleDataset(avgDataset);
-      config.data.datasets.push(avgDataset);
-      // }
+        avgDataset = styleDataset(avgDataset);
+        config.data.datasets.push(avgDataset);
+      }
 
       let field = chartData.fields.filter((x) => x.field == fieldName)[0];
       let y = config.options.scales.y;
       y.reverse = (field.reverse) ? true : false;
-      y.suggestedMin = field.min;
-      y.suggestedMax = field.max;
+      // y.suggestedMin = field.min;
+      // y.suggestedMax = field.max;
+      y.min = field.min;
+      y.max = field.max;
       y.ticks.callback = function (value, index, values) {
         if (field.label.includes('%')) {
           return Math.round(value * 100) + '%';
@@ -416,6 +422,35 @@
 
     /* ------------------------------------------------ */
 
+    function calcYAxisRange(field) {
+      // should be 5th and 95th percentile
+      // after, round to nearest 5
+      let data = DATA.Chart.data;
+      let vals = data.map((x) => x[field].v);
+      vals = vals.sort((a, b) => a - b);
+      let min = vals[0];
+      let max = vals[vals.length - 1];
+      let range = max - min;
+      let rangePct = range / max;
+      // get 5th and 95th percentile
+      let minPct = .25;
+      let maxPct = .75;
+      let minIndex = Math.floor(vals.length * minPct);
+      let maxIndex = Math.floor(vals.length * maxPct);
+      min = vals[minIndex];
+      max = vals[maxIndex];
+      // round to nearest 5
+
+
+      // min = Math.floor(min / 5) * 5;
+      // max = Math.ceil(max / 5) * 5;
+
+      return {
+        min: min,
+        max: max,
+      }
+    }
+
     function procChartData() {
 
       let data = DATA.Stats;
@@ -425,11 +460,12 @@
       let fields = [
         { field: 'rank', min: 1, max: 9, reverse: true },
         { field: 'games_back', min: 0, max: Math.max(...data.map((x) => x.games_back)), reverse: true },
-        { field: 'wpct', min: .4, max: .6 },
-
-        { field: 'cum_wpct', min: .4, max: .6 },
-        { field: 'cum_dog_pct', min: .1, max: .2 },
-        { field: 'cum_dog_wpct', min: .2, max: .4 },
+        { field: 'wpct', min: .2, max: .9 },
+        { field: 'dog_pct', min: 0, max: .6 },
+        { field: 'dog_wpct', min: 0, max: 1 },
+        { field: 'cum_wpct', min: .45, max: .7 },
+        { field: 'cum_dog_pct', min: 0, max: .4 },
+        { field: 'cum_dog_wpct', min: .25, max: .65 },
       ].map((field) => {
         let f = field.field;
         let label = f.replace(/_/g, ' ');
@@ -441,6 +477,12 @@
           label += ' (cumul)';
           label = label.replace('Cum ', '');
         }
+
+        // if (f.includes('pct')) {
+        //   let range = calcYAxisRange(f);
+        //   field.min = range.min;
+        //   field.max = range.max;
+        // }
 
         field.label = label;
         return field;
