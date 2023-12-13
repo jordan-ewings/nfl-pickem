@@ -172,6 +172,28 @@
         }
       };
 
+      // if player is selected (not all players), fill area below player line (but not below average line)
+      // if (playerNames.length == 1) {
+      //   let playerColors = getPlayerColors();
+      //   let playerColor = playerColors[playerNames[0]].colorAlpha;
+      //   let avgColor = playerColors['Average'].colorAlpha;
+      //   config.data.datasets.forEach((d) => {
+      //     if (d.label == playerNames[0]) {
+      //       d.fill = {
+      //         target: '+1',
+      //         above: playerColor.replace('.7)', '.1)'),
+      //         below: avgColor.replace('.7)', '.1)'),}
+      //       d.backgroundColor = playerColor;
+      //     } else {
+      //       d.fill = false;
+      //     }
+      //   });
+      // } else {
+      //   config.data.datasets.forEach((d) => {
+      //     d.fill = false;
+      //   });
+      // }
+
       config.options.plugins.tooltip.itemSort = function (a, b) {
         if (field.reverse) {
           return a.parsed.y - b.parsed.y;
@@ -207,7 +229,7 @@
 
       // average
       let op1avg = '1';
-      let op2avg = '.8';
+      let op2avg = '.7';
       let avgColor = 'rgb(200, 200, 200)';
       let avgDefault = avgColor.replace('rgb', 'rgba').replace(')', ', ' + op1avg + ')');
       let avgAlpha = avgColor.replace('rgb', 'rgba').replace(')', ', ' + op2avg + ')');
@@ -267,6 +289,7 @@
         options: options,
       };
 
+
       config.options.plugins.legend.onClick = function (event, legendItem, legend) {
         let chart = this.chart;
         let playerColors = getPlayerColors();
@@ -315,7 +338,7 @@
 
       let colors = {
         defaultText: 'rgb(255, 255, 255, .85)',
-        legendText: 'rgb(255, 255, 255, .85)',
+        legendText: 'rgb(255, 255, 255, .75)',
         axisText: 'rgb(255, 255, 255, .6)',
         gridLine: 'rgb(255, 255, 255, .05)',
         tooltipBg: 'rgba(0, 0, 0, .8)',
