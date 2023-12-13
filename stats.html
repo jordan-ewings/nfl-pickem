@@ -94,105 +94,6 @@
 
     /* ------------------------------------------------ */
 
-    function procChartData() {
-
-      let data = DATA.Stats;
-      let weeks = [...new Set(data.map((x) => 'WK ' + x.week))];
-      DATA.Chart.labels = weeks;
-
-      let fields = [
-        { field: 'rank', min: 1, max: 9, reverse: true },
-        { field: 'games_back', min: 0, max: Math.max(...data.map((x) => x.games_back)), reverse: true },
-        { field: 'cum_wpct', min: .4, max: .6 },
-        { field: 'cum_dog_pct', min: .1, max: .2 },
-        { field: 'cum_dog_wpct', min: .2, max: .4 },
-      ].map((field) => {
-        let f = field.field;
-        let label = f.replace(/_/g, ' ');
-        label = label.replace('wpct', 'Win %');
-        label = label.replace('pct', '%');
-        label = label.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
-        label = label.replace('Games Back', 'GB');
-        if (f.includes('cum')) {
-          label += ' (cumul)';
-          label = label.replace('Cum ', '');
-        }
-
-        field.label = label;
-        return field;
-      });
-      DATA.Chart.fields = fields;
-
-      let players = [...new Set(data.map((x) => x.player))];
-      DATA.Chart.players = players;
-
-      let cdata = data.map((x) => {
-        let obj = {};
-        let fields = Object.keys(x);
-        fields = fields.filter((f) => !['rankOrder', 'rankVal'].includes(f));
-        fields.forEach((f) => {
-          let val = x[f];
-          let display = val;
-          if (f == 'rank') {
-            val = x['rankVal'];
-            display = x['rank'];
-          }
-          if (f.includes('pct')) {
-            display = Math.round(val * 100) + '%';
-          }
-          obj[f] = {
-            v: val,
-            d: display,
-          };
-        });
-        return obj;
-      });
-
-      DATA.Chart.data = cdata;
-    }
-
-
-    /* ------------------------------------------------ */
-
-    function makeChartFilters() {
-      let chartDiv = document.getElementById('chartFilters');
-      let chartData = DATA.Chart;
-      let fields = chartData.fields;
-      let players = chartData.players;
-
-      let fieldSelector = document.getElementById('fieldSelector');
-      fieldSelector.addEventListener('change', function () {
-        updateChart();
-      });
-      fields.forEach((f) => {
-        let field = f.field;
-        let label = f.label;
-        let option = document.createElement('option');
-        option.setAttribute('value', field);
-        option.innerText = label;
-        fieldSelector.appendChild(option);
-      });
-
-      let playerSelector = document.getElementById('playerSelector');
-      playerSelector.addEventListener('change', function () {
-        updateChart();
-      });
-      let option = document.createElement('option');
-      option.setAttribute('value', 'All Players');
-      option.setAttribute('selected', true);
-      option.innerText = 'All Players';
-      playerSelector.appendChild(option);
-      players.forEach((p) => {
-        if (p == 'Average') return;
-        let option = document.createElement('option');
-        option.setAttribute('value', p);
-        option.innerText = p;
-        playerSelector.appendChild(option);
-      });
-    }
-
-    /* ------------------------------------------------ */
-
     function updateChart() {
 
       let chartData = DATA.Chart;
@@ -276,7 +177,7 @@
 
     function getPlayerColors() {
       let players = DATA.Chart.players;
-      let op1 = '.8';
+      let op1 = '.9';
       let op2 = '.7';
       let playerColors = {};
       players.forEach((x) => {
@@ -348,40 +249,41 @@
         options: options,
       };
 
-      // config.options.onClick = function (event, elements) {
-      //   let chart = this;
-      //   let playerColors = getPlayerColors();
+      config.options.plugins.legend.onClick = function (event, legendItem, legend) {
+        let chart = this.chart;
+        let playerColors = getPlayerColors();
+        let clickedDataset = chart.data.datasets[legendItem.datasetIndex];
+        let isDimmed = clickedDataset.borderColor.includes('.2)');
+        let someDimmed = chart.data.datasets.some((d) => d.borderColor.includes('.2)'));
 
-      //   chart.data.datasets.forEach((d) => {
-      //     let c = playerColors[d.label];
-      //     d.borderColor = c.color;
-      //     d.backgroundColor = c.colorAlpha;
-      //     d.pointBorderColor = c.color;
-      //     d.pointBackgroundColor = c.colorAlpha;
-      //   });
-      //   chart.update();
-      // };
+        // if clicked dataset is already highlighted, reset all datasets
+        if (isDimmed && someDimmed || !isDimmed && !someDimmed) {
+          let c = playerColors[clickedDataset.label];
+          clickedDataset.borderColor = c.color;
+          clickedDataset.backgroundColor = c.colorAlpha;
+          clickedDataset.pointBorderColor = c.color;
+          clickedDataset.pointBackgroundColor = c.colorAlpha;
 
-      // config.options.plugins.legend.onClick = function (event, legendItem, legend) {
-      //   let chart = this.chart;
-      //   let playerColors = getPlayerColors();
-      //   let clickedDataset = chart.data.datasets[legendItem.datasetIndex];
-      //   let c = playerColors[clickedDataset.label];
-      //   clickedDataset.borderColor = c.color;
-      //   clickedDataset.backgroundColor = c.colorAlpha;
-      //   clickedDataset.pointBorderColor = c.color;
-      //   clickedDataset.pointBackgroundColor = c.colorAlpha;
+          let otherDatasets = chart.data.datasets.filter((x) => x.label != clickedDataset.label);
 
-      //   let otherDatasets = chart.data.datasets.filter((x) => x.label != clickedDataset.label);
-
-      //   otherDatasets.forEach((d) => {
-      //     d.borderColor = 'rgba(255, 255, 255, .2)';
-      //     d.backgroundColor = 'rgba(255, 255, 255, .05)';
-      //     d.pointBorderColor = 'rgba(255, 255, 255, .05)';
-      //     d.pointBackgroundColor = 'rgba(255, 255, 255, 0)';
-      //   });
-      //   chart.update();
-      // };
+          otherDatasets.forEach((d) => {
+            d.borderColor = 'rgba(255, 255, 255, .2)';
+            d.backgroundColor = 'rgba(255, 255, 255, .05)';
+            d.pointBorderColor = 'rgba(255, 255, 255, .05)';
+            d.pointBackgroundColor = 'rgba(255, 255, 255, 0)';
+          });
+          chart.update();
+        } else {
+          chart.data.datasets.forEach((d) => {
+            let c = playerColors[d.label];
+            d.borderColor = c.color;
+            d.backgroundColor = c.colorAlpha;
+            d.pointBorderColor = c.color;
+            d.pointBackgroundColor = c.colorAlpha;
+          });
+          chart.update();
+        }
+      };
 
       chart = new Chart(ctx, config);
     }
@@ -481,10 +383,10 @@
       let options = {
         responsive: true,
         maintainAspectRatio: false,
-        // interaction: {
-        //   mode: 'index',
-        //   intersect: false,
-        // },
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
         plugins: {
           title: title,
           legend: legend,
@@ -497,6 +399,105 @@
       };
 
       return options;
+    }
+
+    /* ------------------------------------------------ */
+
+    function procChartData() {
+
+      let data = DATA.Stats;
+      let weeks = [...new Set(data.map((x) => 'WK ' + x.week))];
+      DATA.Chart.labels = weeks;
+
+      let fields = [
+        { field: 'rank', min: 1, max: 9, reverse: true },
+        { field: 'games_back', min: 0, max: Math.max(...data.map((x) => x.games_back)), reverse: true },
+        { field: 'cum_wpct', min: .4, max: .6 },
+        { field: 'cum_dog_pct', min: .1, max: .2 },
+        { field: 'cum_dog_wpct', min: .2, max: .4 },
+      ].map((field) => {
+        let f = field.field;
+        let label = f.replace(/_/g, ' ');
+        label = label.replace('wpct', 'Win %');
+        label = label.replace('pct', '%');
+        label = label.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+        label = label.replace('Games Back', 'GB');
+        if (f.includes('cum')) {
+          label += ' (cumul)';
+          label = label.replace('Cum ', '');
+        }
+
+        field.label = label;
+        return field;
+      });
+      DATA.Chart.fields = fields;
+
+      let players = [...new Set(data.map((x) => x.player))];
+      DATA.Chart.players = players;
+
+      let cdata = data.map((x) => {
+        let obj = {};
+        let fields = Object.keys(x);
+        fields = fields.filter((f) => !['rankOrder', 'rankVal'].includes(f));
+        fields.forEach((f) => {
+          let val = x[f];
+          let display = val;
+          if (f == 'rank') {
+            val = x['rankVal'];
+            display = x['rank'];
+          }
+          if (f.includes('pct')) {
+            display = Math.round(val * 100) + '%';
+          }
+          obj[f] = {
+            v: val,
+            d: display,
+          };
+        });
+        return obj;
+      });
+
+      DATA.Chart.data = cdata;
+    }
+
+
+    /* ------------------------------------------------ */
+
+    function makeChartFilters() {
+      let chartDiv = document.getElementById('chartFilters');
+      let chartData = DATA.Chart;
+      let fields = chartData.fields;
+      let players = chartData.players;
+
+      let fieldSelector = document.getElementById('fieldSelector');
+      fieldSelector.addEventListener('change', function () {
+        updateChart();
+      });
+      fields.forEach((f) => {
+        let field = f.field;
+        let label = f.label;
+        let option = document.createElement('option');
+        option.setAttribute('value', field);
+        option.innerText = label;
+        fieldSelector.appendChild(option);
+      });
+
+      let playerSelector = document.getElementById('playerSelector');
+      playerSelector.addEventListener('change', function () {
+        updateChart();
+      });
+      let option = document.createElement('option');
+      option.setAttribute('value', 'All Players');
+      option.setAttribute('selected', true);
+      option.innerText = 'All Players';
+      playerSelector.appendChild(option);
+      players.forEach((p) => {
+        if (p == 'Average') return;
+        let option = document.createElement('option');
+        option.setAttribute('value', p);
+        option.innerText = p;
+        playerSelector.appendChild(option);
+      });
     }
 
     /* ------------------------------------------------ */
