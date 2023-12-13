@@ -74,8 +74,8 @@
 
       // previewData(DATA.Chart);
       makeChartFilters();
-      generateChart();
-      updateChart();
+      // generateChart();
+      // updateChart();
     }
 
     function procChartData() {
@@ -112,6 +112,9 @@
       //   { field: 'cum_dog_pct', label: 'Dog % (cumul.)', min: .1, max: .2 },
       //   { field: 'cum_dog_wpct', label: 'Dog Win % (cumul.)', min: .2, max: .4 },
       // ];
+
+
+
       DATA.Chart.fields = fields;
 
       let players = [...new Set(data.map((x) => x.player))];
@@ -242,13 +245,7 @@
         let dataset = {
           type: 'line',
           label: p,
-          data: playerData.map((x) => {
-            return {
-              x: x.week.v,
-              y: x[fieldName].v,
-            };
-
-          })
+          data: playerData.map((x) => x[fieldName].v),
         };
         // dataset = styleDataset(dataset);
         config.data.datasets.push(dataset);
@@ -354,11 +351,11 @@
     function generateChart() {
 
       let ctx = document.getElementById('chart').getContext('2d');
-      let options = getBaseChartConfig();
+      let options = getChartOptions();
       let config = {
         type: 'line',
         data: {
-          labels: [],
+          labels: DATA.Chart.labels,
           datasets: [],
         },
         options: options,
