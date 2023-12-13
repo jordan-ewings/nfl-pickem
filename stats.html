@@ -10,7 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     .testing {
-      background-color: rgb(12, 228, 171);
+      background-color: rgb(199, 199, 199);
     }
 
     :root {
@@ -131,6 +131,7 @@
       });
 
       // average
+      // if (playerNames.length == 1) {
       let weeks = chartData.data.map((x) => x.week.v);
       weeks = [...new Set(weeks)];
       let avgData = weeks.map((w) => {
@@ -150,6 +151,7 @@
       };
       avgDataset = styleDataset(avgDataset);
       config.data.datasets.push(avgDataset);
+      // }
 
       let field = chartData.fields.filter((x) => x.field == fieldName)[0];
       let y = config.options.scales.y;
@@ -193,18 +195,20 @@
         playerColors[x] = {
           color: defaultColor,
           colorAlpha: alphaColor,
+          colorEmphasis: color,
         };
       })
 
       // average
       let op1avg = '1';
       let op2avg = '.8';
-      let avgColor = 'rgb(0, 0, 0)';
+      let avgColor = 'rgb(200, 200, 200)';
       let avgDefault = avgColor.replace('rgb', 'rgba').replace(')', ', ' + op1avg + ')');
       let avgAlpha = avgColor.replace('rgb', 'rgba').replace(')', ', ' + op2avg + ')');
       playerColors['Average'] = {
         color: avgDefault,
         colorAlpha: avgAlpha,
+        colorEmphasis: avgColor,
       };
 
       return playerColors;
@@ -229,8 +233,8 @@
       d.backgroundColor = color;
       d.borderColor = color;
       d.borderWidth = 3;
-      d.tension = 0.2;
-      d.pointRadius = 2;
+      d.tension = 0.4;
+      d.pointRadius = 3;
       d.pointBackgroundColor = colorAlpha;
       d.pointBorderColor = color;
       d.pointBorderWidth = 1;
@@ -267,12 +271,13 @@
         // if clicked dataset is already highlighted, reset all datasets
         if (isDimmed && someDimmed || !isDimmed && !someDimmed) {
           let c = playerColors[clickedDataset.label];
-          clickedDataset.borderColor = c.color;
+          clickedDataset.borderColor = c.colorEmphasis;
           clickedDataset.backgroundColor = c.colorAlpha;
-          clickedDataset.pointBorderColor = c.color;
+          clickedDataset.pointBorderColor = c.colorEmphasis;
           clickedDataset.pointBackgroundColor = c.colorAlpha;
 
           let otherDatasets = chart.data.datasets.filter((x) => x.label != clickedDataset.label);
+          otherDatasets = otherDatasets.filter((x) => x.label != 'Average');
 
           otherDatasets.forEach((d) => {
             d.borderColor = 'rgba(255, 255, 255, .2)';
@@ -370,8 +375,8 @@
       tooltip.cornerRadius = 4;
       tooltip.borderWidth = 0;
 
-      tooltip.mode = 'index';
-      tooltip.intersect = true;
+      // tooltip.mode = 'index';
+      // tooltip.intersect = true;
       tooltip.callbacks = {
         label: function (context) {
           let player = context.dataset.label;
@@ -392,7 +397,7 @@
         responsive: true,
         maintainAspectRatio: false,
         interaction: {
-          mode: 'index',
+          mode: 'x',
           intersect: false,
         },
         plugins: {
@@ -420,6 +425,8 @@
       let fields = [
         { field: 'rank', min: 1, max: 9, reverse: true },
         { field: 'games_back', min: 0, max: Math.max(...data.map((x) => x.games_back)), reverse: true },
+        { field: 'wpct', min: .4, max: .6 },
+
         { field: 'cum_wpct', min: .4, max: .6 },
         { field: 'cum_dog_pct', min: .1, max: .2 },
         { field: 'cum_dog_wpct', min: .2, max: .4 },
