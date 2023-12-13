@@ -234,7 +234,7 @@
       d.pointBackgroundColor = colorAlpha;
       d.pointBorderColor = color;
       d.pointBorderWidth = 1;
-      d.pointHoverRadius = 4;
+      d.pointHoverRadius = 6;
       d.pointHoverBackgroundColor = color;
       d.pointHoverBorderColor = color;
 
@@ -371,7 +371,7 @@
       tooltip.borderWidth = 0;
 
       tooltip.mode = 'index';
-      tooltip.intersect = false;
+      tooltip.intersect = true;
       tooltip.callbacks = {
         label: function (context) {
           let player = context.dataset.label;
@@ -391,50 +391,10 @@
       let options = {
         responsive: true,
         maintainAspectRatio: false,
-        // onhover, do nothing
-        onHover: function (event, elements, chart) {
-          // dont change where tooltip is shown (or the data in it)
-          // new tooltip info will be shown on click
-          chart.options.plugins.tooltip.enabled = false;
-          chart.update();
-
+        interaction: {
+          mode: 'index',
+          intersect: false,
         },
-        onClick: function (event, elements, chart) {
-          // if clicked on a point, show tooltip
-          // if clicked on empty space, hide tooltip
-
-          let tooltip = chart.options.plugins.tooltip;
-          let tooltipEnabled = tooltip.enabled;
-          tooltip.enabled = !tooltipEnabled;
-
-          chart.update();
-
-
-
-          // let els = chart.getElementsAtEventForMode(event, 'index', { intersect: false }, true);
-          // if (els.length > 0) {
-          //   let toActive = els.map((x) => {
-          //     return {
-          //       datasetIndex: x.datasetIndex,
-          //       index: x.index,
-          //     }
-          //   });
-          //   chart.setActiveElements(toActive);
-          // } else {
-          //   chart.setActiveElements([]);
-
-          // }
-          // chart.update();
-
-
-
-
-
-        },
-        // interaction: {
-        //   mode: 'index',
-        //   intersect: false,
-        // },
         plugins: {
           title: title,
           legend: legend,
