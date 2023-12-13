@@ -131,9 +131,6 @@
         return;
       }
 
-      // format tr to indicate active
-
-
       e.target.closest('tr').querySelector('[data-item="player"]').classList.add('text-primary-emphasis');
 
       chartDiv.classList.remove('d-none');
@@ -141,9 +138,6 @@
 
       let field = 'rankVal';
       let data = DATA.tblStandings.find((g) => g.player == player).history;
-      // let playerName = chartDiv.querySelector('.player-name');
-      // playerName.textContent = player;
-
       let config = chart.config;
       config.data.datasets[0].data = data.map((g) => g[field]);
       config.options.plugins.title.text = player;

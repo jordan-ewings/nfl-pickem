@@ -53,21 +53,23 @@
   <script>
     let DATA = {
       Stats: [],
-      Chart: {},
-      ChartFilters: {
-        player: 'All Players',
-        field: 'Rank',
+      Chart: {
+        data: [],
+        filters: {
+          player: 'All Players',
+          field: 'Rank',
+        },
+        plots: [
+          { field: 'rankVal', label: 'Rank', min: 1, max: 9, reverse: true },
+          { field: 'games_back', label: 'GB', min: 0, max: Math.max(...data.map((x) => x.games_back)), reverse: true },
+          { field: 'cum_wpct', label: 'Win % (cumul.)', min: .4, max: .6 },
+          { field: 'cum_dog_pct', label: 'Dog % (cumul.)', min: .1, max: .2 },
+          { field: 'cum_dog_wpct', label: 'Dog Win % (cumul.)', min: .2, max: .4 },
+        ]
       },
-      PlayerColors: {}
     };
-    // let ctx = document.getElementById('chart').getContext('2d');
+
     let chart;
-
-    // make page long enough so mobile user doesnt have ios safari address bar at bottom
-    let vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-
-
     sendData();
 
     /* ------------------------------------------------ */
@@ -75,15 +77,16 @@
     async function sendData() {
       const data = await getSheet('PlayerStats');
       DATA.Stats = procStats(data);
-      DATA.Chart = procChartData(DATA.Stats);
+      DATA.Chart.data = procChartData();
 
-      // previewData('Chart');
-      makeChartFilters();
-      generateChart();
-      updateChart();
+      previewData(DATA.Chart.data);
+      // makeChartFilters();
+      // generateChart();
+      // updateChart();
     }
 
-    function procChartData(data) {
+    function procChartData() {
+      let data = DATA.Stats;
       let chartData = {
         labels: [],
         datasets: [],
@@ -91,79 +94,32 @@
 
       let weeks = [...new Set(data.map((x) => 'WK ' + x.week))];
       chartData.labels = weeks;
-      let fields = [
-        {
-          field: 'rankVal',
-          label: 'Rank',
-          min: 1,
-          max: 9,
-          reverse: true,
-        },
-        {
-          field: 'games_back',
-          label: 'GB',
-          min: 0,
-          max: Math.max(...data.map((x) => x.games_back)),
-          reverse: true,
-        },
-        {
-          field: 'cum_wpct',
-          label: 'Win % (cumul.)',
-          min: .4,
-          max: .6,
-        },
-        {
-          field: 'cum_dog_pct',
-          label: 'Dog % (cumul.)',
-          min: .1,
-          max: .2,
-        },
-        {
-          field: 'cum_dog_wpct',
-          label: 'Dog Win % (cumul.)',
-          min: .2,
-          max: .4,
-        },
-      ];
+      let fields = DATA.Chart.plots;
 
       let players = [...new Set(data.map((x) => x.player))];
       fields.forEach((f) => {
-        let limdata = data.map((x) => {
-          return {
-            player: x.player,
-            week: x.week,
-            value: x[f.field],
-          };
-        });
-
-        let label = f.label;
-
         let dataset = {
-          label: label,
-          options: {
-            scales: {
-              y: {
-                min: f.min,
-                max: f.max,
-                reverse: f.reverse,
-              }
-            }
-          },
+          options: f,
           data: {}
-        };
+        }
 
         players.forEach((p) => {
-          let playerData = limdata.filter((x) => x.player == p);
-          let playerValues = playerData.map((x) => x.value);
-          dataset.data[p] = playerData;
+          let playerData = data.filter((x) => x.player == p);
+          dataset.data[p] = playerData.map((x) => {
+            return {
+              player: x.player,
+              week: x.week,
+              value: x[f.field],
+            };
+          });
         });
 
         // add 'Average' line
-        let weeks = [...new Set(data.map((x) => x.week))];
+        // let weeks = [...new Set(data.map((x) => x.week))];
         dataset.data['Average'] = [];
         weeks.forEach((w) => {
-          let weekData = limdata.filter((x) => x.week == w);
-          let weekValues = weekData.map((x) => x.value);
+          let weekData = data.filter((x) => x.week == w);
+          let weekValues = weekData.map((x) => x[f.field]);
           let sum = weekValues.reduce((a, b) => a + b, 0);
           let avg = sum / weekValues.length;
           dataset.data['Average'].push({
@@ -179,21 +135,6 @@
       return chartData;
     }
 
-    function getPlayerColors() {
-      let players = [...new Set(DATA.Stats.map((x) => x.player))];
-      let colors = ['#0d6efd', '#6f42c1', '#d63384', '#dc3545', '#fd7e14', '#ffc107', '#198754', '#20c997', '#0dcaf0', '#6c757d', '#adb5bd', '#212529'];
-      let playerColors = {};
-      players.forEach((p, i) => {
-        let c = colors[i];
-        playerColors[p] = {
-          // dim color slightly
-          color: c + 'cc',
-          colorAlpha: c + '33',
-        };
-      });
-      return playerColors;
-    }
-
 
     /* ------------------------------------------------ */
 
@@ -202,7 +143,7 @@
     // on click, updateChart(playerName, fieldName)
     function makeChartFilters() {
       let chartDiv = document.getElementById('chartFilters');
-      let chartData = DATA.Chart;
+      let chartData = CHART.data;
       let fields = chartData.datasets.map((x) => x.label);
       let players = Object.keys(chartData.datasets[0].data);
 
@@ -251,14 +192,8 @@
         playerNames.push('Average');
       }
       let fieldName = document.getElementById('fieldSelector').value;
-      // remove average if field is rank
-      // if (fieldName == 'Rank') {
-      //   playerNames = playerNames.filter((x) => x != 'Average');
-      // }
       DATA.ChartFilters.players = playerNames;
       DATA.ChartFilters.field = fieldName;
-
-
 
 
       let config = chart.config;
@@ -313,21 +248,33 @@
     }
     /* ------------------------------------------------ */
 
+    function getPlayerColors() {
+      let players = [...new Set(DATA.Stats.map((x) => x.player))];
+      let colors = ['#0d6efd', '#6f42c1', '#d63384', '#dc3545', '#fd7e14', '#ffc107', '#198754', '#20c997', '#0dcaf0', '#6c757d', '#adb5bd', '#212529'];
+      let playerColors = {};
+      players.forEach((p, i) => {
+        let c = colors[i];
+        playerColors[p] = {
+          // dim color slightly
+          color: c + 'cc',
+          colorAlpha: c + '33',
+        };
+      });
+      return playerColors;
+    }
+
+    /* ------------------------------------------------ */
+
     function styleDataset(dataset) {
 
-      let colorAx = 'rgb(255, 255, 255, .4)';
-      let colorGrid = 'rgb(255, 255, 255, .1)';
-      let colorMain = 'rgb(13, 110, 253, .8)';
-      let colorMainAlpha = 'rgb(13, 110, 253, .2)';
-
-      let color = 'rgb(255, 255, 255, .4)';
-      let colorAlpha = 'rgb(255, 255, 255, .2)';
-
-      let playerColors = getPlayerColors();
-      if (dataset.label != 'Average') {
-        let c = playerColors[dataset.label];
-        color = c.color;
-        colorAlpha = c.colorAlpha;
+      let color, colorAlpha;
+      let playerColors = getPlayerColors()[dataset.label];
+      if (playerColors) {
+        color = playerColors.color;
+        colorAlpha = playerColors.colorAlpha;
+      } else {
+        color = 'rgb(255, 255, 255, .4)';
+        colorAlpha = 'rgb(255, 255, 255, .2)';
       }
 
       let d = dataset;
@@ -340,145 +287,16 @@
       d.pointBackgroundColor = colorAlpha;
       d.pointBorderColor = color;
       d.pointBorderWidth = 3;
-      d.pointHoverRadius = 6;
-      d.pointHoverBackgroundColor = color;
-
-      // if (dataset.label == 'Average') {
-      //   d.pointRadius = 0;
-      //   d.pointHoverRadius = 0;
-      // }
 
       return d;
     }
 
+    /* ------------------------------------------------ */
+
     function generateChart() {
 
-      Chart.defaults.font.size = 12;
-      Chart.defaults.font.weight = '500';
-      Chart.defaults.color = 'rgba(255, 255, 255, .85)';
-
-      let colorAx = 'rgb(255, 255, 255, .6)';
-      let colorGrid = 'rgb(255, 255, 255, .05)';
-
       let ctx = document.getElementById('chart').getContext('2d');
-      let config = {
-        type: 'line',
-        data: {
-          labels: DATA.Chart.labels,
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          // interaction: {
-          //   mode: 'index',
-          //   intersect: false,
-          // },
-          plugins: {
-            legend: {
-              display: true,
-              position: 'top',
-              align: 'center',
-              labels: {
-                color: colorAx,
-                padding: 20,
-                usePointStyle: true,
-                font: {
-                  size: 14,
-                  weight: '500',
-                },
-              },
-            },
-            title: {
-              display: false,
-            },
-            tooltip: {
-              // make tooltip look better
-              // sort players by value
-
-              enabled: true,
-              callbacks: {
-                label: function (context) {
-                  let label = context.dataset.label || '';
-                  if (label) {
-                    label += ': ';
-                  }
-                  if (context.parsed.y !== null) {
-                    // format as percent if field is a percent
-                    if (DATA.ChartFilters.field.includes('%')) {
-                      label += Math.round(context.parsed.y * 100) + '%';
-                    } else {
-                      label += context.parsed.y;
-                    }
-                  }
-                  return label;
-                },
-                title: function (context) {
-                  let title = context[0].label || '';
-                  return title;
-                },
-
-              },
-
-              // format tooltip container
-              backgroundColor: 'rgba(0, 0, 0, .8)',
-              titleColor: 'rgba(255, 255, 255, .85)',
-              bodyColor: 'rgba(255, 255, 255, .85)',
-              titleFont: {
-                size: 14,
-                weight: '500',
-              },
-              bodyFont: {
-                size: 12,
-                weight: '500',
-              },
-              padding: 8,
-              cornerRadius: 4,
-              // displayColors: false,
-              borderWidth: 0,
-
-            }
-          },
-          scales: {
-            x: {
-              offset: true,
-              grid: {
-                display: false,
-                color: colorGrid,
-              },
-              ticks: {
-                color: colorAx,
-                padding: 8,
-                maxRotation: 90,
-                minRotation: 0,
-              },
-              border: {
-                display: false,
-
-              },
-            },
-            y: {
-              offset: true,
-              grid: {
-                color: colorGrid,
-                drawTicks: false,
-                drawBorder: false,
-              },
-              ticks: {
-                color: colorAx,
-                padding: 0,
-              },
-              border: {
-                display: false,
-              },
-            }
-          },
-        }
-      };
-
-
-      // when a line/point is clicked, dim others
-      // when another line/point is clicked, dim others
-      // when there's a click on the canvas, but not on a line/point, reset all lines/points to normal
+      let config = getBaseChartConfig();
 
       config.options.onClick = function (event, elements) {
         let chart = this;
@@ -490,47 +308,10 @@
           d.backgroundColor = c.colorAlpha;
           d.pointBorderColor = c.color;
           d.pointBackgroundColor = c.colorAlpha;
-
         });
-
-
         chart.update();
       };
 
-      // enable zooming
-      // limit to 4 weeks
-      config.options.plugins.zoom = {
-        zoom: {
-          wheel: {
-            enabled: true,
-          },
-          drag: {
-            enabled: true,
-          },
-          mode: 'x',
-          speed: 0.05,
-          threshold: 2,
-          sensitivity: 3,
-          limits: {
-            x: {
-              min: 'original',
-              max: 'original',
-            },
-            y: {
-              min: 'original',
-              max: 'original',
-            },
-          },
-
-        },
-      };
-
-      // if player zooms, limit to 4 weeks
-
-
-
-
-      // do the same thing when legend is clicked
       config.options.plugins.legend.onClick = function (event, legendItem, legend) {
         let chart = this.chart;
         let playerColors = getPlayerColors();
@@ -552,11 +333,103 @@
         chart.update();
       };
 
-      // allow user to zoom in on chart (show fewer weeks)
-
-
       chart = new Chart(ctx, config);
-      // styleChart(chart);
+    }
+
+    /* ------------------------------------------------ */
+
+    // function to set chart config options
+
+    function getBaseChartConfig() {
+
+      let colors = {
+        defaultText: 'rgb(255, 255, 255, .85)',
+        legendText: 'rgb(255, 255, 255, .85)',
+        axisText: 'rgb(255, 255, 255, .6)',
+        gridLine: 'rgb(255, 255, 255, .05)',
+        tooltipBg: 'rgba(0, 0, 0, .8)',
+        tooltipTitle: 'rgba(255, 255, 255, .85)',
+        tooltipBody: 'rgba(255, 255, 255, .85)',
+      };
+
+      let fonts = {
+        default: { size: 12, weight: '500' },
+        legend: { size: 14, weight: '500' },
+        axis: { size: 12, weight: '500' },
+        tooltipTitle: { size: 14, weight: '500' },
+        tooltipBody: { size: 12, weight: '500' },
+      };
+
+      let title = {};
+      title.display = false;
+
+      let legend = {};
+      legend.display = true;
+      legend.position = 'top';
+      legend.align = 'center';
+      legend.labels = {};
+      legend.labels.color = colors.legendText;
+      legend.labels.padding = 20;
+      legend.labels.usePointStyle = true;
+      legend.labels.font = fonts.legend;
+
+      let x = {};
+      x.offset = true;
+      x.grid = {};
+      x.grid.display = false;
+      x.grid.color = colors.gridLine;
+      x.ticks = {};
+      x.ticks.color = colors.axisText;
+      x.ticks.padding = 8;
+      x.ticks.maxRotation = 90;
+      x.ticks.minRotation = 0;
+      x.border = {};
+      x.border.display = false;
+
+      let y = {};
+      y.offset = true;
+      y.grid = {};
+      y.grid.color = colors.gridLine;
+      y.grid.drawTicks = false;
+      y.grid.drawBorder = false;
+      y.ticks = {};
+      y.ticks.color = colors.axisText;
+      y.ticks.padding = 0;
+      y.border = {};
+      y.border.display = false;
+
+      let tooltip = {};
+      tooltip.enabled = false;
+      tooltip.backgroundColor = colors.tooltipBg;
+      tooltip.titleColor = colors.tooltipTitle;
+      tooltip.bodyColor = colors.tooltipBody;
+      tooltip.titleFont = fonts.tooltipTitle;
+      tooltip.bodyFont = fonts.tooltipBody;
+      tooltip.padding = 8;
+      tooltip.cornerRadius = 4;
+      tooltip.borderWidth = 0;
+
+      let config = {
+        type: 'line',
+        data: {
+          labels: [],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: legend,
+            title: title,
+            tooltip: tooltip,
+          },
+          scales: {
+            x: x,
+            y: y,
+          },
+        },
+      };
+
+      return config;
     }
 
     /* ------------------------------------------------ */
@@ -595,9 +468,42 @@
     }
 
     function previewData(dataset) {
-      let code = '<div><pre>' + JSON.stringify(DATA[dataset], null, 2) + '</pre></div>';
+      let code = '<div><pre>' + JSON.stringify(dataset, null, 2) + '</pre></div>';
       document.body.appendChild(document.createRange().createContextualFragment(code));
     }
+
+
+    // if player zooms, limit to 4 weeks
+
+    // callbacks: {
+    //   label: function (context) {
+    //     let label = context.dataset.label || '';
+    //     if (label) {
+    //       label += ': ';
+    //     }
+    //     if (context.parsed.y !== null) {
+    //       // format as percent if field is a percent
+    //       if (DATA.ChartFilters.field.includes('%')) {
+    //         label += Math.round(context.parsed.y * 100) + '%';
+    //       } else {
+    //         label += context.parsed.y;
+    //       }
+    //     }
+    //     return label;
+    //   },
+    //   title: function (context) {
+    //     let title = context[0].label || '';
+    //     return title;
+    //   },
+
+    // },
+
+    //       Chart.defaults.font.size = 12;
+    // Chart.defaults.font.weight = '500';
+    // Chart.defaults.color = 'rgba(255, 255, 255, .85)';
+
+    // let colorAx = 'rgb(255, 255, 255, .6)';
+    // let colorGrid = 'rgb(255, 255, 255, .05)';
 
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
