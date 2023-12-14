@@ -67,6 +67,8 @@
   </div>
 
   <script src="./scripts/getSheet.js"></script>
+  <script src="./scripts/procStats.js"></script>
+  <script src="./scripts/chart.js"></script>
   <script>
     let DATA = {
       Stats: [],
@@ -86,13 +88,26 @@
 
     async function sendData() {
       const data = await getSheet('PlayerStats');
-      procStats(data);
+      DATA.Stats = procStats(data);
       procChartData();
 
-      // previewData(DATA.Chart);
       makeChartFilters();
       generateChart();
-      updateChart();
+      setDatasetParsing();
+      // updateChart();
+      // previewData(chart.config.data.datasets);
+    }
+
+    function setDatasetParsing() {
+      let datasets = chart.config.data.datasets;
+      datasets.forEach((d) => {
+        d.parsing = {
+          xAxisKey: 'week.v',
+          yAxisKey: 'rank.v',
+        };
+      });
+      chart.update();
+
     }
 
 
@@ -104,16 +119,10 @@
       let playerNames = document.getElementById('playerSelector').value;
       if (playerNames == 'All Players') {
         playerNames = chartData.players;
-        // playerNames = playerNames.filter((x) => x != 'Average');
       } else {
         playerNames = [playerNames];
-        // playerNames.push('Average');
       }
       let fieldName = document.getElementById('fieldSelector').value;
-      // if (fieldName.includes('rank')) {
-      //   // remove average
-      //   playerNames = playerNames.filter((x) => x != 'Average');
-      // }
 
       let config = chart.config;
       config.data.datasets = [];
@@ -172,37 +181,13 @@
         }
       };
 
-      // if player is selected (not all players), fill area below player line (but not below average line)
-      // if (playerNames.length == 1) {
-      //   let playerColors = getPlayerColors();
-      //   let playerColor = playerColors[playerNames[0]].colorAlpha;
-      //   let avgColor = playerColors['Average'].colorAlpha;
-      //   config.data.datasets.forEach((d) => {
-      //     if (d.label == playerNames[0]) {
-      //       d.fill = {
-      //         target: '+1',
-      //         above: playerColor.replace('.7)', '.1)'),
-      //         below: avgColor.replace('.7)', '.1)'),}
-      //       d.backgroundColor = playerColor;
-      //     } else {
-      //       d.fill = false;
-      //     }
-      //   });
-      // } else {
-      //   config.data.datasets.forEach((d) => {
-      //     d.fill = false;
-      //   });
-      // }
-
       config.options.plugins.tooltip.itemSort = function (a, b) {
         if (field.reverse) {
           return a.parsed.y - b.parsed.y;
         } else {
           return b.parsed.y - a.parsed.y;
         }
-        // return b.parsed.y - a.parsed.y;
       };
-
 
       chart.update();
     }
@@ -256,20 +241,22 @@
         colorAlpha = 'rgb(255, 255, 255, .2)';
       }
 
-      let d = dataset;
-      d.fill = false;
-      d.backgroundColor = color;
-      d.borderColor = color;
-      d.borderWidth = 3;
-      d.tension = 0.4;
-      d.pointRadius = 3;
-      d.pointBackgroundColor = colorAlpha;
-      d.pointBorderColor = color;
-      d.pointBorderWidth = 1;
-      d.pointHoverRadius = 6;
-      d.pointHoverBackgroundColor = color;
-      d.pointHoverBorderColor = color;
+      let style = {
+        fill: false,
+        backgroundColor: color,
+        borderColor: color,
+        borderWidth: 3,
+        tension: 0.4,
+        pointRadius: 3,
+        pointBackgroundColor: colorAlpha,
+        pointBorderColor: color,
+        pointBorderWidth: 1,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: color,
+        pointHoverBorderColor: color,
+      };
 
+      let d = Object.assign(dataset, style);
 
       return d;
     }
@@ -278,19 +265,51 @@
 
     function generateChart() {
 
+      let labels = DATA.Chart.labels;
+      let players = DATA.Chart.players;
+      let data = DATA.Chart.data;
+      let weeks = [...new Set(data.map((x) => x.week.v))];
+      let datasets = players.map((p) => {
+        let dataset = {
+          type: 'line',
+          label: p,
+          data: data.filter((x) => x.player.v == p)
+        };
+        dataset = styleDataset(dataset);
+        return dataset;
+      });
+
       let ctx = document.getElementById('chart').getContext('2d');
       let options = getChartOptions();
       let config = {
         type: 'line',
         data: {
-          labels: DATA.Chart.labels,
-          datasets: [],
+          labels: weeks,
+          datasets: datasets,
         },
         options: options,
       };
 
+      // parsing
+      // config.options.parsing.xAxisKey = 'week.v';
 
-      config.options.plugins.legend.onClick = function (event, legendItem, legend) {
+      let tooltip = config.options.plugins.tooltip;
+      tooltip.callbacks = {
+        label: function (context) {
+          let player = context.dataset.label;
+          let itemIndex = context.dataIndex;
+          let itemDisplay = context.dataset.data[itemIndex].display;
+          let label = player + ': ' + itemDisplay;
+          return label;
+        },
+        title: function (context) {
+          let title = context[0].label || '';
+          return title;
+        },
+      };
+
+      let legend = config.options.plugins.legend;
+      legend.onClick = function (event, legendItem, legend) {
         let chart = this.chart;
         let playerColors = getPlayerColors();
         let clickedDataset = chart.data.datasets[legendItem.datasetIndex];
@@ -330,165 +349,22 @@
       chart = new Chart(ctx, config);
     }
 
-    /* ------------------------------------------------ */
-
-    // function to set chart config options
-
-    function getChartOptions() {
-
-      let colors = {
-        defaultText: 'rgb(255, 255, 255, .85)',
-        legendText: 'rgb(255, 255, 255, .75)',
-        axisText: 'rgb(255, 255, 255, .6)',
-        gridLine: 'rgb(255, 255, 255, .05)',
-        tooltipBg: 'rgba(0, 0, 0, .8)',
-        tooltipTitle: 'rgba(255, 255, 255, .85)',
-        tooltipBody: 'rgba(255, 255, 255, .85)',
-      };
-
-      let fonts = {
-        default: { size: 12, weight: '500' },
-        legend: { size: 14, weight: '500' },
-        axis: { size: 12, weight: '500' },
-        tooltipTitle: { size: 14, weight: '500' },
-        tooltipBody: { size: 12, weight: '500' },
-      };
-
-      let title = {};
-      title.display = false;
-
-      let legend = {};
-      legend.display = true;
-      legend.position = 'top';
-      legend.align = 'center';
-      legend.labels = {};
-      legend.labels.color = colors.legendText;
-      legend.labels.padding = 20;
-      legend.labels.usePointStyle = true;
-      legend.labels.font = fonts.legend;
-      legend.labels.pointStyle = 'rect';
-
-      let x = {};
-      x.offset = true;
-      x.grid = {};
-      x.grid.display = false;
-      x.grid.color = colors.gridLine;
-      x.ticks = {};
-      x.ticks.color = colors.axisText;
-      x.ticks.padding = 8;
-      x.ticks.maxRotation = 90;
-      x.ticks.minRotation = 0;
-      x.border = {};
-      x.border.display = false;
-
-      let y = {};
-      y.offset = true;
-      y.grid = {};
-      y.grid.color = colors.gridLine;
-      y.grid.drawTicks = false;
-      y.grid.drawBorder = false;
-      y.ticks = {};
-      y.ticks.color = colors.axisText;
-      y.ticks.padding = 0;
-      y.border = {};
-      y.border.display = false;
-
-      let tooltip = {};
-      tooltip.enabled = true;
-      tooltip.backgroundColor = colors.tooltipBg;
-      tooltip.titleColor = colors.tooltipTitle;
-      tooltip.bodyColor = colors.tooltipBody;
-      tooltip.titleFont = fonts.tooltipTitle;
-      tooltip.bodyFont = fonts.tooltipBody;
-      tooltip.padding = 8;
-      tooltip.cornerRadius = 4;
-      tooltip.borderWidth = 0;
-
-      // tooltip.mode = 'index';
-      // tooltip.intersect = true;
-      tooltip.callbacks = {
-        label: function (context) {
-          let player = context.dataset.label;
-          let itemIndex = context.dataIndex;
-          let itemDisplay = context.dataset.data[itemIndex].display;
-          let label = player + ': ' + itemDisplay;
-          return label;
-        },
-        title: function (context) {
-          let title = context[0].label || '';
-          return title;
-        },
-      }
-
-
-
-      let options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-          mode: 'x',
-          intersect: false,
-        },
-        plugins: {
-          title: title,
-          legend: legend,
-          tooltip: tooltip,
-        },
-        scales: {
-          x: x,
-          y: y,
-        },
-      };
-
-      return options;
-    }
-
-    /* ------------------------------------------------ */
-
-    function calcYAxisRange(field) {
-      // should be 5th and 95th percentile
-      // after, round to nearest 5
-      let data = DATA.Chart.data;
-      let vals = data.map((x) => x[field].v);
-      vals = vals.sort((a, b) => a - b);
-      let min = vals[0];
-      let max = vals[vals.length - 1];
-      let range = max - min;
-      let rangePct = range / max;
-      // get 5th and 95th percentile
-      let minPct = .25;
-      let maxPct = .75;
-      let minIndex = Math.floor(vals.length * minPct);
-      let maxIndex = Math.floor(vals.length * maxPct);
-      min = vals[minIndex];
-      max = vals[maxIndex];
-      // round to nearest 5
-
-
-      // min = Math.floor(min / 5) * 5;
-      // max = Math.ceil(max / 5) * 5;
-
-      return {
-        min: min,
-        max: max,
-      }
-    }
-
     function procChartData() {
 
       let data = DATA.Stats;
       let weeks = [...new Set(data.map((x) => 'WK ' + x.week))];
+      // let weeks = [...new Set(data.map((x) => x.week))];
       DATA.Chart.labels = weeks;
 
       let fields = [
         { field: 'rank', min: 1, max: 9, reverse: true },
         { field: 'games_back', min: 0, max: Math.max(...data.map((x) => x.games_back)), reverse: true },
-        { field: 'wpct', min: .2, max: .9 },
-        { field: 'dog_pct', min: 0, max: .6 },
-        { field: 'dog_wpct', min: 0, max: 1 },
-        { field: 'cum_wpct', min: .45, max: .7 },
-        { field: 'cum_dog_pct', min: 0, max: .4 },
-        { field: 'cum_dog_wpct', min: .25, max: .65 },
+        // { field: 'wk_wpct', min: .2, max: .9 },
+        // { field: 'wk_dog_pct', min: 0, max: .6 },
+        // { field: 'wk_dog_wpct', min: 0, max: 1 },
+        { field: 'wpct', min: .45, max: .7 },
+        { field: 'dog_pct', min: 0, max: .4 },
+        { field: 'dog_wpct', min: .25, max: .65 },
       ].map((field) => {
         let f = field.field;
         let label = f.replace(/_/g, ' ');
@@ -496,15 +372,9 @@
         label = label.replace('pct', '%');
         label = label.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
         label = label.replace('Games Back', 'GB');
-        if (f.includes('cum')) {
-          label += ' (cumul)';
-          label = label.replace('Cum ', '');
-        }
-
-        // if (f.includes('pct')) {
-        //   let range = calcYAxisRange(f);
-        //   field.min = range.min;
-        //   field.max = range.max;
+        // if (f.includes('cum')) {
+        //   label += ' (cumul)';
+        //   label = label.replace('Cum ', '');
         // }
 
         field.label = label;
@@ -580,79 +450,10 @@
       });
     }
 
-    /* ------------------------------------------------ */
-
-    function procStats(PlayerStats) {
-      let raw = PlayerStats;
-      raw.forEach((x) => {
-        let fields = Object.keys(x);
-        let fieldsStr = ['player', 'rank'];
-        let fieldsInt = fields.filter((f) => !fieldsStr.includes(f));
-        let fieldsPct = fields.filter((f) => f.includes('pct'));
-        fieldsInt = fieldsInt.filter((f) => !fieldsPct.includes(f));
-        fieldsInt.forEach((f) => {
-          x[f] = parseInt(x[f]);
-        });
-        fieldsPct.forEach((f) => {
-          x[f] = parseFloat(x[f]);
-        });
-
-      });
-
-      let fields = Object.keys(raw[0]);
-      let wkFields = fields.filter((f) => f.includes('wk_'));
-      wkFields.forEach((f) => {
-        let cumField = f.replace('wk_', '');
-        let newCumFieldName = 'cum_' + cumField;
-        raw.forEach((x) => {
-          x[newCumFieldName] = x[cumField];
-          x[cumField] = x[f];
-          delete x[f];
-        });
-      });
-
-      let data = raw;
-      DATA.Stats = data;
-    }
-
     function previewData(dataset) {
       let code = '<div><pre>' + JSON.stringify(dataset, null, 2) + '</pre></div>';
-      // document.body.appendChild(document.createRange().createContextualFragment(code));
       document.body.innerHTML = code;
     }
-
-
-    // if player zooms, limit to 4 weeks
-
-    // callbacks: {
-    //   label: function (context) {
-    //     let label = context.dataset.label || '';
-    //     if (label) {
-    //       label += ': ';
-    //     }
-    //     if (context.parsed.y !== null) {
-    //       // format as percent if field is a percent
-    //       if (DATA.ChartFilters.field.includes('%')) {
-    //         label += Math.round(context.parsed.y * 100) + '%';
-    //       } else {
-    //         label += context.parsed.y;
-    //       }
-    //     }
-    //     return label;
-    //   },
-    //   title: function (context) {
-    //     let title = context[0].label || '';
-    //     return title;
-    //   },
-
-    // },
-
-    //       Chart.defaults.font.size = 12;
-    // Chart.defaults.font.weight = '500';
-    // Chart.defaults.color = 'rgba(255, 255, 255, .85)';
-
-    // let colorAx = 'rgb(255, 255, 255, .6)';
-    // let colorGrid = 'rgb(255, 255, 255, .05)';
 
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
