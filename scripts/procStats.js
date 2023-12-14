@@ -14,6 +14,10 @@ function procStats(PlayerStats) {
     fieldsPct.forEach((f) => {
       x[f] = parseFloat(x[f]);
     });
+    let rankVal = x.rankVal;
+    let rankLabel = x.rank;
+    x.rank = rankVal;
+    x.rankLabel = rankLabel;
   });
 
   // let fields = Object.keys(raw[0]);

@@ -43,6 +43,7 @@ function getChartOptions() {
   x.ticks.padding = 8;
   x.ticks.maxRotation = 90;
   x.ticks.minRotation = 0;
+  // x.ticks.includeBounds = false;
   x.border = {};
   x.border.display = false;
 
@@ -55,6 +56,7 @@ function getChartOptions() {
   y.ticks = {};
   y.ticks.color = colors.axisText;
   y.ticks.padding = 0;
+  y.ticks.includeBounds = false;
   y.border = {};
   y.border.display = false;
 
@@ -68,6 +70,8 @@ function getChartOptions() {
   tooltip.padding = 8;
   tooltip.cornerRadius = 4;
   tooltip.borderWidth = 0;
+  tooltip.boxPadding = 3;
+  tooltip.bodySpacing = 3;
 
   let options = {
     responsive: true,

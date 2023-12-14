@@ -93,103 +93,104 @@
 
       makeChartFilters();
       generateChart();
-      setDatasetParsing();
-      // updateChart();
-      // previewData(chart.config.data.datasets);
+      // previewData(chart.config.data.datasets[9]);
     }
-
-    function setDatasetParsing() {
-      let datasets = chart.config.data.datasets;
-      datasets.forEach((d) => {
-        d.parsing = {
-          xAxisKey: 'week.v',
-          yAxisKey: 'rank.v',
-        };
-      });
-      chart.update();
-
-    }
-
 
     /* ------------------------------------------------ */
 
-    function updateChart() {
-
-      let chartData = DATA.Chart;
-      let playerNames = document.getElementById('playerSelector').value;
-      if (playerNames == 'All Players') {
-        playerNames = chartData.players;
+    function showDataset(d, index) {
+      let c = getPlayerColors()[d.label];
+      if (d.label == 'Average') {
+        chart.setDatasetVisibility(index, true);
       } else {
-        playerNames = [playerNames];
+        d.borderColor = c.color;
+        d.backgroundColor = c.colorAlpha;
+        d.pointBorderColor = c.color;
+        d.pointBackgroundColor = c.colorAlpha;
       }
-      let fieldName = document.getElementById('fieldSelector').value;
+    }
 
-      let config = chart.config;
-      config.data.datasets = [];
-      playerNames.forEach((p) => {
-        let playerData = chartData.data.filter((x) => x.player.v == p);
-        let dataset = {
-          type: 'line',
-          label: p,
-          data: playerData.map((x) => {
-            return {
-              x: x.week.v,
-              y: x[fieldName].v,
-              display: x[fieldName].d,
-            }
-          })
-        };
-        dataset = styleDataset(dataset);
-        config.data.datasets.push(dataset);
-      });
+    function hideDataset(d, index) {
+      let c = getPlayerColors()[d.label];
+      if (d.label == 'Average') {
+        chart.setDatasetVisibility(index, false);
+      } else {
+        d.borderColor = 'rgba(255, 255, 255, .03)';
+        d.backgroundColor = 'rgba(255, 255, 255, .03)';
+        d.pointBorderColor = 'rgba(255, 255, 255, 0)';
+        d.pointBackgroundColor = 'rgba(255, 255, 255, 0)';
+      }
+    }
 
-      // average
-      if (!fieldName.includes('rank')) {
-        let weeks = chartData.data.map((x) => x.week.v);
-        weeks = [...new Set(weeks)];
-        let avgData = weeks.map((w) => {
-          let weekData = chartData.data.filter((x) => x.week.v == w);
-          let avg = weekData.reduce((a, b) => a + b[fieldName].v, 0) / weekData.length;
-          avg = (fieldName.includes('pct')) ? Math.round(avg * 100) / 100 : Math.round(avg);
-          return {
-            x: w,
-            y: avg,
-            display: (fieldName.includes('pct')) ? Math.round(avg * 100) + '%' : avg,
-          };
+    /* ------------------------------------------------ */
+
+    function updateChart(field = null, players = null) {
+
+      let datasets = chart.config.data.datasets;
+
+      if (players != null) {
+        let altPlayers = ['Average', 'High', 'Low'];
+        if (players == 'All Players') {
+          players = DATA.Chart.players.filter((x) => !altPlayers.includes(x));
+        } else {
+          players = [players].concat(altPlayers);
+        }
+
+        datasets.forEach((d, index) => {
+          if (players.includes(d.label)) {
+            showDataset(d, index);
+          } else {
+            hideDataset(d, index);
+          }
         });
-        let avgDataset = {
-          type: 'line',
-          label: 'Average',
-          data: avgData,
+
+        chart.config.options.plugins.legend.labels.filter = function (legendItem, chartData) {
+          let label = legendItem.text;
+          return players.includes(label);
         };
-        avgDataset = styleDataset(avgDataset);
-        config.data.datasets.push(avgDataset);
+
+        chart.update();
       }
 
-      let field = chartData.fields.filter((x) => x.field == fieldName)[0];
-      let y = config.options.scales.y;
-      y.reverse = (field.reverse) ? true : false;
-      // y.suggestedMin = field.min;
-      // y.suggestedMax = field.max;
-      y.min = field.min;
-      y.max = field.max;
-      y.ticks.callback = function (value, index, values) {
-        if (field.label.includes('%')) {
-          return Math.round(value * 100) + '%';
-        } else {
-          return value;
-        }
-      };
+      if (field != null) {
+        datasets.forEach((d) => {
+          d.data.forEach((x) => {
+            x.y = x[field].v;
+            x.display = x[field].d;
+          });
+        });
 
-      config.options.plugins.tooltip.itemSort = function (a, b) {
-        if (field.reverse) {
-          return a.parsed.y - b.parsed.y;
+        // field scale
+        let options = DATA.Chart.fields.filter((x) => x.field == field)[0];
+        let scale = chart.config.options.scales.y;
+        scale.min = options.min;
+        scale.max = options.max;
+        scale.reverse = options.reverse;
+        if (field.includes('pct')) {
+          scale.ticks.callback = function (value, index, values) {
+            // rounded %
+            return Math.round(value * 100) + '%';
+          };
         } else {
-          return b.parsed.y - a.parsed.y;
+          scale.ticks.callback = function (value, index, values) {
+            return value;
+          };
         }
-      };
 
-      chart.update();
+        let tooltip = chart.config.options.plugins.tooltip;
+        tooltip.itemSort = function (a, b) {
+          let aVal = a.parsed.y;
+          let bVal = b.parsed.y;
+          if (options.reverse) {
+            aVal = -aVal;
+            bVal = -bVal;
+          }
+          return bVal - aVal;
+        };
+
+
+        chart.update();
+      }
     }
 
     /* ------------------------------------------------ */
@@ -247,7 +248,7 @@
         borderColor: color,
         borderWidth: 3,
         tension: 0.4,
-        pointRadius: 3,
+        pointRadius: 2,
         pointBackgroundColor: colorAlpha,
         pointBorderColor: color,
         pointBorderWidth: 1,
@@ -273,7 +274,11 @@
         let dataset = {
           type: 'line',
           label: p,
-          data: data.filter((x) => x.player.v == p)
+          data: data.filter((x) => x.player.v == p).map((j) => {
+            return Object.assign(j, {
+              x: j.week.v,
+            });
+          }),
         };
         dataset = styleDataset(dataset);
         return dataset;
@@ -284,14 +289,11 @@
       let config = {
         type: 'line',
         data: {
-          labels: weeks,
+          labels: labels,
           datasets: datasets,
         },
         options: options,
       };
-
-      // parsing
-      // config.options.parsing.xAxisKey = 'week.v';
 
       let tooltip = config.options.plugins.tooltip;
       tooltip.callbacks = {
@@ -310,58 +312,32 @@
 
       let legend = config.options.plugins.legend;
       legend.onClick = function (event, legendItem, legend) {
-        let chart = this.chart;
-        let playerColors = getPlayerColors();
-        let clickedDataset = chart.data.datasets[legendItem.datasetIndex];
-        let isDimmed = clickedDataset.borderColor.includes('.2)');
-        let someDimmed = chart.data.datasets.some((d) => d.borderColor.includes('.2)'));
-
-        // if clicked dataset is already highlighted, reset all datasets
-        if (isDimmed && someDimmed || !isDimmed && !someDimmed) {
-          let c = playerColors[clickedDataset.label];
-          clickedDataset.borderColor = c.colorEmphasis;
-          clickedDataset.backgroundColor = c.colorAlpha;
-          clickedDataset.pointBorderColor = c.colorEmphasis;
-          clickedDataset.pointBackgroundColor = c.colorAlpha;
-
-          let otherDatasets = chart.data.datasets.filter((x) => x.label != clickedDataset.label);
-          otherDatasets = otherDatasets.filter((x) => x.label != 'Average');
-
-          otherDatasets.forEach((d) => {
-            d.borderColor = 'rgba(255, 255, 255, .2)';
-            d.backgroundColor = 'rgba(255, 255, 255, .05)';
-            d.pointBorderColor = 'rgba(255, 255, 255, .05)';
-            d.pointBackgroundColor = 'rgba(255, 255, 255, 0)';
-          });
-          chart.update();
+        let isFiltered = document.getElementById('playerSelector').value != 'All Players';
+        if (!isFiltered) {
+          document.getElementById('playerSelector').value = legendItem.text;
+          updateChart(field = null, players = legendItem.text);
         } else {
-          chart.data.datasets.forEach((d) => {
-            let c = playerColors[d.label];
-            d.borderColor = c.color;
-            d.backgroundColor = c.colorAlpha;
-            d.pointBorderColor = c.color;
-            d.pointBackgroundColor = c.colorAlpha;
-          });
-          chart.update();
+          document.getElementById('playerSelector').value = 'All Players';
+          updateChart(field = null, players = 'All Players');
         }
       };
 
       chart = new Chart(ctx, config);
+      updateChart(field = 'rank', players = 'All Players');
     }
+
+    /* ------------------------------------------------ */
 
     function procChartData() {
 
       let data = DATA.Stats;
-      let weeks = [...new Set(data.map((x) => 'WK ' + x.week))];
-      // let weeks = [...new Set(data.map((x) => x.week))];
-      DATA.Chart.labels = weeks;
+      let weeks = [...new Set(data.map((x) => x.week))];
+      let labels = weeks.map((x) => 'WK ' + x);
+      DATA.Chart.labels = labels;
 
       let fields = [
-        { field: 'rank', min: 1, max: 9, reverse: true },
-        { field: 'games_back', min: 0, max: Math.max(...data.map((x) => x.games_back)), reverse: true },
-        // { field: 'wk_wpct', min: .2, max: .9 },
-        // { field: 'wk_dog_pct', min: 0, max: .6 },
-        // { field: 'wk_dog_wpct', min: 0, max: 1 },
+        { field: 'rank', min: 1, max: 9, reverse: true, stepSize: 1 },
+        { field: 'games_back', reverse: true },
         { field: 'wpct', min: .45, max: .7 },
         { field: 'dog_pct', min: 0, max: .4 },
         { field: 'dog_wpct', min: .25, max: .65 },
@@ -372,10 +348,6 @@
         label = label.replace('pct', '%');
         label = label.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
         label = label.replace('Games Back', 'GB');
-        // if (f.includes('cum')) {
-        //   label += ' (cumul)';
-        //   label = label.replace('Cum ', '');
-        // }
 
         field.label = label;
         return field;
@@ -385,16 +357,54 @@
       let players = [...new Set(data.map((x) => x.player))];
       DATA.Chart.players = players;
 
+      // append rows ('players'): Average, High, Low
+      weeks.forEach((w) => {
+        let weekData = data.filter((x) => x.week == w);
+        let cFields = fields.map((x) => x.field);
+        let newRows = [
+          { player: 'Average', week: w },
+          { player: 'High', week: w },
+          { player: 'Low', week: w },
+        ];
+        cFields.forEach((f) => {
+          let f_reversed = fields.filter((x) => x.field == f)[0].reverse;
+          let vals = weekData.map((x) => x[f]);
+          let avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+          if (f.includes('pct')) {
+            avg = Math.round(avg * 100) / 100;
+          } else {
+            avg = Math.round(avg);
+          }
+          let high = Math.max(...vals);
+          let low = Math.min(...vals);
+          if (f_reversed) {
+            high = Math.min(...vals);
+            low = Math.max(...vals);
+          }
+          newRows[0][f] = avg;
+          newRows[1][f] = high;
+          newRows[2][f] = low;
+          if (f == 'rank') {
+            newRows[0]['rankLabel'] = avg;
+            newRows[1]['rankLabel'] = high;
+            newRows[2]['rankLabel'] = low;
+          }
+        });
+
+        data = data.concat(newRows);
+      });
+      DATA.Chart.players = DATA.Chart.players.concat(['Average']);
+
       let cdata = data.map((x) => {
         let obj = {};
         let fields = Object.keys(x);
-        fields = fields.filter((f) => !['rankOrder', 'rankVal'].includes(f));
+        fields = fields.filter((f) => !['rankOrder', 'rankVal', 'rankLabel'].includes(f));
         fields.forEach((f) => {
           let val = x[f];
           let display = val;
           if (f == 'rank') {
-            val = x['rankVal'];
-            display = x['rank'];
+            val = x['rank'];
+            display = x['rankLabel'];
           }
           if (f.includes('pct')) {
             display = Math.round(val * 100) + '%';
@@ -418,10 +428,11 @@
       let chartData = DATA.Chart;
       let fields = chartData.fields;
       let players = chartData.players;
+      players = players.filter((x) => !['Average', 'High', 'Low'].includes(x));
 
       let fieldSelector = document.getElementById('fieldSelector');
-      fieldSelector.addEventListener('change', function () {
-        updateChart();
+      fieldSelector.addEventListener('change', (e) => {
+        updateChart(field = e.target.value, players = null);
       });
       fields.forEach((f) => {
         let field = f.field;
@@ -433,8 +444,8 @@
       });
 
       let playerSelector = document.getElementById('playerSelector');
-      playerSelector.addEventListener('change', function () {
-        updateChart();
+      playerSelector.addEventListener('change', (e) => {
+        updateChart(field = null, players = e.target.value);
       });
       let option = document.createElement('option');
       option.setAttribute('value', 'All Players');
@@ -442,7 +453,6 @@
       option.innerText = 'All Players';
       playerSelector.appendChild(option);
       players.forEach((p) => {
-        if (p == 'Average') return;
         let option = document.createElement('option');
         option.setAttribute('value', p);
         option.innerText = p;
