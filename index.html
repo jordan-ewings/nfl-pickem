@@ -123,39 +123,41 @@
 
     /* ------------------------------------------------ */
 
-    function updateChart(field = null, players = null) {
+    function updateChart(field = null, player = null) {
 
       let datasets = chart.config.data.datasets;
-
-      if (players != null) {
-        datasets.forEach((d, index) => {
-          if (players.includes(d.label)) {
-            chart.setDatasetVisibility(index, true);
-          } else {
-            chart.setDatasetVisibility(index, false);
-          }
+      let dataset = datasets[0];
+      let data = DATA.Chart.data
+        .filter((x) => x.player.v == player)
+        .map((x) => {
+          return Object.assign(x, {
+            x: x.week.v,
+            y: x[field].v,
+            display: x[field].d
+          })
         });
 
-        chart.update('show');
+      dataset.data = data;
+      let options = DATA.Chart.fields.filter((x) => x.field == field)[0];
+      let scale = chart.config.options.scales.y;
+      scale.min = options.min;
+      scale.max = options.max;
+      scale.reverse = options.reverse;
+
+      if (field.includes('pct')) {
+        scale.ticks.callback = function (value, index, values) {
+          return value + '%';
+        };
+      } else {
+        scale.ticks.callback = function (value, index, values) {
+          return value;
+        };
       }
 
-      if (field != null) {
 
-        datasets.forEach((d) => {
-          d.data.forEach((x) => {
-            x.y = x[field].v;
-            x.display = x[field].d;
-          });
-        });
+      chart.update();
 
-        let options = DATA.Chart.fields.filter((x) => x.field == field)[0];
-        let scale = chart.config.options.scales.y;
-        scale.min = options.min;
-        scale.max = options.max;
-        scale.reverse = options.reverse;
 
-        chart.update();
-      }
 
     }
 
@@ -181,43 +183,29 @@
         pointBackgroundColor: c.color,
       };
 
-      let labels = DATA.Chart.labels;
-      let players = DATA.Chart.players;
-      players = players.filter((x) => x != 'Average');
-      let data = DATA.Chart.data;
-      let weeks = [...new Set(data.map((x) => x.week.v))];
-      let datasets = players.map((p) => {
-        let dataset = {
-          type: 'line',
-          label: p,
-          data: data.filter((x) => x.player.v == p).map((j) => {
-            return Object.assign(j, {
-              x: j.week.v,
-            });
-          }),
-        };
-        dataset = Object.assign(dataset, style);
-        return dataset;
-      });
-
       let ctx = document.getElementById('chart').getContext('2d');
       let options = getChartOptions();
       let config = {
         type: 'line',
         data: {
-          labels: labels,
-          datasets: datasets,
+          labels: DATA.Chart.labels,
+          datasets: [{
+            ...style,
+          }]
         },
         options: options,
       };
 
       let tooltip = config.options.plugins.tooltip;
+      tooltip.mode = 'index';
+
+
       tooltip.callbacks = {
         label: function (context) {
-          let player = context.dataset.label;
-          let itemIndex = context.dataIndex;
-          let itemDisplay = context.dataset.data[itemIndex].display;
-          let label = player + ': ' + itemDisplay;
+          let data = context.dataset.data[context.dataIndex];
+          let player = data.player.v;
+          let value = data.display;
+          let label = player + ': ' + value;
           return label;
         },
         title: function (context) {
@@ -287,7 +275,7 @@
               }
             });
 
-            updateChart(field = 'rank', players = [player]);
+            updateChart(field = 'rank', player = player);
             setTimeout(() => {
               chartDiv.classList.remove('d-none');
             }, 200);
@@ -305,7 +293,7 @@
                   r.classList.add('inactive');
                 }
               });
-              updateChart(field = 'rank', players = [player]);
+              updateChart(field = 'rank', player = player);
             }
           }
 
