@@ -76,7 +76,7 @@
         </tbody>
       </table>
     </div>
-
+    <!-- add wpct button -->
     <div id="chartDiv" class="chart-container d-none">
       <canvas id="chart" width="300" height="500"></canvas>
     </div>
@@ -123,26 +123,6 @@
 
     /* ------------------------------------------------ */
 
-    function showDataset(d, index) {
-      let c = {
-        color: 'rgba(10, 132, 255, 1)',
-        colorAlpha: 'rgba(10, 132, 255, .1)',
-      };
-      d.borderColor = c.color;
-      d.backgroundColor = c.colorAlpha;
-      d.pointBorderColor = c.color;
-      d.pointBackgroundColor = c.color;
-    }
-
-    function hideDataset(d, index) {
-      d.borderColor = 'rgba(255, 255, 255, 0)';
-      d.backgroundColor = 'rgba(255, 255, 255, 0)';
-      d.pointBorderColor = 'rgba(255, 255, 255, 0)';
-      d.pointBackgroundColor = 'rgba(255, 255, 255, 0)';
-    }
-
-    /* ------------------------------------------------ */
-
     function updateChart(field = null, players = null) {
 
       let datasets = chart.config.data.datasets;
@@ -150,16 +130,17 @@
       if (players != null) {
         datasets.forEach((d, index) => {
           if (players.includes(d.label)) {
-            showDataset(d, index);
+            chart.setDatasetVisibility(index, true);
           } else {
-            hideDataset(d, index);
+            chart.setDatasetVisibility(index, false);
           }
         });
 
-        chart.update();
+        chart.update('show');
       }
 
       if (field != null) {
+
         datasets.forEach((d) => {
           d.data.forEach((x) => {
             x.y = x[field].v;
@@ -172,35 +153,20 @@
         scale.min = options.min;
         scale.max = options.max;
         scale.reverse = options.reverse;
-        // scale.ticks.autoSkip = false;
-        if (field.includes('pct')) {
-          scale.ticks.callback = function (value, index, values) {
-            return Math.round(value * 100) + '%';
-          };
-        } else {
-          scale.ticks.callback = function (value, index, values) {
-            return value;
-          };
-        }
-
-        let tooltip = chart.config.options.plugins.tooltip;
-        tooltip.itemSort = function (a, b) {
-          let aVal = a.parsed.y;
-          let bVal = b.parsed.y;
-          if (options.reverse) {
-            aVal = -aVal;
-            bVal = -bVal;
-          }
-          return bVal - aVal;
-        };
 
         chart.update();
       }
+
     }
 
     /* ------------------------------------------------ */
 
     function generateChart() {
+
+      let c = {
+        color: 'rgba(10, 132, 255, 1)',
+        colorAlpha: 'rgba(10, 132, 255, .2)',
+      };
 
       let style = {
         fill: false,
@@ -209,6 +175,10 @@
         pointRadius: 3,
         pointBorderWidth: 1,
         pointHoverRadius: 6,
+        borderColor: c.color,
+        backgroundColor: c.colorAlpha,
+        pointBorderColor: c.color,
+        pointBackgroundColor: c.color,
       };
 
       let labels = DATA.Chart.labels;
@@ -239,9 +209,6 @@
           datasets: datasets,
         },
         options: options,
-      };
-      config.options.animation = {
-        duration: 400,
       };
 
       let tooltip = config.options.plugins.tooltip;
