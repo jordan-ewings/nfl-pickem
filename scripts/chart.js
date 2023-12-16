@@ -31,16 +31,16 @@ function getChartOptions() {
     fill: false,
     borderWidth: 3,
     tension: 0.4,
-    borderColor: c.color,
-    backgroundColor: c.colorAlpha,
+    // borderColor: c.color,
+    // backgroundColor: c.colorAlpha,
   };
 
   elements.point = {
     radius: 3,
     borderWidth: 1,
     hoverRadius: 6,
-    borderColor: c.color,
-    backgroundColor: c.color,
+    // borderColor: c.color,
+    // backgroundColor: c.color,
   };
 
   let title = {};
@@ -56,6 +56,8 @@ function getChartOptions() {
   legend.labels.usePointStyle = true;
   legend.labels.font = fonts.legend;
   legend.labels.pointStyle = 'rect';
+  // padding below legend
+  legend.padding = 20;
 
   let x = {};
   x.offset = true;
@@ -75,6 +77,7 @@ function getChartOptions() {
 
 
   let y = {};
+  y.offset = true;
   y.position = 'left';
   y.reverse = false;
   y.border = {};
