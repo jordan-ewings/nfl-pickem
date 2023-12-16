@@ -52,6 +52,14 @@ function updateChart(options = {}) {
   }
 
   if (mode == 'byStat') {
+
+    let colors = [
+      // light blue
+      { color: 'rgba(10, 132, 255, 0.7)', colorAlpha: 'rgba(10, 132, 255, 0.3)' },
+      // salmon
+      { color: 'rgba(255, 99, 132, 0.7)', colorAlpha: 'rgba(255, 99, 132, 0.3)' },
+    ];
+
     let player = players[0];
     let fieldMetas = fieldOptions.filter((x) => fields.includes(x.field));
     fieldMetas.sort((a, b) => {
@@ -66,6 +74,8 @@ function updateChart(options = {}) {
       let yAxis = 'y';
       if (index > 0) yAxis = 'y1';
       x.yAxis = yAxis;
+
+      // set 
       return x;
     });
 
@@ -103,6 +113,10 @@ function updateChart(options = {}) {
           return { ...x, ...cdata };
         });
       dataset.yAxisID = yAxis;
+      dataset.borderColor = colors[index].color;
+      dataset.backgroundColor = colors[index].colorAlpha;
+      dataset.pointBackgroundColor = colors[index].colorAlpha;
+      dataset.pointBorderColor = colors[index].color;
       datasets[index] = dataset;
     });
 
