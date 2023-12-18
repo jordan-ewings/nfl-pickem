@@ -212,7 +212,7 @@ function getScaleOptions(datasets) {
 
 
 /* ------------------------------------------------ */
-
+let delayed;
 function generateChart() {
 
   let ctx = document.getElementById('chart').getContext('2d');
@@ -224,6 +224,24 @@ function generateChart() {
     },
     options: getChartOptions(),
   });
+
+  // if legend is clicked, disable tooltips
+  // if chart is clicked, enable tooltips
+
+  chart.options.plugins.legend.onClick = (e, legendItem) => {
+    let tooltipShown = chart.options.plugins.tooltip.enabled;
+    chart.options.plugins.tooltip.enabled = !tooltipShown;
+    chart.update();
+  }
+
+  chart.options.onClick = (e, activeElements) => {
+    let tooltipShown = chart.options.plugins.tooltip.enabled;
+    if (!tooltipShown) {
+      chart.options.plugins.tooltip.enabled = true;
+      chart.update();
+    }
+
+  }
 
 }
 

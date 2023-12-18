@@ -154,83 +154,9 @@
 
       DATA.Chart = procChartData(DATA.Stats);
       DATA.Chart.active.fields.push(...['rank', 'wpct']);
-
       console.log(DATA.Chart);
-      // logHeightValues();
 
       updateTblStandings();
-      logHeightValues();
-
-      // updateChart({
-      //   mode: 'byStat',
-      //   field: 'rank',
-      //   player: 'Jordan'
-      // });
-    }
-
-    function logHeightValues() {
-      // get all height vars (e.g., clientHeight, offsetHeight, scrollHeight, innerHeight, offsetHeight, etc.)
-      // for the window, document, body, and chartDiv
-      // log results in json format to console
-      let heights = {
-        ht_window: {
-          clientHeight: window.document.documentElement.clientHeight,
-          innerHeight: window.innerHeight,
-          outerHeight: window.outerHeight,
-          offsetHeight: window.document.documentElement.offsetHeight,
-          scrollHeight: window.document.documentElement.scrollHeight,
-          // availHeight: window.screen.availHeight,
-          height: window.screen.height,
-        },
-        ht_document: {
-          clientHeight: document.documentElement.clientHeight,
-          innerHeight: document.innerHeight,
-          outerHeight: document.outerHeight,
-          offsetHeight: document.documentElement.offsetHeight,
-          scrollHeight: document.documentElement.scrollHeight,
-        },
-        ht_body: {
-          clientHeight: document.body.clientHeight,
-          innerHeight: document.body.innerHeight,
-          outerHeight: document.body.outerHeight,
-          offsetHeight: document.body.offsetHeight,
-          scrollHeight: document.body.scrollHeight,
-          // availHeight: document.body.screen.availHeight,
-          // height: document.body.screen.height,
-        },
-        ht_chartDiv: {
-          clientHeight: document.getElementById('chartDiv').clientHeight,
-          innerHeight: document.getElementById('chartDiv').innerHeight,
-          outerHeight: document.getElementById('chartDiv').outerHeight,
-          offsetHeight: document.getElementById('chartDiv').offsetHeight,
-          scrollHeight: document.getElementById('chartDiv').scrollHeight,
-          // availHeight: document.getElementById('chartDiv').screen.availHeight,
-          // height: document.getElementById('chartDiv').screen.height,
-        },
-      }
-
-      let bodyChildren = Array.from(document.body.children);
-      // limit to nav and divs
-      bodyChildren = bodyChildren.filter(c => c.tagName == 'NAV' || c.tagName == 'DIV');
-      bodyChildren.forEach((c) => {
-        let id = c.id;
-        console.log(id);
-        let height = {
-          clientHeight: c.clientHeight,
-          innerHeight: c.innerHeight,
-          outerHeight: c.outerHeight,
-          offsetHeight: c.offsetHeight,
-          scrollHeight: c.scrollHeight,
-          // availHeight: c.screen.availHeight,
-          // height: c.screen.height,
-        };
-        console.log(height);
-      })
-
-
-
-
-      console.log(heights);
     }
 
     /* ------------------------------------------------ */
@@ -301,7 +227,6 @@
             });
             DATA.Chart.active.players = players;
             updateChart();
-            logHeightValues();
           } else {
             hideChart();
             chartDiv.classList.add('d-none');
