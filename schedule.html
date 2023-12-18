@@ -210,9 +210,13 @@
     </div>
   </template>
 
-  <script src="./scripts/getSheet.js"></script>
-  <script src="./scripts/procGames.js"></script>
-  <script src="./scripts/forms.js"></script>
+  <script src="./scripts/global/data.js"></script>
+
+  <script src="./scripts/page-schedule/procGames.js"></script>
+  <script src="./scripts/page-schedule/forms.js"></script>
+  <!-- <script src="./scripts/getSheet.js"></script> -->
+  <!-- <script src="./scripts/procGames.js"></script> -->
+  <!-- <script src="./scripts/forms.js"></script> -->
   <script>
     function setDataAttrs(element, data) {
       Object.keys(data).forEach((key) => {
@@ -223,7 +227,7 @@
 
   </script>
   <script>
-    var USING_LIVE = true;
+    var USING_LIVE = false;
     let DATA = {
       LOADED: false,
       TBL_LOADED: false

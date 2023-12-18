@@ -36,15 +36,19 @@
     }
 
     .table.shrunken {
-      max-height: 35vh !important;
+      max-height: 35dvh !important;
       overflow-y: scroll;
       display: inline-block;
     }
 
+    body,
+    html {
+      height: -webkit-fill-available;
+    }
+
     /* .chart-container {
       position: relative;
-      height: 40vh;
-      width: 100vw;
+      height: calc(100dvh)
     } */
 
     tr.inactive td {
@@ -75,25 +79,13 @@
   <div id="main" class="container-fluid px-2 mt-4 mb-4">
     <div class="table-responsive">
       <table id="tblStandings" class="table align-middle text-center text-nowrap">
-        <thead>
-          <tr>
-            <th></th>
-            <th></th>
-            <th>WK</th>
-            <th>TTL</th>
-            <th>GB</th>
-            <th>D%</th>
-            <th>DW%</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
       </table>
     </div>
     <!-- add wpct button -->
-    <div id="chartDiv" class="chart-container">
-      <canvas id="chart"></canvas>
-    </div>
+  </div>
+  <div id="chartDiv" class="chart-container d-none">
+    <canvas id="chart"></canvas>
+  </div>
   </div>
 
 
@@ -114,10 +106,12 @@
       <td data-item="pc_dog_win" class="text-dim1"></td>
     </tr>
   </template>
-  <script src="./scripts/getSheet.js"></script>
-  <script src="./scripts/procStats.js"></script>
-  <script src="./scripts/index.js"></script>
-  <script src="./scripts/chart.js"></script>
+  <script src="./scripts/global/data.js"></script>
+  <script src="./scripts/global/chart-utils.js"></script>
+
+  <script src="./scripts/page-charts/DATA.js"></script>
+  <script src="./scripts/page-charts/elements.js"></script>
+  <script src="./scripts/page-charts/chart.js"></script>
   <script>
     let DATA = {};
     let chart;
@@ -127,8 +121,19 @@
     async function showChart() {
       if (!document.getElementById('chartDiv').style.height) {
         document.getElementById('tblStandings').classList.add('shrunken');
+        let currHeight = 0;
+        let els = ['navCont', 'main'];
+        els.forEach((x) => {
+          let el = document.getElementById(x);
+          let h = el.offsetHeight;
+          h += parseInt(window.getComputedStyle(el).getPropertyValue('margin-top'));
+          h += parseInt(window.getComputedStyle(el).getPropertyValue('margin-bottom'));
+          currHeight += h;
+        });
+
+        let cssDVH = `calc(100vh - ${currHeight}px)`;
         let chartDiv = document.getElementById('chartDiv');
-        chartDiv.style.height = '40vh';
+        chartDiv.style.height = cssDVH;
       }
     }
 
@@ -142,18 +147,104 @@
     async function sendData() {
       const data = await getSheet('PlayerStats');
       DATA.Stats = procStats(data);
-      DATA.Chart = procChartData(DATA.Stats);
       DATA.tblStandings = procStandings();
+
+      DATA.Chart = procChartData(DATA.Stats);
+      DATA.Chart.active.fields.push(...['rank', 'wpct']);
+
       console.log(DATA.Chart);
+      // logHeightValues();
 
       updateTblStandings();
+      logHeightValues();
+
+      // updateChart({
+      //   mode: 'byStat',
+      //   field: 'rank',
+      //   player: 'Jordan'
+      // });
+    }
+
+    function logHeightValues() {
+      // get all height vars (e.g., clientHeight, offsetHeight, scrollHeight, innerHeight, offsetHeight, etc.)
+      // for the window, document, body, and chartDiv
+      // log results in json format to console
+      let heights = {
+        ht_window: {
+          clientHeight: window.document.documentElement.clientHeight,
+          innerHeight: window.innerHeight,
+          outerHeight: window.outerHeight,
+          offsetHeight: window.document.documentElement.offsetHeight,
+          scrollHeight: window.document.documentElement.scrollHeight,
+          // availHeight: window.screen.availHeight,
+          height: window.screen.height,
+        },
+        ht_document: {
+          clientHeight: document.documentElement.clientHeight,
+          innerHeight: document.innerHeight,
+          outerHeight: document.outerHeight,
+          offsetHeight: document.documentElement.offsetHeight,
+          scrollHeight: document.documentElement.scrollHeight,
+        },
+        ht_body: {
+          clientHeight: document.body.clientHeight,
+          innerHeight: document.body.innerHeight,
+          outerHeight: document.body.outerHeight,
+          offsetHeight: document.body.offsetHeight,
+          scrollHeight: document.body.scrollHeight,
+          // availHeight: document.body.screen.availHeight,
+          // height: document.body.screen.height,
+        },
+        ht_chartDiv: {
+          clientHeight: document.getElementById('chartDiv').clientHeight,
+          innerHeight: document.getElementById('chartDiv').innerHeight,
+          outerHeight: document.getElementById('chartDiv').outerHeight,
+          offsetHeight: document.getElementById('chartDiv').offsetHeight,
+          scrollHeight: document.getElementById('chartDiv').scrollHeight,
+          // availHeight: document.getElementById('chartDiv').screen.availHeight,
+          // height: document.getElementById('chartDiv').screen.height,
+        },
+      }
+
+      let bodyChildren = Array.from(document.body.children);
+      // limit to nav and divs
+      bodyChildren = bodyChildren.filter(c => c.tagName == 'NAV' || c.tagName == 'DIV');
+      bodyChildren.forEach((c) => {
+        let id = c.id;
+        console.log(id);
+        let height = {
+          clientHeight: c.clientHeight,
+          innerHeight: c.innerHeight,
+          outerHeight: c.outerHeight,
+          offsetHeight: c.offsetHeight,
+          scrollHeight: c.scrollHeight,
+          // availHeight: c.screen.availHeight,
+          // height: c.screen.height,
+        };
+        console.log(height);
+      })
+
+
+
+
+      console.log(heights);
     }
 
     /* ------------------------------------------------ */
 
     function updateTblStandings() {
       let data = DATA.tblStandings;
-      let tbl = document.getElementById('tblStandings').querySelector('tbody');
+      let tbl = document.getElementById('tblStandings');
+      let thead = tbl.createTHead();
+      let tbody = tbl.createTBody();
+      let header = thead.insertRow();
+      let headerCells = ['', '', 'WK', 'TTL', 'GB', 'D%', 'DW%'];
+      headerCells.forEach((h) => {
+        let cell = document.createElement('th');
+        cell.textContent = h;
+        header.appendChild(cell);
+      });
+
       let template = document.getElementById('row-template');
 
       data.forEach((g) => {
@@ -199,31 +290,24 @@
           let chartDiv = document.getElementById('chartDiv');
 
           if (showChartDiv) {
-            // if (chartDiv.classList.contains('d-none')) {
-            // showChart();
             chartDiv.classList.remove('d-none');
             showChart();
-            // scroll to row clicked
             e.currentTarget.scrollIntoView({
               behavior: 'smooth',
               block: 'center'
             });
-            // }
-            updateChart({
-              mode: 'byStat',
-              // fields: ['rank'],
-              players: players
-            });
+            DATA.Chart.active.players = players;
+            updateChart();
+            logHeightValues();
           } else {
             hideChart();
             chartDiv.classList.add('d-none');
-            // hideChart();
           }
 
         });
 
         // add row to table
-        tbl.appendChild(clone);
+        tbody.appendChild(clone);
       });
     }
 
