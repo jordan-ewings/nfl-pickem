@@ -131,6 +131,9 @@
           currHeight += h;
         });
 
+        // adjust for toolbar
+        currHeight += 85;
+
         let cssDVH = `calc(100vh - ${currHeight}px)`;
         let chartDiv = document.getElementById('chartDiv');
         chartDiv.style.height = cssDVH;
