@@ -132,9 +132,9 @@
         });
 
         // adjust for toolbar
-        currHeight += 85;
+        // currHeight += 85;
 
-        let cssDVH = `calc(100vh - ${currHeight}px)`;
+        let cssDVH = `calc(100dvh - ${currHeight}px)`;
         let chartDiv = document.getElementById('chartDiv');
         chartDiv.style.height = cssDVH;
       }
