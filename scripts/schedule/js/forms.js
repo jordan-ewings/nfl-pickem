@@ -7,10 +7,6 @@ function submitForm(e) {
   submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
   submitBtn.setAttribute('disabled', '');
 
-  // hide cancel button
-  let cancelBtn = e.target.querySelector('[type="button"]');
-  cancelBtn.classList.add('d-none');
-
   let formData = new FormData(e.target);
   formData.append('timestamp', new Date().toLocaleString());
   let formUrlParams = new URLSearchParams(formData).toString();
@@ -38,10 +34,8 @@ function submitForm(e) {
       setTimeout(() => {
         let modalBS = bootstrap.Modal.getInstance(modal);
         modalBS.hide();
-        // modalMessage.classList.add('d-none');
         submitBtn.removeAttribute('disabled');
         submitBtn.innerHTML = 'Submit';
-        cancelBtn.classList.remove('d-none');
       }, 300);
     })
     .catch(error => {
@@ -53,7 +47,6 @@ function submitForm(e) {
         modalMessage.classList.add('d-none');
         submitBtn.removeAttribute('disabled');
         submitBtn.innerHTML = 'Submit';
-        cancelBtn.classList.remove('d-none');
       }, 3000);
     });
 
@@ -88,14 +81,11 @@ function incorpFormData(formData) {
 
 function prepareForm(e) {
 
+  // document.getElementById('main').classList.add('d-none');
+
   let modal = document.getElementById('modalFormContainer');
   let modalFormGames = document.getElementById('modalFormGames');
   let modalForm = document.getElementById('modalForm');
-  let modalFooter = document.getElementById('modalForm').querySelector('.modal-footer');
-  if (!modalFooter.classList.contains('d-none')) {
-    modalFooter.classList.add('d-none');
-  }
-
   let playerSelect = modal.querySelector('#player');
 
   let playerValue = playerSelect.value;
@@ -116,7 +106,7 @@ function prepareForm(e) {
   let openGames = tblrows.length;
   let pickedGames = 0;
 
-  tblrows.forEach((tblrow) => {
+  tblrows.forEach((tblrow, index) => {
 
     let teamSelectValue = '';
     let pickFormatting = [];
@@ -150,6 +140,9 @@ function prepareForm(e) {
     // remove data attributes related to collapsing
     game.removeAttribute('data-bs-toggle');
     game.removeAttribute('data-bs-target');
+    if (index == 0) {
+      game.classList.add('border-top-0');
+    }
 
     // game.classList.add('rounded-end-3', 'mb-3', 'bg-main', 'pb-2', 'ps-1');
     // game.style.borderTop = 'none';
@@ -212,7 +205,8 @@ function prepareForm(e) {
 
         let modal = document.getElementById('modalFormContainer');
         let modalFooter = modal.querySelector('.modal-footer');
-        let footerHidden = modalFooter.classList.contains('d-none');
+        let submitBtn = modal.querySelector('[type="submit"]');
+        let noSubmit = submitBtn.classList.contains('no-submit');
         let formInputs = modal.querySelectorAll('input');
 
         let inputs_changed = false;
@@ -231,9 +225,9 @@ function prepareForm(e) {
         });
 
         if (inputs_changed == true) {
-          if (footerHidden) modalFooter.classList.remove('d-none');
+          if (noSubmit) submitBtn.classList.remove('no-submit');
         } else {
-          if (!footerHidden) modalFooter.classList.add('d-none');
+          if (!noSubmit) submitBtn.classList.add('no-submit');
         }
       });
 

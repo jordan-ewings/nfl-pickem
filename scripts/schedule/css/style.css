@@ -1,0 +1,66 @@
+.modal-content {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+#modalFormBody {
+  padding: 0 !important;
+}
+
+.modal-body {
+  padding: 0 !important;
+}
+
+.modal-footer {
+  padding: 8px 12px !important;
+  border-top: none !important;
+  /* border-top: 1px solid var(--ios-separator) !important; */
+
+  /* background-color: rgb(15, 15, 15) !important; */
+}
+
+.modal-header {
+  padding: 12px 12px !important;
+}
+
+#filterCont button.active {
+  color: var(--ios-text) !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+.pickcont {
+  background-color: rgb(15, 15, 15) !important;
+}
+
+.form-select {
+  border-color: var(--ios-separator) !important;
+}
+
+#modalFormMeta {
+  box-shadow: 0 10px 5px -5px rgb(15, 15, 15);
+  border-bottom: 1px solid rgb(15, 15, 15);
+}
+
+.modfooter-sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 1000;
+}
+
+#tblDetails {
+  position: sticky;
+  top: env(safe-area-inset-top);
+  z-index: 1000;
+  box-shadow: 0 20px 10px -10px var(--ios-bg);
+}
+
+/* make disabled */
+button.no-submit {
+  pointer-events: none;
+  opacity: .5;
+}
+
+/* button.no-submit {
+  display: none !important;
+} */

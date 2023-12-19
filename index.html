@@ -3,9 +3,9 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="./styles/global.css">
@@ -22,7 +22,7 @@
     .table th {
       background-color: var(--ios-bg) !important;
       color: var(--ios-text);
-      font-size: var(--font-sm2);
+      font-size: var(--font-sm3);
     }
 
     .table thead th {
@@ -43,15 +43,20 @@
       display: inline-block;
     }
 
-    /* body,
-    html {
-      height: -webkit-fill-available;
-    } */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: env(safe-area-inset-top);
+      background-color: var(--ios-bg);
+      z-index: 1000;
+    }
 
-    /* .chart-container {
-      position: relative;
-      height: calc(100dvh)
-    } */
+    html {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
 
     tr.inactive td {
       opacity: .4 !important;
@@ -85,7 +90,7 @@
     </div>
     <!-- add wpct button -->
   </div>
-  <div id="chartDiv" class="chart-container d-none">
+  <div id="chartDiv" class="chart-container d-none px-1">
     <canvas id="chart"></canvas>
   </div>
   </div>
