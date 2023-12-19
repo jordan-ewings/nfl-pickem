@@ -311,6 +311,7 @@
       let games = DATA.tblGames.games;
 
       if (update == false) {
+        document.getElementById('toggle-picks-btn').innerHTML = 'Show Picks';
         tblGames.innerHTML = '';
         let days = games.map((x) => x.gameday_long);
         days = days.filter((c, index) => days.indexOf(c) === index);
@@ -335,9 +336,11 @@
           let g = games.filter((x) => x.game_id == game_id)[0];
           let newrow = makeTblrow(g);
           // if pickrow of tblrow has class show, add class show to new pickrow
-          let pickrow = tblrow.getElementsByClassName('pickrow')[0];
-          if (pickrow.classList.contains('show')) {
-            newrow.getElementsByClassName('pickrow')[0].classList.add('show');
+          let pickrow = tblrow.querySelector('.pickrow');
+          if (pickrow) {
+            if (pickrow.classList.contains('show')) {
+              newrow.getElementsByClassName('pickrow')[0].classList.add('show');
+            }
           }
           tblrow.replaceWith(newrow);
         }
@@ -348,6 +351,14 @@
         let pc_games = Math.round(num_games / games.length * 100);
         document.getElementById('prog-' + state).style.width = pc_games + '%';
       });
+
+      // if no pickrows, disable toggle-picks-btn
+      let pickrows = tblGames.getElementsByClassName('pickrow');
+      if (pickrows.length == 0) {
+        document.getElementById('toggle-picks-btn').classList.add('disabled');
+      } else {
+        document.getElementById('toggle-picks-btn').classList.remove('disabled');
+      }
     }
 
     /* ------------------------------------------------ */
