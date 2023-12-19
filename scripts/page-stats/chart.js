@@ -124,10 +124,6 @@ function updateChartOptions(chart) {
     let ax = scales[yAxisID];
     let axOpts = scaleOptions[yAxisID];
     if (!axOpts) return;
-    let fields = axOpts.fields;
-
-
-
     ax.reverse = axOpts.reverse;
     if (axOpts.fields.includes('rank')) {
       ax.suggestedMin = 1;
@@ -225,9 +221,6 @@ function generateChart() {
     options: getChartOptions(),
   });
 
-  // if legend is clicked, disable tooltips
-  // if chart is clicked, enable tooltips
-
   chart.options.plugins.legend.onClick = (e, legendItem) => {
     let tooltipShown = chart.options.plugins.tooltip.enabled;
     if (tooltipShown) {
@@ -242,17 +235,6 @@ function generateChart() {
       chart.options.plugins.tooltip.enabled = true;
       chart.update();
     }
-
-    // if didn't click in chart area, hide tooltips
-    // let els = chart.getElementsAtEventForMode(e, 'nearest', { intersect: false }, true);
-    // let tooltipShown = chart.options.plugins.tooltip.enabled;
-    // if (els.length == 0 && tooltipShown) {
-    //   chart.options.plugins.tooltip.enabled = false;
-    //   chart.update();
-    // } else if (els.length > 0 && !tooltipShown) {
-    //   chart.options.plugins.tooltip.enabled = true;
-    //   chart.update();
-    // }
 
   }
 

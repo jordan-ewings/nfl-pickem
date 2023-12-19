@@ -3,7 +3,9 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/dark.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -53,10 +55,22 @@
       z-index: 1000;
       box-shadow: 0 20px 10px -10px var(--ios-bg);
     }
+
+    #ios-toolbar {
+      height: env(safe-area-inset-top);
+      background-color: var(--ios-bg);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+
+    }
   </style>
 </head>
 
 <body class="m-0 p-0 mx-auto" style="max-width: 600px;">
+  <!-- <div id="ios-toolbar"></div> -->
   <nav id="navCont" class="navbar">
     <div class="container-fluid">
       <a class="navbar-brand" href="/nfl-pickem/index.html">
@@ -214,9 +228,6 @@
 
   <script src="./scripts/page-schedule/procGames.js"></script>
   <script src="./scripts/page-schedule/forms.js"></script>
-  <!-- <script src="./scripts/getSheet.js"></script> -->
-  <!-- <script src="./scripts/procGames.js"></script> -->
-  <!-- <script src="./scripts/forms.js"></script> -->
   <script>
     function setDataAttrs(element, data) {
       Object.keys(data).forEach((key) => {
@@ -302,8 +313,17 @@
         });
 
         DATA.TBL_LOADED = true;
+
+
       }
 
+    }
+
+    /* ------------------------------------------------ */
+
+    function scrollToHideSafariToolbar() {
+      let main = document.getElementById('main');
+      main.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
     }
 
     /* ------------------------------------------------ */

@@ -7,22 +7,12 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="./styles/global.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .testing {
-      background-color: rgb(199, 199, 199);
-    }
-
-    :root {
-      --color-austin: rgb(10, 132, 255);
-      --color-carly: rgb(88, 86, 211);
-      --color-carter: rgb(178, 41, 41);
-      --color-john: rgb(255, 65, 103);
-      --color-jordan: rgb(255, 153, 0);
-      --color-kayla: rgb(255, 237, 37);
-      --color-kristen: rgb(48, 209, 88);
-      --color-kristy: rgb(12, 228, 221);
-      --color-stella: rgb(253, 116, 255);
+    .chart-container {
+      position: relative;
+      height: 50vh;
+      /* width: 10vw; */
     }
   </style>
 </head>
@@ -44,34 +34,23 @@
     </div>
   </nav>
 
-  <div id="main" class="container-fluid mx-0 mt-4">
-    <div id="chartFilters" class="row mx-0 mb-3">
-      <div class="col px-1">
-        <label for="playerSelector" class="form-label text-dim1 text-sm3">PLAYER</label>
-        <select id="playerSelector" class="form-select bg-main" aria-label="Player Selector">
-        </select>
-      </div>
-      <div class="col px-1">
-        <label for="fieldSelector" class="form-label text-dim1 text-sm3">FIELD</label>
-        <select id="fieldSelector" class="form-select bg-main" aria-label="Field Selector">
-        </select>
-      </div>
-    </div>
+  <div id="main" class="container-fluid px-2 mt-4 mb-4">
+    <div id="userOptions" class="row mx-0">
 
-    <div id="chartDiv" class="chart-container">
-      <canvas id="chart" width="300" height="500"></canvas>
     </div>
-    <div>
-      <pre id="chartData"></pre>
+    <div id="chartDiv" class="chart-container">
+      <canvas id="chart"></canvas>
     </div>
   </div>
+  <script src="./scripts/global/data.js"></script>
+  <script src="./scripts/global/chart-utils.js"></script>
 
-  <script src="./scripts/getSheet.js"></script>
-  <script src="./scripts/procStats.js"></script>
-  <script src="./scripts/chart.js"></script>
+  <script src="./scripts/page-stats/DATA.js"></script>
+  <script src="./scripts/page-stats/elements.js"></script>
+  <script src="./scripts/page-stats/chart.js"></script>
+
   <script>
     let DATA = {};
-
     let chart;
 
     sendData();
@@ -82,289 +61,17 @@
       const data = await getSheet('PlayerStats');
       DATA.Stats = procStats(data);
       DATA.Chart = procChartData(DATA.Stats);
+      console.log(DATA);
 
-      makeChartFilters();
-      generateChart();
-      // previewData(DATA.Stats);
-    }
-
-    /* ------------------------------------------------ */
-
-    function showDataset(d, index) {
-      let c = getPlayerColors()[d.label];
-      if (d.label == 'Average') {
-        chart.setDatasetVisibility(index, true);
-      } else {
-        d.borderColor = c.color;
-        d.backgroundColor = c.colorAlpha;
-        d.pointBorderColor = c.color;
-        d.pointBackgroundColor = c.colorAlpha;
-      }
-    }
-
-    function hideDataset(d, index) {
-      let c = getPlayerColors()[d.label];
-      if (d.label == 'Average') {
-        chart.setDatasetVisibility(index, false);
-      } else {
-        d.borderColor = 'rgba(255, 255, 255, .03)';
-        d.backgroundColor = 'rgba(255, 255, 255, .03)';
-        d.pointBorderColor = 'rgba(255, 255, 255, 0)';
-        d.pointBackgroundColor = 'rgba(255, 255, 255, 0)';
-      }
-    }
-
-    /* ------------------------------------------------ */
-
-    function updateChart(field = null, players = null) {
-
-      let datasets = chart.config.data.datasets;
-
-      if (players != null) {
-        let altPlayers = ['Average', 'High', 'Low'];
-        if (players == 'All Players') {
-          players = DATA.Chart.players.filter((x) => !altPlayers.includes(x));
-        } else {
-          players = [players].concat(altPlayers);
-        }
-
-        datasets.forEach((d, index) => {
-          if (players.includes(d.label)) {
-            showDataset(d, index);
-          } else {
-            hideDataset(d, index);
-          }
-        });
-
-        chart.config.options.plugins.legend.labels.filter = function (legendItem, chartData) {
-          let label = legendItem.text;
-          return players.includes(label);
-        };
-
-        chart.update();
-      }
-
-      if (field != null) {
-        datasets.forEach((d) => {
-          d.data.forEach((x) => {
-            x.y = x[field].v;
-            x.display = x[field].d;
-          });
-        });
-
-        // field scale
-        let options = DATA.Chart.fields.filter((x) => x.field == field)[0];
-        let scale = chart.config.options.scales.y;
-        scale.min = options.min;
-        scale.max = options.max;
-        scale.reverse = options.reverse;
-        if (field.includes('pct')) {
-          scale.ticks.callback = function (value, index, values) {
-            // rounded %
-            return Math.round(value * 100) + '%';
-          };
-        } else {
-          scale.ticks.callback = function (value, index, values) {
-            return value;
-          };
-        }
-
-        let tooltip = chart.config.options.plugins.tooltip;
-        tooltip.itemSort = function (a, b) {
-          let aVal = a.parsed.y;
-          let bVal = b.parsed.y;
-          if (options.reverse) {
-            aVal = -aVal;
-            bVal = -bVal;
-          }
-          return bVal - aVal;
-        };
+      generateFilters();
 
 
-        chart.update();
-      }
-    }
 
-    /* ------------------------------------------------ */
-
-    function getPlayerColors() {
-      let players = DATA.Chart.players;
-      let op1 = '.9';
-      let op2 = '.7';
-      let playerColors = {};
-      players.forEach((x) => {
-        // get --color-xxx variable
-        let colorVar = '--color-' + x.toLowerCase();
-        let color = getComputedStyle(document.documentElement).getPropertyValue(colorVar);
-        let defaultColor = color.replace('rgb', 'rgba').replace(')', ', ' + op1 + ')');
-        let alphaColor = color.replace('rgb', 'rgba').replace(')', ', ' + op2 + ')');
-        playerColors[x] = {
-          color: defaultColor,
-          colorAlpha: alphaColor,
-          colorEmphasis: color,
-        };
-      })
-
-      // average
-      let op1avg = '1';
-      let op2avg = '.7';
-      let avgColor = 'rgb(200, 200, 200)';
-      let avgDefault = avgColor.replace('rgb', 'rgba').replace(')', ', ' + op1avg + ')');
-      let avgAlpha = avgColor.replace('rgb', 'rgba').replace(')', ', ' + op2avg + ')');
-      playerColors['Average'] = {
-        color: avgDefault,
-        colorAlpha: avgAlpha,
-        colorEmphasis: avgColor,
-      };
-
-      return playerColors;
-    }
-
-    /* ------------------------------------------------ */
-
-    function styleDataset(dataset) {
-
-      let color, colorAlpha;
-      let playerColors = getPlayerColors()[dataset.label];
-      if (playerColors) {
-        color = playerColors.color;
-        colorAlpha = playerColors.colorAlpha;
-      } else {
-        color = 'rgb(255, 255, 255, .4)';
-        colorAlpha = 'rgb(255, 255, 255, .2)';
-      }
-
-      let style = {
-        fill: false,
-        backgroundColor: color,
-        borderColor: color,
-        borderWidth: 3,
-        tension: 0.4,
-        pointRadius: 2,
-        pointBackgroundColor: colorAlpha,
-        pointBorderColor: color,
-        pointBorderWidth: 1,
-        pointHoverRadius: 6,
-        pointHoverBackgroundColor: color,
-        pointHoverBorderColor: color,
-      };
-
-      let d = Object.assign(dataset, style);
-
-      return d;
-    }
-
-    /* ------------------------------------------------ */
-
-    function generateChart() {
-
-      let labels = DATA.Chart.labels;
-      let players = DATA.Chart.players;
-      let data = DATA.Chart.data;
-      let weeks = [...new Set(data.map((x) => x.week.v))];
-      let datasets = players.map((p) => {
-        let dataset = {
-          type: 'line',
-          label: p,
-          data: data.filter((x) => x.player.v == p).map((j) => {
-            return Object.assign(j, {
-              x: j.week.v,
-            });
-          }),
-        };
-        dataset = styleDataset(dataset);
-        return dataset;
-      });
-
-      let ctx = document.getElementById('chart').getContext('2d');
-      let options = getChartOptions();
-      let config = {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: datasets,
-        },
-        options: options,
-      };
-      config.options.animation = {
-        duration: 400,
-      };
-
-      let tooltip = config.options.plugins.tooltip;
-      tooltip.callbacks = {
-        label: function (context) {
-          let player = context.dataset.label;
-          let itemIndex = context.dataIndex;
-          let itemDisplay = context.dataset.data[itemIndex].display;
-          let label = player + ': ' + itemDisplay;
-          return label;
-        },
-        title: function (context) {
-          let title = context[0].label || '';
-          return title;
-        },
-      };
-
-      let legend = config.options.plugins.legend;
-      legend.onClick = function (event, legendItem, legend) {
-        let isFiltered = document.getElementById('playerSelector').value != 'All Players';
-        if (!isFiltered) {
-          document.getElementById('playerSelector').value = legendItem.text;
-          updateChart(field = null, players = legendItem.text);
-        } else {
-          document.getElementById('playerSelector').value = 'All Players';
-          updateChart(field = null, players = 'All Players');
-        }
-      };
-
-
-      chart = new Chart(ctx, config);
-
-      updateChart(field = 'rank', players = 'All Players');
-    }
-
-    /* ------------------------------------------------ */
-
-    function makeChartFilters() {
-      let chartDiv = document.getElementById('chartFilters');
-      let chartData = DATA.Chart;
-      let fields = chartData.fields;
-      let players = chartData.players;
-      players = players.filter((x) => !['Average', 'High', 'Low'].includes(x));
-
-      let fieldSelector = document.getElementById('fieldSelector');
-      fieldSelector.addEventListener('change', (e) => {
-        updateChart(field = e.target.value, players = null);
-      });
-      fields.forEach((f) => {
-        let field = f.field;
-        let label = f.label;
-        let option = document.createElement('option');
-        option.setAttribute('value', field);
-        option.innerText = label;
-        fieldSelector.appendChild(option);
-      });
-
-      let playerSelector = document.getElementById('playerSelector');
-      playerSelector.addEventListener('change', (e) => {
-        updateChart(field = null, players = e.target.value);
-      });
-      let option = document.createElement('option');
-      option.setAttribute('value', 'All Players');
-      option.setAttribute('selected', true);
-      option.innerText = 'All Players';
-      playerSelector.appendChild(option);
-      players.forEach((p) => {
-        let option = document.createElement('option');
-        option.setAttribute('value', p);
-        option.innerText = p;
-        playerSelector.appendChild(option);
-      });
-    }
-
-    function previewData(dataset) {
-      let code = '<div><pre>' + JSON.stringify(dataset, null, 2) + '</pre></div>';
-      document.body.innerHTML = code;
+      updateChart();
+      // updateChart(e = null, options = {
+      //   field: 'rank',
+      //   player: 'Jordan'
+      // });
     }
 
   </script>

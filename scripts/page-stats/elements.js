@@ -83,7 +83,11 @@ function generateFilters() {
 
         updateChart(e);
       });
-      if (index == 0) inp.setAttribute('checked', '');
+
+      if (index == 0) {
+        inp.setAttribute('checked', '');
+        DATA.Chart.active[optionsKey].push(option.value);
+      }
 
       let label = document.createElement('label');
       label.classList.add('form-check-label');
