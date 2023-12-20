@@ -30,7 +30,7 @@ function submitForm(e) {
       console.log(result);
       submitBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
 
-      incorpFormData(formData);
+      incorpFormData(result);
       setTimeout(() => {
         let modalBS = bootstrap.Modal.getInstance(modal);
         modalBS.hide();
@@ -52,29 +52,28 @@ function submitForm(e) {
 
 }
 
-function incorpFormData(formData) {
-  let player = formData.get('player');
-  let gameids = [...formData.keys()];
-  // filter out non-gameid keys (gameid keys only contain numbers)
+function incorpFormData(resp) {
+  let player = resp.player;
+  let gameids = Object.keys(resp);
   gameids = gameids.filter((x) => !isNaN(x));
   gameids.forEach((gameid) => {
-    let teamname = formData.get(gameid);
-    let gamerow = document.querySelector('.gamerow[data-gameid="' + gameid + '"]');
-    let teamrow = gamerow.querySelector('.teamrow[data-teamfull="' + teamname + '"]');
-    let tblrow = gamerow.closest('.tblrow');
-    let pickitem = tblrow.querySelector('.pickitem[data-player="' + player + '"]');
-    // if new pick is same as old pick, do nothing
-    if (pickitem.getAttribute('data-pick-teamfull') == teamrow.getAttribute('data-teamfull')) {
-      return;
+
+    let pickitem = document.querySelector('.pickitem[data-player="' + player + '"][data-game-id="' + gameid + '"]');
+    let p = resp[gameid];
+    Object.keys(p).forEach((key) => {
+      let dataLabel = key.replace('_', '-');
+      pickitem.setAttribute('data-' + dataLabel, p[key]);
+    });
+
+    if (pickitem.classList.contains('opacity-25')) {
+      pickitem.classList.remove('opacity-25');
+    }
+    let pickimg = pickitem.querySelector('img');
+    pickimg.src = p.pick_logo;
+    if (pickimg.classList.contains('opacity-0')) {
+      pickimg.classList.remove('opacity-0');
     }
 
-    pickitem.setAttribute('data-pick-teamfull', teamrow.getAttribute('data-teamfull'));
-    pickitem.setAttribute('data-pick-teamshort', teamrow.getAttribute('data-teamshort'));
-    pickitem.setAttribute('data-pick-team', teamrow.getAttribute('data-team'));
-    pickitem.querySelector('img').src = teamrow.querySelector('img').src;
-    if (pickitem.querySelector('img').classList.contains('opacity-0')) {
-      pickitem.querySelector('img').classList.remove('opacity-0');
-    }
   });
 }
 
