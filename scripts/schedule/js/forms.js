@@ -30,6 +30,8 @@ function createAlert(type, msg) {
   return alert;
 }
 
+/* ------------------------------------------------ */
+
 function submitForm(e) {
 
   e.preventDefault();
@@ -52,7 +54,6 @@ function submitForm(e) {
     let alert = createAlert('warning', alertMsg);
     let confirmBtn = alert.querySelector('#alertConfirmBtn');
     confirmBtn.addEventListener('click', (e) => {
-      // close alert
       let alert = e.target.closest('.alert');
       alert.remove();
 
@@ -62,7 +63,6 @@ function submitForm(e) {
 
     let closeBtn = alert.querySelector('#alertCloseBtn');
     closeBtn.addEventListener('click', (e) => {
-      // close alert
       let alert = e.target.closest('.alert');
       alert.remove();
     });
@@ -72,16 +72,16 @@ function submitForm(e) {
   }
 }
 
+/* ------------------------------------------------ */
+
 function postForm() {
 
-  // e.preventDefault();
   let modal = document.getElementById('modalFormContainer');
   let modalForm = modal.querySelector('#modalForm');
   let modalFooter = modal.querySelector('.modal-footer');
   let modalMessage = modal.querySelector('#modalMessage');
   let formData = new FormData(modalForm);
 
-  // change submit button to show loading
   let submitBtn = modal.querySelector('[type="submit"]');
   submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
   submitBtn.setAttribute('disabled', '');
@@ -102,8 +102,8 @@ function postForm() {
     .then(result => {
       console.log(result);
       submitBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-
       incorpFormData(result);
+
       setTimeout(() => {
         let modalBS = bootstrap.Modal.getInstance(modal);
         modalBS.hide();
@@ -118,6 +118,7 @@ function postForm() {
       alert.querySelector('#alertConfirmBtn').remove();
       modalMessage.innerHTML = '';
       modalMessage.appendChild(alert);
+
       setTimeout(() => {
         submitBtn.removeAttribute('disabled');
         submitBtn.innerHTML = 'Submit';
@@ -125,6 +126,8 @@ function postForm() {
     });
 
 }
+
+/* ------------------------------------------------ */
 
 function incorpFormData(resp) {
   let player = resp.player;
@@ -151,14 +154,12 @@ function incorpFormData(resp) {
   });
 }
 
+/* ------------------------------------------------ */
 
 function prepareForm(e) {
 
-  // document.getElementById('main').classList.add('d-none');
-
   let modal = document.getElementById('modalFormContainer');
   let modalFormGames = document.getElementById('modalFormGames');
-  let modalForm = document.getElementById('modalForm');
   let playerSelect = modal.querySelector('#player');
 
   let playerValue = playerSelect.value;
@@ -167,176 +168,55 @@ function prepareForm(e) {
     let pickitem = e.target.parentElement;
     playerValue = pickitem.getAttribute('data-player');
     playerSelect.value = playerValue;
-    let username = localStorage.getItem('username');
-    console.log(username);
-
-    let weekNum = DATA.tblGames.week;
-    modalForm.setAttribute('data-week', weekNum);
   }
 
   modalFormGames.classList.add('mb-3');
-  let weekNum = modalForm.getAttribute('data-week');
-  let tblrows = document.querySelectorAll('.tblrow');
   modalFormGames.innerHTML = '';
+  let tblrows = document.querySelectorAll('.tblrow');
   let openGames = tblrows.length;
   let pickedGames = 0;
+  let openUnpickedGames = 0;
+  let winGames = 0;
+  let loseGames = 0;
 
   tblrows.forEach((tblrow, index) => {
 
-    let teamSelectValue = '';
-    let pickFormatting = [];
-    let pickitem = tblrow.querySelector('.pickitem[data-player="' + playerValue + '"]');
-    let is_faded = pickitem.classList.contains('opacity-25');
-    let status = pickitem.getAttribute('data-status');
-    teamSelectValue = pickitem.getAttribute('data-pick-teamfull');
+    let game = tblrowToInput(tblrow, playerValue);
+    let picked = game.getAttribute('data-picked') == 'true';
+    if (picked) pickedGames++;
+    if (index == 0) game.classList.add('border-top-0');
+    let disabled = game.querySelector('input[disabled]');
+    if (disabled) openGames--;
+    if (!picked && !disabled) openUnpickedGames++;
 
-    if (tblrow.classList.contains('game-post')) {
-      if (is_faded) {
-        pickFormatting = ['border-danger'];
-      } else {
-        pickFormatting = ['border-success'];
-      }
-    }
+    let win = game.classList.contains('border-success');
+    let lose = game.classList.contains('border-danger');
+    if (win) winGames++;
+    if (lose) loseGames++;
 
-    let gamerow = tblrow.querySelector('.gamerow');
-    let gameid = gamerow.getAttribute('data-gameid');
-    let gametime_raw = gamerow.getAttribute('data-gametime');
-    let deadline_raw = gamerow.getAttribute('data-deadline');
-    let gametime = new Date(gametime_raw);
-    let currtime = new Date();
-    let time_diff = (currtime - gametime) / 1000 / 60;
-    let is_open = time_diff < 5;
-    if (!is_open) openGames--;
-
-    // wrap each team in a radio button input
-    modalFormGames.appendChild(gamerow.cloneNode(true));
-    let game = modalFormGames.querySelector('.gamerow[data-gameid="' + gameid + '"]');
-
-    // remove data attributes related to collapsing
-    game.removeAttribute('data-bs-toggle');
-    game.removeAttribute('data-bs-target');
-    if (index == 0) {
-      game.classList.add('border-top-0');
-    }
-
-    // game.classList.add('rounded-end-3', 'mb-3', 'bg-main', 'pb-2', 'ps-1');
-    // game.style.borderTop = 'none';
-    // game.classList.replace('px-2', 'px-0');
-    game.style.borderLeft = '3px solid #0e0e0e';
-    game.classList.add(...pickFormatting);
-    game.setAttribute('data-picked', 'false')
-    if (teamSelectValue != '') game.setAttribute('data-picked', 'true');
-
-    let timeRemainingDiv = document.createElement('div');
-    timeRemainingDiv.classList.add('dl-clock');
-    timeRemainingDiv.classList.add('d-flex', 'flex-row', 'flex-nowrap', 'justify-content-start', 'text-sm5');
-    if (is_open) timeRemainingDiv.classList.add('mt-2');
-    timeRemainingDiv.setAttribute('data-deadline', deadline_raw);
-    game.querySelector('.col-9').appendChild(timeRemainingDiv);
-
-    if (status == 'LATE') {
-      let late = document.createElement('div');
-      late.classList.add('rounded-pill', 'text-center', 'text-smaller');
-      late.classList.add('bg-danger', 'text-white');
-      late.textContent = 'LATE';
-      late.classList.add('mt-2', 'ms-auto', 'me-1');
-      game.querySelector('.col-3').appendChild(late);
-    }
-
-    let teams = game.querySelectorAll('.teamrow');
-
-    teams.forEach((team) => {
-      let tempDiv = document.createElement('div');
-      let teamName = team.getAttribute('data-teamfull');
-      let teamId = teamName.split(' ').join('-');
-
-      let label = document.createElement('label');
-      label.classList.add('btn', 'btn-sm', 'd-flex', 'align-items-center');
-      label.setAttribute('for', teamId);
-      label.innerHTML = team.innerHTML;
-
-      let input = document.createElement('input');
-      input.classList.add('btn-check');
-      input.setAttribute('type', 'radio');
-      input.setAttribute('name', gameid);
-      input.setAttribute('id', teamId);
-      input.setAttribute('value', teamName);
-
-      // if teamSelectValue matches teamName, check the input
-      if (teamSelectValue == teamName) {
-        input.setAttribute('checked', '');
-        input.setAttribute('data-origchecked', 'true');
-        pickedGames++;
-      } else {
-        input.setAttribute('data-origchecked', 'false');
-      }
-
-      if (!is_open) {
-        input.setAttribute('disabled', '');
-      }
-
-      // if any input values change, show modal footer
-      input.addEventListener('change', (e) => {
-
-        let modal = document.getElementById('modalFormContainer');
-        let modalFooter = modal.querySelector('.modal-footer');
-        let submitBtn = modal.querySelector('[type="submit"]');
-        let noSubmit = submitBtn.classList.contains('no-submit');
-        let formInputs = modal.querySelectorAll('input');
-
-        let inputs_changed = false;
-        formInputs.forEach((input) => {
-          let gr = input.closest('.gamerow');
-          let orig_checked = input.getAttribute('data-origchecked') == 'true';
-          if (input.checked && !orig_checked) {
-            inputs_changed = true;
-            gr.classList.add('border-primary');
-            // }
-          } else {
-            if (input.checked && orig_checked) {
-              gr.classList.remove('border-primary');
-            }
-          }
-        });
-
-        if (inputs_changed == true) {
-          if (noSubmit) submitBtn.classList.remove('no-submit');
-        } else {
-          if (!noSubmit) submitBtn.classList.add('no-submit');
-        }
-      });
-
-      tempDiv.appendChild(input);
-      tempDiv.appendChild(label);
-      team.replaceWith(tempDiv);
-
-    });
+    modalFormGames.appendChild(game);
   });
 
-  let mHeader = document.getElementById('modalFormContainerLabel');
-  let headtext = 'Week ' + weekNum;
-  mHeader.innerHTML = '';
-  // mHeader.textContent = headtext;
-  mHeader.appendChild(document.createTextNode(headtext));
+  let head = document.getElementById('modalFormTitle');
+  let headText = DATA.tblGames.week_label;
+  head.innerHTML = '';
+  head.appendChild(document.createTextNode(headText));
 
-  let mSub = document.getElementById('modalFormSubtitle');
-  let ttlGames = tblrows.length;
-  let subtext = ttlGames + ' game' + ((ttlGames == 1) ? '' : 's') + ' (';
-  if (openGames == 0) {
-    subtext += 'all closed)';
-  } else {
-    subtext += openGames + ' open)';
+  let sub = document.getElementById('modalFormSubtitle');
+  let subText = openGames + ' games open';
+  if (openGames == 0) subText = 'No games open';
+  if (openGames > 0) {
+    if (openUnpickedGames > 0) subText += ' (' + openUnpickedGames + ' unpicked)';
+    if (openUnpickedGames == 0) subText += ' (all picked)';
   }
-  mSub.innerHTML = '';
-  mSub.appendChild(document.createTextNode(subtext));
+  sub.innerHTML = '';
+  sub.appendChild(document.createTextNode(subText));
 
-  let mSub2 = document.getElementById('modalFormSubtitle2');
-
-  let subtext2 = pickedGames + ' of ' + ttlGames + ' games picked';
-  if (pickedGames == 0) subtext2 = 'No games picked';
-  // mSub2.textContent = subtext2;
-  mSub2.innerHTML = '';
-  mSub2.appendChild(document.createTextNode(subtext2));
+  // record
+  let sub2 = document.getElementById('modalFormSubtitle2');
+  let sub2Text = 'Record: ' + winGames + '-' + loseGames;
+  sub2.innerHTML = '';
+  sub2.appendChild(document.createTextNode(sub2Text));
 
   updateTimeRemainingDivs();
   if (modal.hasAttribute('data-clockInt') == false) {
@@ -345,7 +225,144 @@ function prepareForm(e) {
   }
 }
 
+/* ------------------------------------------------ */
 
+function tblrowToInput(tblrow, playerValue) {
+
+  let gameid = tblrow.getAttribute('data-gameid');
+  let gdata = queryData().filter((x) => x['game_id'] == gameid)[0];
+  let pdata = gdata.responses.filter((x) => x.player == playerValue)[0];
+
+  let gamerow = tblrow.querySelector('.gamerow');
+  let pickitem = tblrow.querySelector('.pickitem[data-player="' + playerValue + '"]');
+
+  let pickFormatting = [];
+  let is_faded = pickitem.classList.contains('opacity-25');
+  let pickfull = pdata.pick_teamfull;
+  if (gdata.state == 'post') {
+    if (is_faded) pickFormatting = ['border-danger'];
+    if (!is_faded) pickFormatting = ['border-success'];
+  }
+
+  let gametime = new Date(gdata.gametime_raw);
+  let time_diff = (new Date() - gametime) / 1000 / 60;
+  let is_open = time_diff < 5;
+
+  let game = gamerow.cloneNode(true);
+  game.removeAttribute('data-bs-toggle');
+  game.removeAttribute('data-bs-target');
+
+  game.style.borderLeft = '3px solid #0e0e0e';
+  game.classList.add(...pickFormatting);
+  game.setAttribute('data-picked', 'false')
+  if (pickfull != '') game.setAttribute('data-picked', 'true');
+
+  let timeRemainingDiv = document.createElement('div');
+  timeRemainingDiv.classList.add('dl-clock', 'd-flex', 'flex-row', 'flex-nowrap', 'justify-content-start', 'text-sm5');
+  if (is_open) timeRemainingDiv.classList.add('mt-2');
+  timeRemainingDiv.setAttribute('data-deadline', gdata.deadline);
+  game.querySelector('.col-9').appendChild(timeRemainingDiv);
+
+  let status = pdata.status;
+  if (status == 'LATE') {
+    let late = document.createElement('div');
+    late.classList.add('rounded-pill', 'text-center', 'text-smaller');
+    late.classList.add('bg-danger', 'text-white');
+    late.classList.add('mt-2', 'ms-auto', 'me-1');
+    late.textContent = 'LATE';
+    game.querySelector('.col-3').appendChild(late);
+  }
+
+  let teams = game.querySelectorAll('.teamrow');
+
+  teams.forEach((team) => {
+    let tempDiv = document.createElement('div');
+    let teamName = team.getAttribute('data-teamfull');
+    let teamId = teamName.split(' ').join('-');
+
+    let label = document.createElement('label');
+    label.classList.add('btn', 'btn-sm', 'd-flex', 'align-items-center');
+    label.setAttribute('for', teamId);
+    label.innerHTML = team.innerHTML;
+
+    let input = document.createElement('input');
+    input.classList.add('btn-check');
+    input.setAttribute('type', 'radio');
+    input.setAttribute('name', gameid);
+    input.setAttribute('id', teamId);
+    input.setAttribute('value', teamName);
+
+    if (!is_open) input.setAttribute('disabled', '');
+    input.setAttribute('data-origchecked', 'false');
+    if (pickfull == teamName) {
+      input.setAttribute('checked', '');
+      input.setAttribute('data-origchecked', 'true');
+    }
+
+    input.addEventListener('change', (e) => {
+      handlePickChange(e);
+    });
+
+    tempDiv.appendChild(input);
+    tempDiv.appendChild(label);
+    team.replaceWith(tempDiv);
+  });
+
+  return game;
+}
+
+/* ------------------------------------------------ */
+
+function handlePickChange(e) {
+
+  let modal = document.getElementById('modalFormContainer');
+  let submitBtn = modal.querySelector('[type="submit"]');
+  let noSubmit = submitBtn.classList.contains('no-submit');
+  let formInputs = modal.querySelectorAll('input');
+
+  let inputs_changed = false;
+  formInputs.forEach((input) => {
+    let gr = input.closest('.gamerow');
+    let orig_checked = input.getAttribute('data-origchecked') == 'true';
+    if (input.checked && !orig_checked) {
+      inputs_changed = true;
+      gr.classList.add('border-primary');
+    } else {
+      if (input.checked && orig_checked) {
+        gr.classList.remove('border-primary');
+      }
+    }
+  });
+
+  if (inputs_changed == true) {
+    if (noSubmit) submitBtn.classList.remove('no-submit');
+  } else {
+    if (!noSubmit) submitBtn.classList.add('no-submit');
+  }
+
+  let sub = document.getElementById('modalFormSubtitle');
+  let gamerows = modal.querySelectorAll('.gamerow');
+  let openUnpickedGames = 0;
+  let openGames = 0;
+  gamerows.forEach((gr) => {
+    let picked = gr.querySelector('input:checked');
+    let disabled = gr.querySelector('input[disabled]');
+    if (!picked && !disabled) openUnpickedGames++;
+    if (!disabled) openGames++;
+  });
+
+  let subText = openGames + ' games open';
+  if (openGames == 0) subText = 'No games open';
+  if (openGames > 0) {
+    if (openUnpickedGames > 0) subText += ' (' + openUnpickedGames + ' unpicked)';
+    if (openUnpickedGames == 0) subText += ' (all picked)';
+  }
+  sub.innerHTML = '';
+  sub.appendChild(document.createTextNode(subText));
+
+}
+
+/* ------------------------------------------------ */
 
 function updateTimeRemainingDivs() {
 
@@ -357,6 +374,8 @@ function updateTimeRemainingDivs() {
     dlClock.appendChild(timeRemaining);
   });
 }
+
+/* ------------------------------------------------ */
 
 function calcTimeRemaining(deadline) {
 
