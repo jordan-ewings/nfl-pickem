@@ -1,13 +1,91 @@
+function createAlert(type, msg) {
+
+  let alert = document.createElement('div');
+  alert.classList.add('alert', 'd-flex', 'align-items-center');
+  alert.classList.add('alert-' + type);
+  alert.setAttribute('role', 'alert');
+
+  let alertMsg = document.createElement('div');
+  alertMsg.classList.add('me-auto', 'text-sm2');
+  alertMsg.innerHTML = msg;
+  alert.appendChild(alertMsg);
+
+  let confirmBtn = document.createElement('button');
+  confirmBtn.id = 'alertConfirmBtn';
+  confirmBtn.classList.add('btn');
+  confirmBtn.classList.add('btn-' + type, 'align-middle', 'ms-2');
+  confirmBtn.setAttribute('type', 'button');
+  confirmBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+  alert.appendChild(confirmBtn);
+
+  let closeBtn = document.createElement('button');
+  closeBtn.id = 'alertCloseBtn';
+  closeBtn.classList.add('btn');
+  closeBtn.classList.add('btn-outline-' + type, 'align-middle', 'ms-2')
+  closeBtn.setAttribute('type', 'button');
+  closeBtn.setAttribute('data-bs-dismiss', 'alert');
+  closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+  alert.appendChild(closeBtn);
+
+  return alert;
+}
 
 function submitForm(e) {
+
   e.preventDefault();
+  let modal = document.getElementById('modalFormContainer');
+  let modalForm = modal.querySelector('#modalForm');
+  let modalFooter = modal.querySelector('.modal-footer');
+  let modalMessage = modal.querySelector('#modalMessage');
+  let formData = new FormData(modalForm);
+
+  let player = formData.get('player');
+  let username = localStorage.getItem('username');
+  if (username == null) {
+    localStorage.setItem('username', player);
+    postForm();
+  } else if (username == player) {
+    postForm();
+  } else {
+
+    let alertMsg = 'Are you sure you want to submit picks for <strong>' + player + '</strong>?';
+    let alert = createAlert('warning', alertMsg);
+    let confirmBtn = alert.querySelector('#alertConfirmBtn');
+    confirmBtn.addEventListener('click', (e) => {
+      // close alert
+      let alert = e.target.closest('.alert');
+      alert.remove();
+
+      localStorage.setItem('username', player);
+      postForm();
+    });
+
+    let closeBtn = alert.querySelector('#alertCloseBtn');
+    closeBtn.addEventListener('click', (e) => {
+      // close alert
+      let alert = e.target.closest('.alert');
+      alert.remove();
+    });
+
+    modalMessage.innerHTML = '';
+    modalMessage.appendChild(alert);
+  }
+}
+
+function postForm() {
+
+  // e.preventDefault();
+  let modal = document.getElementById('modalFormContainer');
+  let modalForm = modal.querySelector('#modalForm');
+  let modalFooter = modal.querySelector('.modal-footer');
+  let modalMessage = modal.querySelector('#modalMessage');
+  let formData = new FormData(modalForm);
 
   // change submit button to show loading
-  let submitBtn = e.target.querySelector('[type="submit"]');
+  let submitBtn = modal.querySelector('[type="submit"]');
   submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
   submitBtn.setAttribute('disabled', '');
 
-  let formData = new FormData(e.target);
   formData.append('timestamp', new Date().toLocaleString());
   let formUrlParams = new URLSearchParams(formData).toString();
   let formUrlRoot = 'https://script.google.com/macros/s/AKfycbxveY_vNT4LvlRThJQuaRszp9WmEXfKv376CgdNbRM1Gy5jWUjwGmxCo3Jv0fOpacpz/exec';
@@ -18,11 +96,6 @@ function submitForm(e) {
     method: 'POST',
     redirect: 'follow'
   };
-
-  let modal = document.getElementById('modalFormContainer');
-  let modalFooter = modal.querySelector('.modal-footer');
-  let modalMessage = document.getElementById('modalMessage');
-  let modalForm = document.getElementById('modalForm');
 
   fetch(formUrl, requestOptions)
     .then(response => response.json())
@@ -93,6 +166,8 @@ function prepareForm(e) {
     let pickitem = e.target.parentElement;
     playerValue = pickitem.getAttribute('data-player');
     playerSelect.value = playerValue;
+    let username = localStorage.getItem('username');
+    console.log(username);
 
     let weekNum = DATA.tblGames.week;
     modalForm.setAttribute('data-week', weekNum);

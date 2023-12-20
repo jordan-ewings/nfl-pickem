@@ -33,7 +33,8 @@
 
     .modal-footer {
       padding-bottom: env(safe-area-inset-bottom) !important;
-      padding-top: 0 !important;
+      padding-top: 8px !important;
+      /* background-color: transparent !important; */
     }
 
     .modal-body {
@@ -144,7 +145,7 @@
           </form>
         </div>
         <div class="modal-footer modfooter-sticky bg-main">
-          <span id="modalMessage" class="text-danger fw-medium d-none"></span>
+          <div id="modalMessage" class="w-100"></div>
         </div>
       </div>
     </div>
@@ -215,7 +216,7 @@
 
   </script>
   <script>
-    var USING_LIVE = true;
+    var USING_LIVE = false;
     let DATA = {
       LOADED: false,
       TBL_LOADED: false
