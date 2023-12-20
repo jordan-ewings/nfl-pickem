@@ -48,9 +48,11 @@ async function getSheet(sheet) {
 
 /* ------------------------------------------------ */
 
-function procStats(PlayerStats) {
-  let raw = PlayerStats;
-  raw.forEach((x) => {
+async function getPlayerStats() {
+
+  let data = await getSheet('PlayerStats');
+
+  data.forEach((x) => {
     let fields = Object.keys(x);
     let fieldsStr = ['player', 'rank'];
     let fieldsInt = fields.filter((f) => !fieldsStr.includes(f));
@@ -69,7 +71,7 @@ function procStats(PlayerStats) {
     delete x.rankVal;
   });
 
-  raw.forEach((x, i) => {
+  data.forEach((x, i) => {
     let week = x.week;
     let player = x.player;
     let rank = x.rank;
@@ -78,12 +80,14 @@ function procStats(PlayerStats) {
       return;
     }
     let prevWeek = week - 1;
-    let prevRank = raw.filter((y) => y.week == prevWeek && y.player == player)[0].rank;
+    let prevRank = data.filter((y) => y.week == prevWeek && y.player == player)[0].rank;
     let rankChange = rank - prevRank;
     rankChange = -rankChange;
     x.rankChange = rankChange;
   })
 
-  let data = raw;
+  console.log(data);
   return data;
 }
+
+

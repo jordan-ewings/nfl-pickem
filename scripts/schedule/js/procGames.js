@@ -89,8 +89,6 @@ function updateData(proc, live) {
       w.games = w.games.map((game) => {
         let g = game;
         let glive = live.filter((x) => x.game_id == g.game_id)[0];
-        console.log(g);
-        console.log(glive);
         g.away_score = glive.away_score;
         g.home_score = glive.home_score;
         g.state = glive.state;

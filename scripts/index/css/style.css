@@ -1,0 +1,46 @@
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background-color: var(--ios-bg);
+  z-index: 1000;
+}
+
+html {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+i {
+  animation-iteration-count: 1 !important;
+  animation-delay: 500ms !important;
+  -webkit-animation-iteration-count: 1 !important;
+  -webkit-animation-delay: 500ms !important;
+}
+
+.table td,
+.table th {
+  background-color: var(--ios-bg) !important;
+  color: var(--ios-text);
+  font-size: var(--font-sm3);
+}
+
+.table thead th {
+  color: var(--ios-text2);
+  font-size: var(--font-sm5);
+  font-weight: 500;
+  border: none;
+}
+
+.table tbody tr td {
+  border-top: 1px solid var(--ios-bg1);
+  border-bottom: none;
+}
+
+.table.shrunken {
+  max-height: 35dvh !important;
+  overflow-y: scroll;
+  display: inline-block;
+}

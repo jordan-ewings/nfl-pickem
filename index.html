@@ -9,60 +9,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="./styles/global.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="./scripts/index/css/style.css">
   <style>
-    i {
-      animation-iteration-count: 1 !important;
-      animation-delay: 500ms !important;
-      -webkit-animation-iteration-count: 1 !important;
-      -webkit-animation-delay: 500ms !important;
-    }
 
-    .table td,
-    .table th {
-      background-color: var(--ios-bg) !important;
-      color: var(--ios-text);
-      font-size: var(--font-sm3);
-    }
-
-    .table thead th {
-      color: var(--ios-text2);
-      font-size: var(--font-sm5);
-      font-weight: 500;
-      border: none;
-    }
-
-    .table tbody tr td {
-      border-top: 1px solid var(--ios-bg1);
-      border-bottom: none;
-    }
-
-    .table.shrunken {
-      max-height: 35dvh !important;
-      overflow-y: scroll;
-      display: inline-block;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: env(safe-area-inset-top);
-      background-color: var(--ios-bg);
-      z-index: 1000;
-    }
-
-    html {
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    }
-
-    tr.inactive td {
-      opacity: .4 !important;
-      /* font-size: var(--font-sm5) !important; */
-
-    }
   </style>
 </head>
 
@@ -86,15 +35,13 @@
   <div id="main" class="container-fluid px-2 mt-4 mb-2">
     <div class="table-responsive">
       <table id="tblStandings" class="table align-middle text-center text-nowrap">
+        <thead>
+        </thead>
+        <tbody>
+        </tbody>
       </table>
     </div>
-    <!-- add wpct button -->
   </div>
-  <div id="chartDiv" class="chart-container d-none px-1">
-    <canvas id="chart"></canvas>
-  </div>
-  </div>
-
 
   <template id="row-template">
     <tr>
@@ -102,7 +49,8 @@
       <td data-item="player-cont" class="fw-medium text-start pe-4">
         <div class="d-flex flex-row align-items-center py-0">
           <span data-item="player" class="pe-2"></span>
-          <i data-item="change-icon" class="d-none"></i>
+          <i data-item="change-up-icon" class="d-none fa-regular fa-circle-up fa-sm text-success-emphasis fa-bounce"></i>
+          <i data-item="change-down-icon" class="d-none fa-regular fa-circle-down fa-sm text-danger-emphasis fa-bounce"></i>
           <span data-item="change" class="d-none text-sm5 ps-1"></span>
         </div>
       </td>
@@ -114,153 +62,18 @@
     </tr>
   </template>
   <script src="./scripts/global/data.js"></script>
-  <script src="./scripts/global/chart-utils.js"></script>
-
-  <script src="./scripts/page-stats/DATA.js"></script>
-  <script src="./scripts/page-stats/elements.js"></script>
-  <script src="./scripts/page-stats/chart.js"></script>
+  <script src="./scripts/index/js/main.js"></script>
   <script>
     let DATA = {};
-    let chart;
-
     sendData();
-
-    async function showChart() {
-      if (!document.getElementById('chartDiv').style.height) {
-        document.getElementById('tblStandings').classList.add('shrunken');
-        let currHeight = 0;
-        let els = ['navCont', 'main'];
-        els.forEach((x) => {
-          let el = document.getElementById(x);
-          let h = el.offsetHeight;
-          h += parseInt(window.getComputedStyle(el).getPropertyValue('margin-top'));
-          h += parseInt(window.getComputedStyle(el).getPropertyValue('margin-bottom'));
-          currHeight += h;
-        });
-
-        let cssDVH = `calc(100dvh - ${currHeight}px)`;
-        let chartDiv = document.getElementById('chartDiv');
-        chartDiv.style.height = cssDVH;
-      }
-    }
-
-    async function hideChart() {
-      document.getElementById('tblStandings').classList.remove('shrunken');
-      document.getElementById('chartDiv').style.height = '';
-    }
 
     /* ------------------------------------------------ */
 
     async function sendData() {
-      const data = await getSheet('PlayerStats');
-      DATA.Stats = procStats(data);
-      DATA.tblStandings = procStandings();
 
-      DATA.Chart = procChartData(DATA.Stats);
-      DATA.Chart.active.fields.push(...['rank', 'wpct']);
-      console.log(DATA.Chart);
-
+      DATA.Stats = await getPlayerStats();
       updateTblStandings();
     }
-
-    /* ------------------------------------------------ */
-
-    function updateTblStandings() {
-      let data = DATA.tblStandings;
-      let tbl = document.getElementById('tblStandings');
-      let thead = tbl.createTHead();
-      let tbody = tbl.createTBody();
-      let header = thead.insertRow();
-      let headerCells = ['', '', 'WK', 'TTL', 'GB', 'D%', 'DW%'];
-      headerCells.forEach((h) => {
-        let cell = document.createElement('th');
-        cell.textContent = h;
-        header.appendChild(cell);
-      });
-
-      let template = document.getElementById('row-template');
-
-      data.forEach((g) => {
-        let clone = template.content.cloneNode(true);
-        let row = clone.querySelector('tr');
-        row.querySelector('[data-item="rank"]').textContent = g.rank;
-        let pcont = row.querySelector('[data-item="player-cont"]');
-        let player = pcont.querySelector('[data-item="player"]');
-        let changeIcon = pcont.querySelector('[data-item="change-icon"]');
-        let change = pcont.querySelector('[data-item="change"]');
-        player.textContent = g.player;
-
-        if (parseInt(g.change) > 0) {
-          changeIcon.classList.remove('d-none');
-          changeIcon.classList.add('fa-regular', 'fa-circle-up', 'fa-sm', 'text-success-emphasis', 'fa-bounce');
-          change.classList.remove('d-none');
-          change.classList.add('text-success-emphasis');
-          change.textContent = g.change.replace('-', '');
-        } else if (parseInt(g.change) < 0) {
-          changeIcon.classList.remove('d-none');
-          changeIcon.classList.add('fa-regular', 'fa-circle-down', 'fa-sm', 'text-danger-emphasis', 'fa-bounce');
-          change.classList.remove('d-none');
-          change.classList.add('text-danger-emphasis');
-          change.textContent = g.change.replace('-', '');
-        }
-
-        row.querySelector('[data-item="rec_week"]').textContent = g.rec_week;
-        row.querySelector('[data-item="rec"]').textContent = g.rec;
-        row.querySelector('[data-item="gb"]').textContent = (g.gb == '') ? '-' : g.gb;
-        row.querySelector('[data-item="pc_dog_pick"]').textContent = g.pc_dog_pick;
-        row.querySelector('[data-item="pc_dog_win"]').textContent = g.pc_dog_win;
-
-        // clicking row shows chart.js line of rank by week
-        row.setAttribute('role', 'button');
-        row.setAttribute('data-player', g.player);
-        row.addEventListener('click', (e) => {
-
-          toggleRow(e.currentTarget);
-          let rows = Array.from(document.getElementById('tblStandings').querySelectorAll('tr'));
-          let rowsSelected = rows.filter(tr => !tr.classList.contains('inactive'));
-          let showChartDiv = rowsSelected.length != rows.length;
-          let players = rowsSelected.map(tr => tr.dataset.player);
-          let chartDiv = document.getElementById('chartDiv');
-
-          if (showChartDiv) {
-            chartDiv.classList.remove('d-none');
-            showChart();
-            e.currentTarget.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center'
-            });
-            DATA.Chart.active.players = players;
-            updateChart();
-          } else {
-            hideChart();
-            chartDiv.classList.add('d-none');
-          }
-
-        });
-
-        // add row to table
-        tbody.appendChild(clone);
-      });
-    }
-
-    function toggleRow(row) {
-      // let rowInactive = row.classList.contains('inactive');
-      let tblRows = Array.from(document.getElementById('tblStandings').querySelectorAll('tr'));
-      let isTblFiltered = tblRows.some(tr => tr.classList.contains('inactive'));
-      let isRowInactive = row.classList.contains('inactive');
-
-      if (!isTblFiltered || (isTblFiltered && isRowInactive)) {
-        tblRows.forEach(tr => tr.classList.add('inactive'));
-        row.classList.remove('inactive');
-        return;
-      }
-
-      if (isTblFiltered && !isRowInactive) {
-        tblRows.forEach(tr => tr.classList.remove('inactive'));
-        return;
-      }
-    }
-
 
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
