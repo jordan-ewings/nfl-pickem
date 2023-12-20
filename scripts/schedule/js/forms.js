@@ -114,13 +114,14 @@ function postForm() {
     .catch(error => {
       console.log('error', error);
       submitBtn.innerHTML = '<i class="fa-solid fa-exclamation"></i>';
-      modalMessage.classList.remove('d-none');
-      modalMessage.textContent = 'Something went wrong. Please try again.';
+      let alert = createAlert('danger', 'Something went wrong. Please try again.');
+      alert.querySelector('#alertConfirmBtn').remove();
+      modalMessage.innerHTML = '';
+      modalMessage.appendChild(alert);
       setTimeout(() => {
-        modalMessage.classList.add('d-none');
         submitBtn.removeAttribute('disabled');
         submitBtn.innerHTML = 'Submit';
-      }, 3000);
+      }, 300);
     });
 
 }
