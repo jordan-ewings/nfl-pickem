@@ -340,25 +340,25 @@ function handlePickChange(e) {
     if (!noSubmit) submitBtn.classList.add('no-submit');
   }
 
-  // let sub = document.getElementById('modalFormSubtitle');
-  // let gamerows = modal.querySelectorAll('.gamerow');
-  // let openUnpickedGames = 0;
-  // let openGames = 0;
-  // gamerows.forEach((gr) => {
-  //   let picked = gr.querySelector('input:checked');
-  //   let disabled = gr.querySelector('input[disabled]');
-  //   if (!picked && !disabled) openUnpickedGames++;
-  //   if (!disabled) openGames++;
-  // });
+  let sub = document.getElementById('modalFormSubtitle');
+  let gamerows = modal.querySelectorAll('.gamerow');
+  let openUnpickedGames = 0;
+  let openGames = 0;
+  gamerows.forEach((gr) => {
+    let picked = gr.querySelector('input:checked');
+    let disabled = gr.querySelector('input[disabled]');
+    if (!picked && !disabled) openUnpickedGames++;
+    if (!disabled) openGames++;
+  });
 
-  // let subText = openGames + ' games open';
-  // if (openGames == 0) subText = 'No games open';
-  // if (openGames > 0) {
-  //   if (openUnpickedGames > 0) subText += ' (' + openUnpickedGames + ' unpicked)';
-  //   if (openUnpickedGames == 0) subText += ' (all picked)';
-  // }
-  // sub.innerHTML = '';
-  // sub.appendChild(document.createTextNode(subText));
+  let subText = openGames + ' games open';
+  if (openGames == 0) subText = 'No games open';
+  if (openGames > 0) {
+    if (openUnpickedGames > 0) subText += ' (' + openUnpickedGames + ' unpicked)';
+    if (openUnpickedGames == 0) subText += ' (all picked)';
+  }
+  sub.innerHTML = '';
+  sub.appendChild(document.createTextNode(subText));
 
 }
 
