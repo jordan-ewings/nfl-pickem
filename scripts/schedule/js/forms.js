@@ -176,21 +176,9 @@ function prepareForm(e) {
   let winGames = 0;
   let loseGames = 0;
 
-  // let tblGamesChildren = document.getElementById('tblGames').querySelectorAll('.tblrow, .daterow');
-  // tblGamesChildren.forEach((tblrow, index) => {
-
-  // if (tblrow.classList.contains('tblrow') == false) {
-  //   // append to modalFormGames
-  //   // let clone = tblrow.cloneNode(true);
-  //   // let text = clone.querySelector('h6');
-  //   // text.classList.remove('pb-3');
-  //   // text.classList.add('pb-2');
-  //   modalFormGames.appendChild(clone);
-  //   return;
-  // }
-
   tblrows.forEach((tblrow, index) => {
 
+    // let gameid = tblrow.getAttribute('data-game-id');
     let game = tblrowToInput(tblrow, playerValue);
     let picked = game.getAttribute('data-picked') == 'true';
     if (picked) pickedGames++;
@@ -239,7 +227,7 @@ function prepareForm(e) {
 
 function tblrowToInput(tblrow, playerValue) {
 
-  let gameid = tblrow.getAttribute('data-gameid');
+  let gameid = tblrow.getAttribute('data-game-id');
   let gdata = queryData().filter((x) => x['game_id'] == gameid)[0];
   let pdata = gdata.responses.filter((x) => x.player == playerValue)[0];
 

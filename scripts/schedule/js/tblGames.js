@@ -28,7 +28,7 @@ function updateTblrows(update = false) {
     let tblrows = tblGames.getElementsByClassName('tblrow');
     for (let i = 0; i < tblrows.length; i++) {
       let tblrow = tblrows.item(i);
-      let game_id = tblrow.getAttribute('data-gameid');
+      let game_id = tblrow.getAttribute('data-game-id');
       let g = games.filter((x) => x.game_id == game_id)[0];
       let newrow = makeTblrow(g);
       // if pickrow of tblrow has class show, add class show to new pickrow
@@ -59,86 +59,93 @@ function updateTblrows(update = false) {
 
 /* ------------------------------------------------ */
 
+function getItem(element, dataItem) {
+  let item = element.querySelector('[data-item="' + dataItem + '"]');
+  return item;
+}
+
 function makeTblrow(g) {
+
   let template = document.getElementById('tblrow-template');
   let clone = template.content.cloneNode(true);
   let tblrow = clone.querySelector('.tblrow');
-  tblrow.setAttribute('data-gameid', g.game_id);
+  tblrow.setAttribute('data-game-id', g.game_id);
   tblrow.classList.add('game-' + g.state);
 
   let gamerow = tblrow.querySelector('.gamerow');
-  gamerow.setAttribute('data-gameid', g.game_id);
-  gamerow.setAttribute('data-week', g.week);
-  gamerow.setAttribute('data-gametime', g.gametime_raw);
-  gamerow.setAttribute('data-deadline', g.deadline);
+  gamerow.setAttribute('data-game-id', g.game_id);
+
 
   ['away', 'home'].forEach((t) => {
     let teamrow = gamerow.querySelector('.teamrow-' + t);
-    teamrow.setAttribute('data-gameid', g.game_id);
+    teamrow.setAttribute('data-game-id', g.game_id);
     teamrow.setAttribute('data-team', g[t + '_team']);
     teamrow.setAttribute('data-teamshort', g[t + '_teamshort']);
     teamrow.setAttribute('data-teamfull', g[t + '_teamfull']);
 
-    ['logo', 'teamshort', 'poss', 'score', 'record'].forEach((item) => {
-      let el = teamrow.querySelector('[data-item="' + item + '"]');
-      if (item == 'logo') {
-        el.src = g[t + '_logo'];
-        return;
-      }
-
-      if (item == 'poss') {
-        if (g[t + '_poss'] != '1') el.classList.add('d-none');
-        return;
-      }
-
-      if (item == 'score') {
-        if (g.state == 'pre') el.classList.add('d-none');
-        // return;
-      }
-
-      if (item == 'record') {
-        if (g.state != 'pre') el.classList.add('d-none');
-        // return;
-      }
-
-      el.textContent = g[t + '_' + item];
+    ['logo', 'teamshort', 'poss', 'score', 'record'].forEach((key) => {
+      let el = getItem(teamrow, key);
+      if (el.tagName == 'SPAN') el.textContent = g[t + '_' + key];
+      if (el.tagName == 'IMG') el.src = g[t + '_' + key];
+      el.classList.add('d-none');
     });
 
-    // add opacity-25 class to teamrow if team didn't win (keep logo at full opacity)
+    let logo = getItem(teamrow, 'logo');
+    let teamshort = getItem(teamrow, 'teamshort');
+    let poss = getItem(teamrow, 'poss');
+    let score = getItem(teamrow, 'score');
+    let record = getItem(teamrow, 'record');
+
+    logo.classList.remove('d-none');
+    teamshort.classList.remove('d-none');
+
+    if (g.state == 'pre') {
+      record.classList.remove('d-none');
+    } else if (g.state == 'in') {
+      score.classList.remove('d-none');
+      if (g[t + '_poss'] == '1') poss.classList.remove('d-none');
+    } else if (g.state == 'post') {
+      score.classList.remove('d-none');
+    }
+
     if (g.state == 'post') {
       if (g[t + '_team'] != g.win_team) {
-        let spanEls = teamrow.querySelectorAll('span');
-        spanEls.forEach((el) => {
-          el.classList.add('opacity-25');
-        });
+        teamshort.classList.add('opacity-25');
+        score.classList.add('opacity-25');
       }
     }
+
   });
 
   // fill statcol
+  let statcol = gamerow.querySelector('.statcol');
   ['gameday', 'gametime', 'stateshort', 'poss_loc', 'poss_dd', 'spread'].forEach((key) => {
-    let el = gamerow.querySelector('[data-item="' + key + '"]');
+    let el = getItem(statcol, key);
     el.textContent = g[key];
     el.classList.add('d-none');
-    if (g.state == 'pre') {
-      if (key == 'gameday') el.classList.remove('d-none');
-      if (key == 'gametime') el.classList.remove('d-none');
-      if (key == 'spread') el.classList.remove('d-none');
-    } else if (g.state == 'in') {
-      if (key == 'stateshort') {
-        el.classList.remove('d-none');
-        el.classList.add('text-danger');
-      }
-      if (key == 'poss_loc') el.classList.remove('d-none');
-      if (key == 'poss_dd') el.classList.remove('d-none');
-    } else if (g.state == 'post') {
-      if (key == 'stateshort') {
-        el.classList.remove('d-none');
-        el.classList.add('text-primary-emphasis');
-      }
-      if (key == 'spread') el.classList.remove('d-none');
-    }
   });
+
+  let gameday = getItem(statcol, 'gameday');
+  let gametime = getItem(statcol, 'gametime');
+  let stateshort = getItem(statcol, 'stateshort');
+  let poss_loc = getItem(statcol, 'poss_loc');
+  let poss_dd = getItem(statcol, 'poss_dd');
+  let spread = getItem(statcol, 'spread');
+
+  if (g.state == 'pre') {
+    gameday.classList.remove('d-none');
+    gametime.classList.remove('d-none');
+    spread.classList.remove('d-none');
+  } else if (g.state == 'in') {
+    stateshort.classList.remove('d-none');
+    stateshort.classList.add('text-danger');
+    poss_loc.classList.remove('d-none');
+    poss_dd.classList.remove('d-none');
+  } else if (g.state == 'post') {
+    stateshort.classList.remove('d-none');
+    stateshort.classList.add('text-primary-emphasis');
+    spread.classList.remove('d-none');
+  }
 
   // fill pickrow
   if (!g.responses) {
@@ -147,9 +154,6 @@ function makeTblrow(g) {
     return tblrow;
   }
 
-  let state = g.state;
-  let win_team = g.win_team;
-
   gamerow.setAttribute('data-bs-toggle', 'collapse');
   gamerow.setAttribute('data-bs-target', '#picks-' + g.game_id);
   gamerow.setAttribute('role', 'button');
@@ -157,7 +161,7 @@ function makeTblrow(g) {
   let pickrow = tblrow.querySelector('.pickrow');
   pickrow.classList.add('collapse');
   pickrow.id = 'picks-' + g.game_id;
-  pickrow.id = pickrow.id.replace('_', '-');
+  // pickrow.id = pickrow.id.replace('_', '-');
 
   let pcols = pickrow.querySelector('.row-cols-3');
   g.responses.forEach((p, index) => {
@@ -175,28 +179,19 @@ function makeTblrow(g) {
       pickitem.setAttribute('data-' + label, p[key]);
     });
 
-    let logo = pickitem.querySelector('[data-item="pick_logo"]');
+    let logo = getItem(pickitem, 'pick_logo');
+    let player = getItem(pickitem, 'player');
+    let status = getItem(pickitem, 'status');
+
     logo.src = p.pick_logo;
     if (p.pick_logo == '') logo.classList.add('opacity-0');
-    let player = pickitem.querySelector('[data-item="player"]');
     player.textContent = p.player;
 
-    let pick_team = p.pick_team;
-    if (p.status != 'OK') {
-      pickitem.classList.add('opacity-25');
-      let status = pickitem.querySelector('[data-item="status"]');
-      if (p.status == 'LATE') {
-        status.textContent = 'L';
-        status.classList.remove('d-none');
-      }
-    } else {
-      if (state == 'post') {
-        if (pick_team == win_team) {
-          pickitem.classList.add('opacity-100');
-        } else {
-          pickitem.classList.add('opacity-25');
-        }
-      }
+    if (p.f_win == '1') pickitem.classList.add('opacity-100');
+    if (p.f_win == '0' || p.status != 'OK') pickitem.classList.add('opacity-25');
+    if (p.status == 'LATE') {
+      status.textContent = 'L';
+      status.classList.remove('d-none');
     }
 
     pickitem.addEventListener('click', (e) => {

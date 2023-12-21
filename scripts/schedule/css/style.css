@@ -54,6 +54,14 @@ html {
   font-weight: 700 !important;
 }
 
+.gamerow {
+  border-top: 2px dotted rgb(47, 47, 47);
+}
+
+.teamcol {
+  border-right: 1px solid rgb(47, 47, 47);
+}
+
 .pickcont {
   background-color: rgb(15, 15, 15) !important;
 }
