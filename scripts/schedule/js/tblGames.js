@@ -12,6 +12,7 @@ function updateTblrows(update = false) {
     days = days.filter((c, index) => days.indexOf(c) === index);
     days.forEach((d) => {
       let dayDiv = document.createElement('div');
+      dayDiv.classList.add('daterow')
       let day = document.createElement('h6');
       day.classList.add('text-center', 'text-dim1', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0');
       day.textContent = d;

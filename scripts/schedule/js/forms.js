@@ -176,6 +176,19 @@ function prepareForm(e) {
   let winGames = 0;
   let loseGames = 0;
 
+  // let tblGamesChildren = document.getElementById('tblGames').querySelectorAll('.tblrow, .daterow');
+  // tblGamesChildren.forEach((tblrow, index) => {
+
+  // if (tblrow.classList.contains('tblrow') == false) {
+  //   // append to modalFormGames
+  //   // let clone = tblrow.cloneNode(true);
+  //   // let text = clone.querySelector('h6');
+  //   // text.classList.remove('pb-3');
+  //   // text.classList.add('pb-2');
+  //   modalFormGames.appendChild(clone);
+  //   return;
+  // }
+
   tblrows.forEach((tblrow, index) => {
 
     let game = tblrowToInput(tblrow, playerValue);
