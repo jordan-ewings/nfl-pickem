@@ -563,6 +563,7 @@
 
       DATA.tblGames = DATA.full.filter((x) => x.week == week)[0];
       updateTblrows();
+      console.log(DATA.tblGames);
 
       let fCont = document.getElementById('filterCont');
       let btns = fCont.getElementsByClassName('btn');

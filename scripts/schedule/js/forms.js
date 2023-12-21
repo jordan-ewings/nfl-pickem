@@ -103,6 +103,7 @@ function postForm() {
       console.log(result);
       submitBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
       incorpFormData(result);
+      console.log('success');
 
       setTimeout(() => {
         let modalBS = bootstrap.Modal.getInstance(modal);
@@ -135,24 +136,45 @@ function incorpFormData(resp) {
   gameids = gameids.filter((x) => !isNaN(x));
   gameids.forEach((gameid) => {
 
-    let pickitem = document.querySelector('.pickitem[data-player="' + player + '"][data-game-id="' + gameid + '"]');
     let p = resp[gameid];
-    Object.keys(p).forEach((key) => {
-      let dataLabel = key.replace('_', '-');
-      pickitem.setAttribute('data-' + dataLabel, p[key]);
+    DATA.tblGames.games.forEach((g) => {
+      if (g.game_id != gameid) return;
+      g.responses.forEach((r) => {
+        if (r.player != player) return;
+        for (key in p) {
+          r[key] = p[key];
+        }
+      });
     });
-
-    if (pickitem.classList.contains('opacity-25')) {
-      pickitem.classList.remove('opacity-25');
-    }
-    let pickimg = pickitem.querySelector('img');
-    pickimg.src = p.pick_logo;
-    if (pickimg.classList.contains('opacity-0')) {
-      pickimg.classList.remove('opacity-0');
-    }
-
   });
+
+  updateTblrows(update = true);
 }
+
+// function incorpFormDataOld(resp) {
+//   let player = resp.player;
+//   let gameids = Object.keys(resp);
+//   gameids = gameids.filter((x) => !isNaN(x));
+//   gameids.forEach((gameid) => {
+
+//     let pickitem = document.querySelector('.pickitem[data-player="' + player + '"][data-game-id="' + gameid + '"]');
+//     let p = resp[gameid];
+//     Object.keys(p).forEach((key) => {
+//       let dataLabel = key.replace('_', '-');
+//       pickitem.setAttribute('data-' + dataLabel, p[key]);
+//     });
+
+//     if (pickitem.classList.contains('opacity-25')) {
+//       pickitem.classList.remove('opacity-25');
+//     }
+//     let pickimg = pickitem.querySelector('img');
+//     pickimg.src = p.pick_logo;
+//     if (pickimg.classList.contains('opacity-0')) {
+//       pickimg.classList.remove('opacity-0');
+//     }
+
+//   });
+// }
 
 /* ------------------------------------------------ */
 
