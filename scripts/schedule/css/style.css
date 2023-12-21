@@ -55,7 +55,7 @@ html {
 }
 
 .gamerow {
-  border-top: 2px dotted rgb(47, 47, 47);
+  border-top: 2px dotted rgb(47, 47, 47) !important;
 }
 
 .teamcol {
