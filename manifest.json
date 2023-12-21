@@ -1,0 +1,8 @@
+{
+  "name": "Pickem",
+  "short_name": "Pickem",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "rgb(24, 24, 24)",
+  "scope": "/"
+}
