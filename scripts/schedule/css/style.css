@@ -15,7 +15,7 @@ html {
 
 .modal-header {
   padding-top: env(safe-area-inset-top) !important;
-  padding-bottom: 12px !important;
+  padding-bottom: 8px !important;
 }
 
 .modal-footer {
@@ -30,7 +30,7 @@ html {
 }
 
 .modal-body {
-  padding: 0 !important;
+  padding: 4px 0 0 0 !important;
   overflow-y: scroll;
   overscroll-behavior: contain;
 }
