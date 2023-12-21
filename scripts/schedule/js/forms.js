@@ -151,31 +151,6 @@ function incorpFormData(resp) {
   updateTblrows(update = true);
 }
 
-// function incorpFormDataOld(resp) {
-//   let player = resp.player;
-//   let gameids = Object.keys(resp);
-//   gameids = gameids.filter((x) => !isNaN(x));
-//   gameids.forEach((gameid) => {
-
-//     let pickitem = document.querySelector('.pickitem[data-player="' + player + '"][data-game-id="' + gameid + '"]');
-//     let p = resp[gameid];
-//     Object.keys(p).forEach((key) => {
-//       let dataLabel = key.replace('_', '-');
-//       pickitem.setAttribute('data-' + dataLabel, p[key]);
-//     });
-
-//     if (pickitem.classList.contains('opacity-25')) {
-//       pickitem.classList.remove('opacity-25');
-//     }
-//     let pickimg = pickitem.querySelector('img');
-//     pickimg.src = p.pick_logo;
-//     if (pickimg.classList.contains('opacity-0')) {
-//       pickimg.classList.remove('opacity-0');
-//     }
-
-//   });
-// }
-
 /* ------------------------------------------------ */
 
 function prepareForm(e) {
@@ -281,7 +256,7 @@ function tblrowToInput(tblrow, playerValue) {
 
   let timeRemainingDiv = document.createElement('div');
   timeRemainingDiv.classList.add('dl-clock', 'd-flex', 'flex-row', 'flex-nowrap', 'justify-content-start', 'text-sm5');
-  if (is_open) timeRemainingDiv.classList.add('mt-2');
+  if (is_open) timeRemainingDiv.classList.add('mt-2', 'ms-1');
   timeRemainingDiv.setAttribute('data-deadline', gdata.deadline);
   game.querySelector('.col-9').appendChild(timeRemainingDiv);
 
@@ -438,6 +413,15 @@ function calcTimeRemaining(deadline) {
     vshow.M = 'd-none';
     eColor += 'text-danger';
   }
+
+  // add clock icon before
+  let eIcon = document.createElement('i');
+  eIcon.classList.add('fa-regular', 'fa-clock');
+  eIcon.classList.add(eColor);
+  eIcon.style.paddingTop = '.2rem';
+  eIcon.style.paddingBottom = '.2rem';
+  eIcon.style.paddingRight = '.15rem';
+  eLab.appendChild(eIcon);
 
   let durClasses = ['text-sm5', 'fw-light'];
   let eSuffs = { 'D': 'DAY', 'H': 'HOUR', 'M': 'MIN', 'S': 'SEC' };

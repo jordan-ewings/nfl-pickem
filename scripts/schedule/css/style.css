@@ -1,26 +1,51 @@
-.modal-content {
-  padding: 0 !important;
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background-color: var(--ios-bg);
+  z-index: 1000;
+}
+
+html {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.modal-header {
+  padding-top: env(safe-area-inset-top) !important;
+  padding-bottom: 12px !important;
+}
+
+.modal-footer {
+  padding-bottom: env(safe-area-inset-bottom) !important;
+  padding-top: 8px !important;
   margin: 0 !important;
+  border-top: none !important;
+}
+
+#modalMessage {
+  margin: 0 !important;
+}
+
+.modal-body {
+  padding: 0 !important;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
 }
 
 #modalFormBody {
   padding: 0 !important;
 }
 
-.modal-body {
-  padding: 0 !important;
+#modalFormGames {
+  padding: 8px 0px !important;
 }
 
-.modal-footer {
-  padding: 8px 12px !important;
-  border-top: none !important;
-  /* border-top: 1px solid var(--ios-separator) !important; */
-
-  /* background-color: rgb(15, 15, 15) !important; */
-}
-
-.modal-header {
-  padding: 12px 12px !important;
+#modalFormGames .gamerow {
+  margin: 4px 4px !important;
+  padding: 8px 0px !important;
 }
 
 #filterCont button.active {
@@ -60,7 +85,3 @@ button.no-submit {
   pointer-events: none;
   opacity: .5;
 }
-
-/* button.no-submit {
-  display: none !important;
-} */
