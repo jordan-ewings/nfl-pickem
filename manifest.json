@@ -4,7 +4,7 @@
   "display": "standalone",
   "background_color": "rgb(24, 24, 24)",
   "theme_color": "rgb(24, 24, 24)",
-  "scope": "/",
+  "scope": "https://jordan-ewings.github.io/nfl-pickem/",
   "icons": [
     {
       "src": "images/logo-192.png",
