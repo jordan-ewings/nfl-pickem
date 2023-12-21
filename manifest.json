@@ -1,11 +1,11 @@
 {
   "name": "PICK 'EM",
   "short_name": "PICK 'EM",
-  "start_url": ".",
+  "start_url": "/nfl-pickem/",
   "display": "standalone",
   "background_color": "rgb(24, 24, 24)",
   "theme_color": "rgb(24, 24, 24)",
-  "scope": ".",
+  "scope": "/nfl-pickem/",
   "icons": [
     {
       "src": "images/logo-192.png",
