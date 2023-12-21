@@ -2,9 +2,10 @@
   "name": "PICK 'EM",
   "short_name": "PICK 'EM",
   "display": "standalone",
+  "start_url": "/",
   "background_color": "rgb(24, 24, 24)",
   "theme_color": "rgb(24, 24, 24)",
-  "scope": "https://jordan-ewings.github.io/nfl-pickem/",
+  "scope": "./",
   "icons": [
     {
       "src": "images/logo-192.png",
