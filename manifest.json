@@ -2,10 +2,10 @@
   "name": "PICK 'EM",
   "short_name": "PICK 'EM",
   "display": "standalone",
-  "start_url": "/",
+  "start_url": "index.html",
   "background_color": "rgb(24, 24, 24)",
   "theme_color": "rgb(24, 24, 24)",
-  "scope": "./",
+  "scope": "/",
   "icons": [
     {
       "src": "images/logo-192.png",
