@@ -172,7 +172,7 @@ function updateTblWeekly(player) {
     let row = createRow(x, isWeekly = true);
     // edit row for weekly
     let week = x.week;
-    let weekStr = 'WK ' + week;
+    let weekStr = 'Week ' + week;
     let playerItem = getItem(row, 'player');
     playerItem.innerHTML = weekStr;
 

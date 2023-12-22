@@ -25,6 +25,7 @@ i {
   background-color: var(--ios-bg);
   color: var(--ios-text);
   font-size: var(--font-sm3);
+  padding: 8px 6px;
 }
 
 .table thead th {
