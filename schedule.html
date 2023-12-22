@@ -190,6 +190,50 @@
 
     sendData();
   </script>
+  <script>
+
+    let touchstartX = 0;
+    let touchendX = 0;
+    let touchstartY = 0;
+    let touchendY = 0;
+
+    document.addEventListener('touchstart', function (event) {
+      touchstartX = event.changedTouches[0].screenX;
+      touchstartY = event.changedTouches[0].screenY;
+    }, false);
+
+    document.addEventListener('touchend', function (event) {
+      touchendX = event.changedTouches[0].screenX;
+      touchendY = event.changedTouches[0].screenY;
+      handleGesture(event);
+    }, false);
+
+    document.getElementById('main').style.transition = "transform 0.3s ease";
+
+    function handleGesture(e) {
+
+      let diffX = touchendX - touchstartX;
+      let diffY = touchendY - touchstartY;
+      let mvmtX = Math.abs(diffX);
+      let mvmtY = Math.abs(diffY);
+      let main = document.getElementById('main');
+
+      if (mvmtX < 100) {
+        main.style.transform = "translateX(0px)";
+        return;
+      }
+
+      if (mvmtX > mvmtY && diffX > 0) {
+        main.style.transform = "translateX(100%)";
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 300);
+      } else {
+        main.style.transform = "translateX(0px)";
+      }
+    }
+
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
   </script>
 </body>
