@@ -188,7 +188,10 @@ function makeTblrow(g) {
     player.textContent = p.player;
 
     if (p.f_win == '1') pickitem.classList.add('opacity-100');
-    if (p.f_win == '0' || p.status != 'OK') pickitem.classList.add('opacity-25');
+    if (p.f_win == '0' || p.status != 'OK') {
+      pickitem.classList.add('opacity-25');
+      pickitem.classList.remove('fw-medium');
+    }
     if (p.status == 'LATE') {
       status.textContent = 'L';
       status.classList.remove('d-none');
