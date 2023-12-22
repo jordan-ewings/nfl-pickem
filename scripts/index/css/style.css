@@ -28,6 +28,15 @@ i {
   padding: 8px 6px;
 }
 
+#tblWeeklyContainer {
+  background-color: rgba(0, 0, 0, .2) !important;
+}
+
+#tblWeeklyContainer td,
+#tblWeeklyContainer th {
+  background-color: rgba(0, 0, 0, .2) !important;
+}
+
 .table thead th {
   color: var(--ios-text2);
   font-size: var(--font-sm5);

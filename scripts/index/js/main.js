@@ -53,31 +53,19 @@ function createRow(x, isWeekly = false) {
   let recIndexes = [2, 3];
   recIndexes.forEach((i) => {
     let rec = row.children[i];
-
     let wlSpl = rec.innerHTML.split('-');
     let wl = [wlSpl[0], '-', wlSpl[1]];
     rec.innerHTML = '';
     let div = document.createElement('div');
     div.classList.add('d-flex', 'w-100', 'justify-content-center');
-
-    let maxChars = 0;
     wl.forEach((x, j) => {
       let span = document.createElement('div');
+      if (j == 1) {
+        span.classList.add('text-dim2', 'text-center');
+        span.style.width = '10px';
+      }
       span.innerHTML = x;
       div.appendChild(span);
-      let chars = x.length;
-      if (chars > maxChars) maxChars = chars;
-    });
-
-    let spans = div.querySelectorAll('div');
-    spans.forEach((span, j) => {
-      if (j == 1) span.classList.add('text-dim1', 'text-center');
-      if (j == 0) span.classList.add('text-end');
-      if (j == 2) span.classList.add('text-start');
-
-      let w = maxChars * 8;
-      if (j != 1) span.style.width = w + 'px';
-      if (j == 1) span.style.width = '10px';
     });
 
     rec.appendChild(div);
@@ -115,7 +103,7 @@ function updateTblStandings() {
     return 0;
   });
 
-  let rows = data.map((x) => {
+  data.forEach((x) => {
     let row = createRow(x);
     row.setAttribute('data-player', x.player);
     row.setAttribute('role', 'button');
@@ -123,14 +111,7 @@ function updateTblStandings() {
       updateTblWeekly(x.player);
     });
 
-    return row;
-  });
-
-  // change alignment of record columns so wins and losses in each row are aligned
-
-
-  rows.forEach((x) => {
-    tbody.appendChild(x);
+    tbody.appendChild(row);
   });
 
   return;
@@ -157,6 +138,7 @@ function updateTblWeekly(player) {
   let tblStandingsDiv = tblStandings.parentElement;
   let tblDiv = tblStandingsDiv.cloneNode(true);
   let tbl = tblDiv.querySelector('table');
+  tbl.classList.add('mb-0');
   let tbody = tbl.querySelector('tbody');
   tbody.innerHTML = '';
 
@@ -170,7 +152,6 @@ function updateTblWeekly(player) {
 
   data.forEach((x, idx) => {
     let row = createRow(x, isWeekly = true);
-    // edit row for weekly
     let week = x.week;
     let weekStr = 'Week ' + week;
     let playerItem = getItem(row, 'player');
@@ -184,15 +165,14 @@ function updateTblWeekly(player) {
       getItem(row, 'pc_dog_win').innerHTML = '-';
     }
 
-    // row highlight every other
-    let cells = row.querySelectorAll('td');
+    // let cells = row.querySelectorAll('td');
     // if (idx % 2 == 0) {
     //   cells.forEach((x) => {
     //     x.style.backgroundColor = 'rgba(0,0,0,.15)';
     //   });
     // }
     // cells.forEach((x) => {
-    //   x.style.borderTop = '1px solid black';
+    //   x.style.backGroundColor = 'rgb(0,0,0) !important';
     // });
 
     tbody.appendChild(row);
