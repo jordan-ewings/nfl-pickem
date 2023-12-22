@@ -50,6 +50,39 @@ function createRow(x, isWeekly = false) {
     }
   }
 
+  let recIndexes = [2, 3];
+  recIndexes.forEach((i) => {
+    let rec = row.children[i];
+
+    let wlSpl = rec.innerHTML.split('-');
+    let wl = [wlSpl[0], '-', wlSpl[1]];
+    rec.innerHTML = '';
+    let div = document.createElement('div');
+    div.classList.add('d-flex', 'w-100', 'justify-content-center');
+
+    let maxChars = 0;
+    wl.forEach((x, j) => {
+      let span = document.createElement('div');
+      span.innerHTML = x;
+      div.appendChild(span);
+      let chars = x.length;
+      if (chars > maxChars) maxChars = chars;
+    });
+
+    let spans = div.querySelectorAll('div');
+    spans.forEach((span, j) => {
+      if (j == 1) span.classList.add('text-dim1', 'text-center');
+      if (j == 0) span.classList.add('text-end');
+      if (j == 2) span.classList.add('text-start');
+
+      let w = maxChars * 8;
+      if (j != 1) span.style.width = w + 'px';
+      if (j == 1) span.style.width = '10px';
+    });
+
+    rec.appendChild(div);
+  });
+
   return row;
 }
 
@@ -82,7 +115,7 @@ function updateTblStandings() {
     return 0;
   });
 
-  data.forEach((x) => {
+  let rows = data.map((x) => {
     let row = createRow(x);
     row.setAttribute('data-player', x.player);
     row.setAttribute('role', 'button');
@@ -90,7 +123,14 @@ function updateTblStandings() {
       updateTblWeekly(x.player);
     });
 
-    tbody.appendChild(row);
+    return row;
+  });
+
+  // change alignment of record columns so wins and losses in each row are aligned
+
+
+  rows.forEach((x) => {
+    tbody.appendChild(x);
   });
 
   return;
