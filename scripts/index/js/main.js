@@ -168,19 +168,33 @@ function updateTblWeekly(player) {
     return 0;
   });
 
-  data.forEach((x) => {
+  data.forEach((x, idx) => {
     let row = createRow(x, isWeekly = true);
     // edit row for weekly
     let week = x.week;
     let weekStr = 'Week ' + week;
     let playerItem = getItem(row, 'player');
     playerItem.innerHTML = weekStr;
+    let cont = getItem(row, 'player-cont');
+    cont.classList.remove('fw-medium');
 
     let dogOpps = x.wk_dog_opps;
     if (dogOpps == 0) {
       getItem(row, 'pc_dog_pick').innerHTML = '-';
       getItem(row, 'pc_dog_win').innerHTML = '-';
     }
+
+    // row highlight every other
+    let cells = row.querySelectorAll('td');
+    // if (idx % 2 == 0) {
+    //   cells.forEach((x) => {
+    //     x.style.backgroundColor = 'rgba(0,0,0,.15)';
+    //   });
+    // }
+    // cells.forEach((x) => {
+    //   x.style.borderTop = '1px solid black';
+    // });
+
     tbody.appendChild(row);
   });
 
