@@ -182,13 +182,13 @@ function prepareForm(e) {
     let game = tblrowToInput(tblrow, playerValue);
     let picked = game.getAttribute('data-picked') == 'true';
     if (picked) pickedGames++;
-    if (index == 0) game.classList.add('border-top-0');
+    // if (index == 0) game.classList.add('border-top-0');
     let disabled = game.querySelector('input[disabled]');
     if (disabled) openGames--;
     if (!picked && !disabled) openUnpickedGames++;
 
-    let win = game.classList.contains('border-success');
-    let lose = game.classList.contains('border-danger');
+    let win = game.classList.contains('correct');
+    let lose = game.classList.contains('incorrect');
     if (win) winGames++;
     if (lose) loseGames++;
 
@@ -238,8 +238,8 @@ function tblrowToInput(tblrow, playerValue) {
   let is_faded = pickitem.classList.contains('opacity-25');
   let pickfull = pdata.pick_teamfull;
   if (gdata.state == 'post') {
-    if (is_faded) pickFormatting = ['border-danger'];
-    if (!is_faded) pickFormatting = ['border-success'];
+    if (is_faded) pickFormatting = ['incorrect'];
+    if (!is_faded) pickFormatting = ['correct'];
   }
 
   let gametime = new Date(gdata.gametime_raw);

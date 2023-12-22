@@ -13,16 +13,21 @@ function updateTblrows(update = false) {
     days.forEach((d) => {
       let dayDiv = document.createElement('div');
       dayDiv.classList.add('daterow')
+      // dayDiv.classList.add('rounded-4', 'mb-2');
+
       let day = document.createElement('h6');
-      day.classList.add('text-center', 'text-dim1', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0');
+      day.classList.add('text-center', 'text-main', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0');
       day.textContent = d;
       dayDiv.appendChild(day);
-      tblGames.appendChild(dayDiv);
+      // tblGames.appendChild(dayDiv);
 
       games.filter((x) => x.gameday_long == d).forEach((g) => {
         let tblrow = makeTblrow(g);
-        tblGames.appendChild(tblrow);
+        dayDiv.appendChild(tblrow);
+        // tblGames.appendChild(tblrow);
       });
+
+      tblGames.appendChild(dayDiv);
     });
   } else {
     let tblrows = tblGames.getElementsByClassName('tblrow');

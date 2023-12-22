@@ -10,9 +10,10 @@
   --ios-teal: rgb(100, 210, 255);
   --ios-yellow: rgb(255, 214, 10);
 
-  --ios-bg: rgb(20, 20, 20);
-  --ios-bg1: rgb(28, 28, 30);
-  --ios-bg2: rgb(44, 44, 46);
+  --ios-bg-black: rgb(14, 14, 15);
+  --ios-bg: rgb(19, 19, 20);
+  --ios-bg1: rgb(24, 24, 26);
+  --ios-bg2: rgb(28, 28, 30);
   --ios-bg3: rgb(58, 58, 60);
   --ios-bg4: rgb(72, 72, 74);
 
@@ -130,4 +131,8 @@ body {
 
 .bg-4 {
   background-color: var(--ios-bg4) !important;
+}
+
+.bg-black {
+  background-color: var(--ios-bg-black) !important;
 }

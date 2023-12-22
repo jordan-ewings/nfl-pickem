@@ -28,13 +28,19 @@ i {
   padding: 8px 6px;
 }
 
+/* .table td span[data-item="player"] {
+  font-size: var(--font-sm2);
+} */
+
 #tblWeeklyContainer {
-  background-color: rgba(0, 0, 0, .2) !important;
+  /* background-color: rgba(0, 0, 0, .2) !important; */
+  background-color: var(--ios-bg-black) !important;
 }
 
 #tblWeeklyContainer td,
 #tblWeeklyContainer th {
-  background-color: rgba(0, 0, 0, .2) !important;
+  /* background-color: rgba(0, 0, 0, .2) !important; */
+  background-color: var(--ios-bg-black) !important;
 }
 
 .table thead th {
