@@ -39,7 +39,7 @@ function createRow(x, isWeekly = false) {
 
   if (tbldata.change != '-') {
     let val = getItem(row, 'change');
-    val.classList.remove('d-none');
+    if (isWeekly == false) val.classList.remove('d-none');
     val.innerHTML = val.innerHTML.replace('-', '');
     if (parseInt(tbldata.change) > 0) {
       val.classList.add('text-success-emphasis');
@@ -101,6 +101,19 @@ function updateTblStandings() {
 function updateTblWeekly(player) {
 
   let tblStandings = document.getElementById('tblStandings');
+  // find player row
+  let cells = tblStandings.querySelectorAll('tbody tr td');
+  cells.forEach((x) => {
+    x.classList.remove('bg-primary', 'bg-opacity-10');
+    x.classList.remove('border', 'border-primary-subtle', 'border-start-0', 'border-end-0');
+  });
+  let playerRow = tblStandings.querySelector('tbody tr[data-player="' + player + '"]');
+  let playerCells = playerRow.querySelectorAll('td');
+  playerCells.forEach((x) => {
+    x.classList.add('bg-primary', 'bg-opacity-10');
+    x.classList.add('border', 'border-primary-subtle', 'border-start-0', 'border-end-0');
+  });
+
   let tblStandingsDiv = tblStandings.parentElement;
   let tblDiv = tblStandingsDiv.cloneNode(true);
   let tbl = tblDiv.querySelector('table');
@@ -132,24 +145,36 @@ function updateTblWeekly(player) {
   });
 
   let tblHeading = document.createElement('div');
-  tblHeading.classList.add('d-flex', 'justify-content-between', 'align-items-center');
-  tblHeading.classList.add('mt-0', 'mb-2', 'mx-0', 'py-2', 'px-3');
+  tblHeading.classList.add('d-flex', 'align-items-center');
+  tblHeading.classList.add('mt-0', 'mb-1', 'mx-0', 'py-2', 'px-3');
   tblHeading.classList.add('bg-primary', 'bg-opacity-10');
-  tblHeading.classList.add('border', 'border-primary-subtle', 'border-start-0', 'border-end-0');
+  tblHeading.classList.add('border', 'border-primary-subtle', 'border-start-0', 'border-end-0', 'border-top-0');
+  tblHeading.classList.add('text-primary-emphasis');
+
+  let headTitle = document.createElement('span');
+  headTitle.classList.add('fw-medium');
+  headTitle.innerHTML = 'Weekly';
+  tblHeading.appendChild(headTitle);
 
   let headPlayer = document.createElement('span');
-  headPlayer.classList.add('fw-light', 'text-lg2', 'text-primary-emphasis');
-  headPlayer.innerHTML = player;
+  headPlayer.classList.add('fw-light', 'ms-1', 'text-sm1', 'opacity-50');
+  headPlayer.innerHTML = ' - ' + player;
   tblHeading.appendChild(headPlayer);
 
   let headClose = document.createElement('button');
-  headClose.classList.add('btn', 'text-primary-emphasis', 'm-0', 'p-0');
+  headClose.classList.add('btn', 'text-primary-emphasis', 'opacity-25', 'm-0', 'p-0', 'ms-auto');
   headClose.setAttribute('type', 'button');
   headClose.innerHTML = '<i class="fa-regular fa-xmark"></i>';
   headClose.addEventListener('click', (e) => {
     let cont = document.getElementById('tblWeeklyContainer');
     cont.classList.add('d-none');
     cont.innerHTML = '';
+    let tblStandings = document.getElementById('tblStandings');
+    let cells = tblStandings.querySelectorAll('tbody tr td');
+    cells.forEach((x) => {
+      x.classList.remove('bg-primary', 'bg-opacity-10');
+      x.classList.remove('border', 'border-primary-subtle', 'border-start-0', 'border-end-0');
+    });
   });
   tblHeading.appendChild(headClose);
 
