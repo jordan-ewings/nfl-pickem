@@ -5,7 +5,7 @@ body::before {
   left: 0;
   right: 0;
   height: env(safe-area-inset-top);
-  background-color: var(--ios-bg);
+  background-color: var(--ios-bg-black);
   z-index: 1000;
 }
 
@@ -22,7 +22,7 @@ i {
 
 .table td,
 .table th {
-  background-color: var(--ios-bg);
+  background-color: transparent !important;
   color: var(--ios-text);
   font-size: var(--font-sm3);
   padding: 8px 6px;
@@ -32,15 +32,13 @@ i {
   font-size: var(--font-sm2);
 } */
 
-#tblWeeklyContainer {
-  /* background-color: rgba(0, 0, 0, .2) !important; */
-  background-color: var(--ios-bg-black) !important;
+#tblStandingsContainer {
+  background-color: var(--ios-bg) !important;
 }
 
-#tblWeeklyContainer td,
-#tblWeeklyContainer th {
+#tblWeeklyContainer {
   /* background-color: rgba(0, 0, 0, .2) !important; */
-  background-color: var(--ios-bg-black) !important;
+  /* background-color: var(--ios-bg-black) !important; */
 }
 
 .table thead th {

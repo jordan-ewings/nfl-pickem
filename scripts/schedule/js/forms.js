@@ -250,7 +250,7 @@ function tblrowToInput(tblrow, playerValue) {
   game.removeAttribute('data-bs-toggle');
   game.removeAttribute('data-bs-target');
 
-  game.style.borderLeft = '3px solid #0e0e0e';
+  // game.style.borderLeft = '3px solid #0e0e0e';
   game.classList.add(...pickFormatting);
   game.setAttribute('data-picked', 'false')
   if (pickfull != '') game.setAttribute('data-picked', 'true');
@@ -264,7 +264,7 @@ function tblrowToInput(tblrow, playerValue) {
   let status = pdata.status;
   if (status == 'LATE') {
     let late = document.createElement('div');
-    late.classList.add('rounded-pill', 'text-center', 'text-smaller');
+    late.classList.add('rounded-pill', 'text-center', 'text-sm3');
     late.classList.add('bg-danger', 'text-white');
     late.classList.add('mt-2', 'ms-auto', 'me-1');
     late.textContent = 'LATE';
@@ -324,10 +324,10 @@ function handlePickChange(e) {
     let orig_checked = input.getAttribute('data-origchecked') == 'true';
     if (input.checked && !orig_checked) {
       inputs_changed = true;
-      gr.classList.add('border-primary');
+      gr.classList.add('pick-changed');
     } else {
       if (input.checked && orig_checked) {
-        gr.classList.remove('border-primary');
+        gr.classList.remove('pick-changed');
       }
     }
   });

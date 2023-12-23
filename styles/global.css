@@ -47,7 +47,7 @@ div::-webkit-scrollbar {
 }
 
 body {
-  background-color: var(--ios-bg);
+  background-color: var(--ios-bg-black);
   color: var(--ios-text);
   font-family: system-ui, -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: var(--font);

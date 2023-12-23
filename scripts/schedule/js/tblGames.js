@@ -13,7 +13,7 @@ function updateTblrows(update = false) {
     days.forEach((d) => {
       let dayDiv = document.createElement('div');
       dayDiv.classList.add('daterow')
-      // dayDiv.classList.add('rounded-4', 'mb-2');
+      dayDiv.classList.add('rounded-4', 'mb-2');
 
       let day = document.createElement('h6');
       day.classList.add('text-center', 'text-main', 'fw-semibold', 'pt-3', 'pb-3', 'mb-0', 'mt-0');

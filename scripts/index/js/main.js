@@ -184,6 +184,7 @@ function updateTblWeekly(player) {
   tblHeading.classList.add('bg-primary', 'bg-opacity-10');
   tblHeading.classList.add('border', 'border-primary-subtle', 'border-start-0', 'border-end-0', 'border-top-0');
   tblHeading.classList.add('text-primary-emphasis');
+  tblHeading.classList.add('rounded-top-4')
 
   let headTitle = document.createElement('span');
   headTitle.classList.add('fw-medium');

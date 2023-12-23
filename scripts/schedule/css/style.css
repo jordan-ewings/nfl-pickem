@@ -5,7 +5,7 @@ body::before {
   left: 0;
   right: 0;
   height: env(safe-area-inset-top);
-  background-color: var(--ios-bg);
+  background-color: var(--ios-bg-black);
   z-index: 1000;
 }
 
@@ -13,12 +13,22 @@ html {
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
+.navbar {
+  background-color: var(--ios-bg-black);
+}
+
+#tblDetails {
+  background-color: var(--ios-bg-black);
+}
+
 .modal-header {
+  background-color: var(--ios-bg-black) !important;
   padding-top: env(safe-area-inset-top) !important;
   padding-bottom: 12px !important;
 }
 
 .modal-footer {
+  background-color: var(--ios-bg) !important;
   padding-bottom: env(safe-area-inset-bottom) !important;
   padding-top: 8px !important;
   margin: 0 !important;
@@ -30,6 +40,7 @@ html {
 }
 
 .modal-body {
+  background-color: var(--ios-bg-black) !important;
   /* padding: 4px 0 0 0 !important; */
   overflow-y: scroll;
   overscroll-behavior: contain;
@@ -40,20 +51,28 @@ html {
 }
 
 #modalFormGames {
+  background-color: var(--ios-bg) !important;
   padding: 8px 0px !important;
+  margin: 0 !important;
 }
 
 #modalFormGames .gamerow {
   margin: 4px 4px !important;
   padding: 10px 0px !important;
+  border-left: 3px solid var(--ios-bg-black);
 }
 
 .gamerow.incorrect {
-  border-left: 3px solid rgb(220, 53, 69) !important;
+  border-left-color: rgb(220, 53, 69) !important;
 }
 
 .gamerow.correct {
-  border-left: 3px solid rgb(25, 135, 84) !important;
+  border-left-color: rgb(25, 135, 84) !important;
+}
+
+.gamerow.pick-changed {
+  border-left-color: var(--bs-primary) !important;
+
 }
 
 #filterCont button.active {
@@ -63,7 +82,7 @@ html {
 }
 
 .daterow {
-  /* background-color: var(--ios-bg1) !important; */
+  background-color: var(--ios-bg) !important;
   /* border: 1px solid var(--ios-separator) !important; */
   /* box shadow around all sides */
   /* box-shadow: inset 0 0 3px var(--ios-separator); */
@@ -82,12 +101,14 @@ html {
 }
 
 .form-select {
+  background-color: var(--ios-bg) !important;
   border-color: var(--ios-separator) !important;
 }
 
 #modalFormMeta {
-  box-shadow: 0 10px 5px -5px var(--ios-bg-black);
-  border-bottom: 1px solid var(--ios-bg-black);
+  background-color: var(--ios-bg-black) !important;
+  /* box-shadow: 0 10px 5px -5px var(--ios-bg-black);
+  border-bottom: 1px solid var(--ios-bg-black); */
 }
 
 .modfooter-sticky {
@@ -100,7 +121,7 @@ html {
   position: sticky;
   top: env(safe-area-inset-top);
   z-index: 1000;
-  box-shadow: 0 20px 10px -10px var(--ios-bg);
+  /* box-shadow: 0 20px 10px -10px var(--ios-bg); */
   /* border-bottom: 1px solid var(--ios-bg-black); */
 }
 
