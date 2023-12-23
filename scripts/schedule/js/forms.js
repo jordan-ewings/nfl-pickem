@@ -252,6 +252,7 @@ function tblrowToInput(tblrow, playerValue) {
 
   // game.style.borderLeft = '3px solid #0e0e0e';
   game.classList.add(...pickFormatting);
+  game.classList.add('rounded-end-3', 'mb-1');
   game.setAttribute('data-picked', 'false')
   if (pickfull != '') game.setAttribute('data-picked', 'true');
 

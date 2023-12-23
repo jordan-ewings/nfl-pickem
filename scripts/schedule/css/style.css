@@ -28,7 +28,7 @@ html {
 }
 
 .modal-footer {
-  background-color: var(--ios-bg) !important;
+  background-color: var(--ios-bg-black) !important;
   padding-bottom: env(safe-area-inset-bottom) !important;
   padding-top: 8px !important;
   margin: 0 !important;
@@ -51,7 +51,7 @@ html {
 }
 
 #modalFormGames {
-  background-color: var(--ios-bg) !important;
+  background-color: var(--ios-bg-black) !important;
   padding: 8px 0px !important;
   margin: 0 !important;
 }
@@ -60,6 +60,8 @@ html {
   margin: 4px 4px !important;
   padding: 10px 0px !important;
   border-left: 3px solid var(--ios-bg-black);
+  background-color: var(--ios-bg) !important;
+  border-top: none !important;
 }
 
 .gamerow.incorrect {
@@ -89,7 +91,7 @@ html {
 }
 
 .gamerow {
-  border-top: 2px dotted var(--ios-separator);
+  border-top: 1px dotted var(--ios-separator);
 }
 
 .teamcol {
