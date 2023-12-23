@@ -47,7 +47,7 @@ i {
 }
 
 .table tbody tr td {
-  border-top: 1px solid var(--ios-bg2);
+  border-top: 1px dotted var(--ios-bg2);
   border-bottom: none;
 }
 
