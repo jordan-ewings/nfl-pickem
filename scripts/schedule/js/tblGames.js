@@ -19,12 +19,10 @@ function updateTblrows(update = false) {
       day.classList.add('text-center');
       day.textContent = d;
       dayDiv.appendChild(day);
-      // tblGames.appendChild(dayDiv);
 
       games.filter((x) => x.gameday_long == d).forEach((g) => {
         let tblrow = makeTblrow(g);
         dayDiv.appendChild(tblrow);
-        // tblGames.appendChild(tblrow);
       });
 
       tblGames.appendChild(dayDiv);
@@ -36,7 +34,6 @@ function updateTblrows(update = false) {
       let game_id = tblrow.getAttribute('data-game-id');
       let g = games.filter((x) => x.game_id == game_id)[0];
       let newrow = makeTblrow(g);
-      // if pickrow of tblrow has class show, add class show to new pickrow
       let pickrow = tblrow.querySelector('.pickrow');
       if (pickrow) {
         if (pickrow.classList.contains('show')) {

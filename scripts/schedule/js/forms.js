@@ -46,13 +46,12 @@ function submitForm(e) {
 
   e.preventDefault();
   let formData = new FormData(modalForm);
-
   let player = formData.get('player');
-  let username = localStorage.getItem('username');
-  if (username == null) {
-    localStorage.setItem('username', player);
-    postForm();
-  } else if (username == player) {
+
+  let username = getUsername();
+  // let userLog = JSON.parse(localStorage.getItem('userLog')).filter((x) => x.submissions > 0);
+  if (username == null || username == player) {
+    updateUserLog(player);
     postForm();
   } else {
 
@@ -63,7 +62,7 @@ function submitForm(e) {
       let alert = e.target.closest('.alert');
       alert.remove();
 
-      localStorage.setItem('username', player);
+      updateUserLog(player);
       postForm();
     });
 
@@ -76,6 +75,64 @@ function submitForm(e) {
     modalMessage.innerHTML = '';
     modalMessage.appendChild(alert);
   }
+}
+
+/* ------------------------------------------------ */
+
+function setupUserLog() {
+
+  let playerOptions = modalForm.querySelector('select[name="player"]').querySelectorAll('option');
+  let playerNames = [];
+  playerOptions.forEach((option) => {
+    let playerName = option.value;
+    if (playerName == 'Player') return;
+    playerNames.push(playerName);
+  });
+
+  let userLog = [];
+  playerNames.forEach((playerName) => {
+    let user = {};
+    user.player = playerName;
+    user.submissions = 0;
+    userLog.push(user);
+  });
+
+  localStorage.setItem('userLog', JSON.stringify(userLog));
+}
+
+/* ------------------------------------------------ */
+
+function getUsername() {
+
+  let userLog = localStorage.getItem('userLog');
+  if (userLog == null) {
+    setupUserLog();
+    return null;
+  }
+
+  userLog = JSON.parse(userLog);
+  let usernames = userLog.filter((x) => x.submissions > 0);
+  if (usernames.length == 0) return null;
+  usernames.sort((a, b) => b.submissions - a.submissions);
+  return usernames[0].player;
+}
+
+/* ------------------------------------------------ */
+
+function updateUserLog(player) {
+
+  let userLog = localStorage.getItem('userLog');
+  userLog = JSON.parse(userLog);
+  userLog.forEach((user) => {
+    if (user.player != player) return;
+    user.submissions++;
+  });
+
+  userLog.sort((a, b) => b.submissions - a.submissions);
+
+  localStorage.setItem('userLog', JSON.stringify(userLog));
+  console.log(player);
+  console.log(userLog.filter((x) => x.submissions > 0));
 }
 
 /* ------------------------------------------------ */
@@ -208,6 +265,14 @@ function prepareForm(e) {
   if (modal.hasAttribute('data-clockInt') == false) {
     setInterval(updateTimeRemainingDivs, 1000);
     modal.setAttribute('data-clockInt', 'true');
+  }
+
+  // indicate player is username
+  let username = getUsername();
+  if (username == playerValue) {
+    playerSelect.classList.add('username-aligned');
+  } else {
+    playerSelect.classList.remove('username-aligned');
   }
 }
 

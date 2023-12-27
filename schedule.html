@@ -94,7 +94,7 @@
               <div id="modalFormMeta" class="container sticky-top w-100 pt-0 pb-3">
                 <div class="row mx-0 align-items-center">
                   <div class="col-9 ps-0">
-                    <select class="form-select m-0 fw-medium" name="player" id="player" required>
+                    <select class="form-select m-0" name="player" id="player" required>
                       <option selected>Player</option>
                       <option value="Austin">Austin</option>
                       <option value="Carly">Carly</option>
@@ -189,6 +189,37 @@
     };
 
     sendData();
+  </script>
+  <script>
+
+    var touchstartY = 0;
+    var touchendY = 0;
+    var tryRefresh = false;
+    var touchmoveMin = 125;
+
+    document.body.addEventListener('touchstart', function (event) {
+      if (window.scrollY === 0) {
+        tryRefresh = true;
+      } else {
+        tryRefresh = false;
+      }
+      touchstartY = event.changedTouches[0].screenY;
+    }, false);
+
+    document.body.addEventListener('touchend', function (event) {
+      touchendY = event.changedTouches[0].screenY;
+      handleGesture();
+    }, false);
+
+    function handleGesture() {
+      if (tryRefresh == false) return;
+      let diff = touchendY - touchstartY;
+      if (diff > touchmoveMin) {
+        sendData();
+      }
+    }
+
+
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
   </script>

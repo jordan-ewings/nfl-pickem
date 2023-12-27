@@ -30,11 +30,21 @@ html {
   padding-bottom: 16px !important;
 }
 
+/* remove glow when focused */
+#modalFormMeta .form-select:focus, #modalFormMeta .form-select:active {
+  box-shadow: none !important;
+}
+
+#modalFormMeta .form-select.username-aligned {
+  font-weight: 500 !important;
+}
+
 .modal-footer {
-  padding-bottom: env(safe-area-inset-bottom) !important;
-  padding-top: 8px !important;
+  /* padding-bottom: env(safe-area-inset-bottom) !important; */
+  padding: 0px 4px;
   margin: 0 !important;
   border-top: none !important;
+  background-color: none !important;
 }
 
 #modalInfo .info-item {
@@ -68,12 +78,9 @@ html {
   padding: 0 !important;
 }
 
-/* .form-select {
-  background-color: var(--ios-bg);
-} */
 
 #modalFormGames {
-  padding: 8px 0px !important;
+  padding: 0px 0px !important;
   margin: 0 !important;
 }
 
@@ -106,13 +113,29 @@ html {
   border-left-color: var(--bs-success) !important;
 }
 
+#filterCont button {
+  margin: .4rem .75rem;
+  padding: .2rem 0;
+  border: none;
+}
 
+#filterCont button.active-week {
+  /* underline */
+  /* color: rgba(var(--bs-primary-rgb), 0.75) !important; */
+  /* color: var(--bs-primary-text-emphasis) !important; */
+  border-bottom: 2px solid var(--ios-text2) !important;
+  /* border-bottom: 2px solid rgba(var(--bs-primary-rgb), 0.5) !important; */
+}
 
 #filterCont button.active {
   color: var(--ios-text) !important;
+  /* border: none !important; */
+  border-bottom-color: rgba(var(--bs-primary-rgb), .9) !important;
   opacity: 1 !important;
   font-weight: 700 !important;
 }
+
+
 
 .daterow {
   background-color: var(--ios-bg) !important;

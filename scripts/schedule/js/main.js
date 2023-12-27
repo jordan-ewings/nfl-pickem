@@ -37,14 +37,15 @@ async function sendData() {
   if (DATA.TBL_LOADED == true) {
     let btn = document.getElementById('refresh-btn');
     let btn_html = btn.innerHTML;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm text-main" role="status" aria-hidden="true"></span>';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm text-danger-emphasis" role="status" aria-hidden="true"></span>';
 
     await getData();
     updateTblrows(update = true);
-    console.log('updated');
 
-    btn.innerHTML = '';
-    btn.innerHTML = btn_html;
+    btn.innerHTML = '<i class="fa-solid fa-check text-success-emphasis"></i>';
+    setTimeout(() => {
+      btn.innerHTML = btn_html;
+    }, 1500);
   } else {
 
     await getData();
@@ -109,8 +110,8 @@ function makeWeekButtons() {
         let week = btn.getAttribute('data-week');
         filterTable(week);
       });
-      btn.classList.add('btn', 'text-dim2', 'fw-medium', 'text-nowrap', 'rounded-2');
-      btn.style.borderColor = 'transparent';
+      btn.classList.add('btn', 'text-dim2', 'fw-medium', 'text-nowrap');
+      // btn.style.borderColor = 'transparent';
       btn.innerHTML = `${wlab}`;
       btn.id = 'btn' + w;
       fCont.appendChild(btn);
@@ -118,7 +119,7 @@ function makeWeekButtons() {
   });
 
   let currbtn = document.getElementById('btn' + DATA.currweek);
-  currbtn.classList.add('active');
+  currbtn.classList.add('active', 'active-week');
   currbtn.scrollIntoView({ behavior: "smooth", block: "end", inline: "center" });
 }
 
