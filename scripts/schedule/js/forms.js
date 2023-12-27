@@ -1,3 +1,13 @@
+let modal = document.getElementById('modalFormContainer');
+let modalHeader = modal.querySelector('.modal-header');
+let modalFooter = modal.querySelector('.modal-footer');
+
+let modalForm = modal.querySelector('#modalForm');
+let modalFormMeta = modal.querySelector('#modalFormMeta');
+let modalFormGames = modal.querySelector('#modalFormGames');
+
+let modalMessage = modal.querySelector('#modalMessage');
+
 function createAlert(type, msg) {
 
   let alert = document.createElement('div');
@@ -35,10 +45,6 @@ function createAlert(type, msg) {
 function submitForm(e) {
 
   e.preventDefault();
-  let modal = document.getElementById('modalFormContainer');
-  let modalForm = modal.querySelector('#modalForm');
-  let modalFooter = modal.querySelector('.modal-footer');
-  let modalMessage = modal.querySelector('#modalMessage');
   let formData = new FormData(modalForm);
 
   let player = formData.get('player');
@@ -76,10 +82,6 @@ function submitForm(e) {
 
 function postForm() {
 
-  let modal = document.getElementById('modalFormContainer');
-  let modalForm = modal.querySelector('#modalForm');
-  let modalFooter = modal.querySelector('.modal-footer');
-  let modalMessage = modal.querySelector('#modalMessage');
   let formData = new FormData(modalForm);
 
   let submitBtn = modal.querySelector('[type="submit"]');
@@ -153,12 +155,15 @@ function incorpFormData(resp) {
 
 /* ------------------------------------------------ */
 
+let modalTitle = modal.querySelector('#modalTitle');
+let modalInfoTTL = modal.querySelector('#modalInfoTTL');
+let modalInfoOPEN = modal.querySelector('#modalInfoOPEN');
+let modalInfoW = modal.querySelector('#modalInfoW');
+let modalInfoL = modal.querySelector('#modalInfoL');
+
 function prepareForm(e) {
 
-  let modal = document.getElementById('modalFormContainer');
-  let modalFormGames = document.getElementById('modalFormGames');
   let playerSelect = modal.querySelector('#player');
-
   let playerValue = playerSelect.value;
   let f_pickitem = e.target.parentElement.classList.contains('pickitem');
   if (f_pickitem) {
@@ -178,11 +183,9 @@ function prepareForm(e) {
 
   tblrows.forEach((tblrow, index) => {
 
-    // let gameid = tblrow.getAttribute('data-game-id');
     let game = tblrowToInput(tblrow, playerValue);
     let picked = game.getAttribute('data-picked') == 'true';
     if (picked) pickedGames++;
-    // if (index == 0) game.classList.add('border-top-0');
     let disabled = game.querySelector('input[disabled]');
     if (disabled) openGames--;
     if (!picked && !disabled) openUnpickedGames++;
@@ -195,26 +198,11 @@ function prepareForm(e) {
     modalFormGames.appendChild(game);
   });
 
-  let head = document.getElementById('modalFormTitle');
-  let headText = DATA.tblGames.week_label;
-  head.innerHTML = '';
-  head.appendChild(document.createTextNode(headText));
-
-  let sub = document.getElementById('modalFormSubtitle');
-  let subText = openGames + ' games open';
-  if (openGames == 0) subText = 'No games open';
-  if (openGames > 0) {
-    if (openUnpickedGames > 0) subText += ' (' + openUnpickedGames + ' unpicked)';
-    if (openUnpickedGames == 0) subText += ' (all picked)';
-  }
-  sub.innerHTML = '';
-  sub.appendChild(document.createTextNode(subText));
-
-  // record
-  let sub2 = document.getElementById('modalFormSubtitle2');
-  let sub2Text = 'Record: ' + winGames + '-' + loseGames;
-  sub2.innerHTML = '';
-  sub2.appendChild(document.createTextNode(sub2Text));
+  modalTitle.innerHTML = DATA.tblGames.week_label;
+  modalInfoTTL.innerHTML = tblrows.length;
+  modalInfoOPEN.innerHTML = openGames;
+  modalInfoW.innerHTML = winGames;
+  modalInfoL.innerHTML = loseGames;
 
   updateTimeRemainingDivs();
   if (modal.hasAttribute('data-clockInt') == false) {
@@ -250,9 +238,8 @@ function tblrowToInput(tblrow, playerValue) {
   game.removeAttribute('data-bs-toggle');
   game.removeAttribute('data-bs-target');
 
-  // game.style.borderLeft = '3px solid #0e0e0e';
   game.classList.add(...pickFormatting);
-  game.classList.add('rounded-end-3', 'mb-1');
+  game.classList.add('rounded-end-3');
   game.setAttribute('data-picked', 'false')
   if (pickfull != '') game.setAttribute('data-picked', 'true');
 
@@ -260,7 +247,7 @@ function tblrowToInput(tblrow, playerValue) {
   timeRemainingDiv.classList.add('dl-clock', 'd-flex', 'flex-row', 'flex-nowrap', 'justify-content-start', 'text-sm5');
   if (is_open) timeRemainingDiv.classList.add('mt-2', 'ms-1');
   timeRemainingDiv.setAttribute('data-deadline', gdata.deadline);
-  game.querySelector('.col-9').appendChild(timeRemainingDiv);
+  game.querySelector('.teamcol').appendChild(timeRemainingDiv);
 
   let status = pdata.status;
   if (status == 'LATE') {
@@ -269,7 +256,7 @@ function tblrowToInput(tblrow, playerValue) {
     late.classList.add('bg-danger', 'text-white');
     late.classList.add('mt-2', 'ms-auto', 'me-1');
     late.textContent = 'LATE';
-    game.querySelector('.col-3').appendChild(late);
+    game.querySelector('.statcol').appendChild(late);
   }
 
   let teams = game.querySelectorAll('.teamrow');
@@ -314,7 +301,6 @@ function tblrowToInput(tblrow, playerValue) {
 
 function handlePickChange(e) {
 
-  let modal = document.getElementById('modalFormContainer');
   let submitBtn = modal.querySelector('[type="submit"]');
   let noSubmit = submitBtn.classList.contains('no-submit');
   let formInputs = modal.querySelectorAll('input');
@@ -338,26 +324,6 @@ function handlePickChange(e) {
   } else {
     if (!noSubmit) submitBtn.classList.add('no-submit');
   }
-
-  let sub = document.getElementById('modalFormSubtitle');
-  let gamerows = modal.querySelectorAll('.gamerow');
-  let openUnpickedGames = 0;
-  let openGames = 0;
-  gamerows.forEach((gr) => {
-    let picked = gr.querySelector('input:checked');
-    let disabled = gr.querySelector('input[disabled]');
-    if (!picked && !disabled) openUnpickedGames++;
-    if (!disabled) openGames++;
-  });
-
-  let subText = openGames + ' games open';
-  if (openGames == 0) subText = 'No games open';
-  if (openGames > 0) {
-    if (openUnpickedGames > 0) subText += ' (' + openUnpickedGames + ' unpicked)';
-    if (openUnpickedGames == 0) subText += ' (all picked)';
-  }
-  sub.innerHTML = '';
-  sub.appendChild(document.createTextNode(subText));
 
 }
 

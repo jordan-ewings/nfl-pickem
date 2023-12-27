@@ -21,18 +21,38 @@ html {
   background-color: var(--ios-bg-black);
 }
 
+.modal {
+  --bs-modal-bg: var(--ios-bg-black);
+}
+
 .modal-header {
-  background-color: var(--ios-bg-black) !important;
   padding-top: env(safe-area-inset-top) !important;
-  padding-bottom: 12px !important;
+  padding-bottom: 16px !important;
 }
 
 .modal-footer {
-  background-color: var(--ios-bg-black) !important;
   padding-bottom: env(safe-area-inset-bottom) !important;
   padding-top: 8px !important;
   margin: 0 !important;
   border-top: none !important;
+}
+
+#modalInfo .info-item {
+  display: flex;
+  flex-direction: column;
+
+  text-align: center;
+}
+
+#modalInfo .info-item .item-label {
+  font-size: var(--font-sm5);
+  color: var(--ios-text3);
+}
+
+#modalInfo .info-item .item-value {
+  font-size: var(--font-sm3);
+  color: var(--ios-text1);
+  font-weight: 600;
 }
 
 #modalMessage {
@@ -40,8 +60,6 @@ html {
 }
 
 .modal-body {
-  background-color: var(--ios-bg-black) !important;
-  /* padding: 4px 0 0 0 !important; */
   overflow-y: scroll;
   overscroll-behavior: contain;
 }
@@ -50,32 +68,45 @@ html {
   padding: 0 !important;
 }
 
+/* .form-select {
+  background-color: var(--ios-bg);
+} */
+
 #modalFormGames {
-  background-color: var(--ios-bg-black) !important;
   padding: 8px 0px !important;
   margin: 0 !important;
 }
 
 #modalFormGames .gamerow {
-  margin: 4px 4px !important;
+  margin: 6px 4px 6px 4px !important;
   padding: 10px 0px !important;
-  border-left: 3px solid var(--ios-bg-black);
-  background-color: var(--ios-bg) !important;
-  border-top: none !important;
+  background-color: var(--ios-bg);
+  border: none;
+  border-left: 3px solid var(--ios-bg);
 }
 
-.gamerow.incorrect {
-  border-left-color: rgb(220, 53, 69) !important;
+#modalFormGames .gamerow .statcol {
+  padding: 0 2px 0 12px !important;
 }
 
-.gamerow.correct {
-  border-left-color: rgb(25, 135, 84) !important;
+.gamerow[data-picked="true"] {
+  border-left-color: var(--ios-separator) !important;
 }
 
 .gamerow.pick-changed {
   border-left-color: var(--bs-primary) !important;
-
+  /* box-shadow: 0 0 2px 1px inset var(--bs-primary-border-subtle) !important; */
 }
+
+.gamerow.incorrect {
+  border-left-color: var(--bs-danger) !important;
+}
+
+.gamerow.correct {
+  border-left-color: var(--bs-success) !important;
+}
+
+
 
 #filterCont button.active {
   color: var(--ios-text) !important;
@@ -85,9 +116,14 @@ html {
 
 .daterow {
   background-color: var(--ios-bg) !important;
-  /* border: 1px solid var(--ios-separator) !important; */
-  /* box shadow around all sides */
-  /* box-shadow: inset 0 0 3px var(--ios-separator); */
+  margin-bottom: 8px;
+}
+
+.daterow h6 {
+  color: var(--ios-text) !important;
+  font-weight: 600 !important;
+  padding: 16px 0px;
+  margin: 0;
 }
 
 .gamerow {
@@ -102,15 +138,8 @@ html {
   background-color: var(--ios-bg-black) !important;
 }
 
-.form-select {
-  background-color: var(--ios-bg) !important;
-  border-color: var(--ios-separator) !important;
-}
-
 #modalFormMeta {
   background-color: var(--ios-bg-black) !important;
-  /* box-shadow: 0 10px 5px -5px var(--ios-bg-black);
-  border-bottom: 1px solid var(--ios-bg-black); */
 }
 
 .modfooter-sticky {

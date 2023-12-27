@@ -28,6 +28,26 @@ i {
   padding: 8px 6px;
 }
 
+.cont-card {
+  border-radius: 16px;
+  background-color: var(--ios-bg);
+  padding: 0px;
+}
+
+.cont-card-title {
+  font-size: var(--font-lg2);
+  font-weight: 500;
+  color: var(--ios-text);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--ios-bg-black);
+}
+
+.cont-card-body {
+  padding: 4px 4px;
+}
+
+
+
 /* .table td span[data-item="player"] {
   font-size: var(--font-sm2);
 } */
@@ -46,9 +66,13 @@ i {
   text-align: center;
 }
 
-.table tbody tr td {
+
+
+.table tbody tr {
   border-top: 1px dotted var(--ios-bg2);
   border-bottom: none;
+  border-left: none;
+  border-right: none;
 }
 
 .table.shrunken {
