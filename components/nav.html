@@ -1,0 +1,22 @@
+<nav id="navCont" class="navbar">
+  <div class="container-fluid">
+    <div class="navbar-nav d-flex flex-row w-100 nav-underline justify-content-evenly">
+      <a id="nav-standings" class="nav-link fw-medium fs-6 pt-0 pb-1" href="index.html">STANDINGS</a>
+      <a id="nav-schedule" class="nav-link fw-medium fs-6 pt-0 pb-1" href="schedule.html">SCHEDULE</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  let origin = window.location.origin;
+  let path = window.location.pathname;
+
+  $('.navbar-nav a').each(function () {
+    let href = $(this).attr('href');
+    if (origin + path == origin + '/' + href) {
+      $(this).addClass('active');
+    } else {
+      $(this).removeClass('active');
+    }
+  });
+</script>

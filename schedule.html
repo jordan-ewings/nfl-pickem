@@ -9,21 +9,24 @@
   <meta name="theme-color" content="rgb(14, 14, 15)">
   <meta name="description" content="PICK 'EM">
   <title>PICK 'EM</title>
+
   <link rel="manifest" href="manifest.json">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link rel="stylesheet" href="styles/global.css">
-  <link rel="stylesheet" href="scripts/schedule/css/style.css">
-  <script src="scripts/global/components.js"></script>
+  <link rel="stylesheet" href="css/schedule.css">
+
+  <script src="vendor/jquery/jquery-3.7.1.min.js"></script>
   <script>
-    window.addEventListener('load', () => {
-      loadNav('schedule');
+    $(document).ready(function () {
+      $('#nav-wrapper').load('components/nav.html');
+      $('#templates').load('components/schedule/templates.html');
+      $('#modal-wrapper').load('components/schedule/modal.html');
     });
   </script>
 </head>
 
 <body class="m-0 p-0 mx-auto" style="max-width: 600px;">
-  <nav id="navPlaceholder"></nav>
+  <div id="nav-wrapper"></div>
   <div id="main" class="container-fluid mx-0 px-0">
     <div id="view-loading" class="d-none d-flex flex-column justify-content-center align-items-center" style="height: 90vh; width:100%">
       <div class="spinner-border text-main" role="status">
@@ -51,177 +54,27 @@
             </div>
           </div>
         </div>
-        <button id="toggle-picks-btn" style="width: 25%" class="fw-semibold btn btn-sm btn-primary text-nowrap d-none" type="button" onclick="togglePicks()">Show Picks</button>
-        <button id="refresh-btn" class="w-auto mx-0 fw-light btn text-nowrap d-none" type="button" onclick="sendData()"><i class="fa-solid fa-sync-alt"></i></button>
+        <button id="toggle-picks-btn" style="width: 25%" class="fw-semibold btn btn-sm btn-primary text-nowrap d-none" type="button">Show Picks</button>
+        <button id="refresh-btn" class="w-auto mx-0 fw-light btn text-nowrap d-none" type="button"><i class="fa-solid fa-sync-alt"></i></button>
       </div>
     </div>
     <div id="tblGames">
       <!-- game rows-->
     </div>
   </div>
-  <div class="modal fade" id="modalFormContainer" tabindex="-1" aria-labelledby="modalFormContainerLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen-sm-down">
-      <div class="modal-content">
-        <div class="modal-header border-0 flex-row">
-          <div>
-            <span id="modalTitle" class="modal-title fs-5 text-nowrap"></span>
-          </div>
-          <div id="modalInfo" class="row flex-fill mx-3 flex-nowrap">
-            <div class="col px-0 info-item">
-              <span class="item-label">TOTAL</span>
-              <span id="modalInfoTTL" class="item-value text-dim2">0</span>
-            </div>
-            <div class="col px-0 info-item">
-              <span class="item-label">OPEN</span>
-              <span id="modalInfoOPEN" class="item-value">0</span>
-            </div>
-            <div class="col px-0 info-item">
-              <span class="item-label">WINS</span>
-              <span id="modalInfoW" class="item-value text-success-emphasis">0</span>
-            </div>
-            <div class="col px-0 info-item">
-              <span class="item-label">LOSSES</span>
-              <span id="modalInfoL" class="item-value text-danger-emphasis">0</span>
-            </div>
-          </div>
-          <div>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-        </div>
-        <div class="modal-body p-0 m-0">
-          <form id="modalForm">
-            <div id="modalFormBody" class="container m-0 pt-0">
-              <div id="modalFormMeta" class="container sticky-top w-100 pt-0 pb-3">
-                <div class="row mx-0 align-items-center">
-                  <div class="col-9 ps-0">
-                    <select class="form-select m-0" name="player" id="player" required>
-                      <option selected>Player</option>
-                      <option value="Austin">Austin</option>
-                      <option value="Carly">Carly</option>
-                      <option value="Carter">Carter</option>
-                      <option value="John">John</option>
-                      <option value="Jordan">Jordan</option>
-                      <option value="Kayla">Kayla</option>
-                      <option value="Kristen">Kristen</option>
-                      <option value="Kristy">Kristy</option>
-                      <option value="Stella">Stella</option>
-                    </select>
-                  </div>
-                  <div class="col-3 pe-0">
-                    <button id="form-submit-btn" type="submit" class="no-submit btn btn-primary w-100 text-sm2 fw-medium">Submit</button>
-                  </div>
-                </div>
-              </div>
-              <div id="modalFormGames" class="container pt-1">
-                <!-- game rows-->
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer modfooter-sticky">
-          <div id="modalMessage" class="w-100"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="modal-wrapper"></div>
 
-  <template id="tblrow-template">
-    <div class="tblrow mx-1">
-      <div class="gamerow row align-items-start pt-2 py-3 mx-0">
-        <div class="teamcol col-9">
-          <div class="d-flex flex-column row-gap-1">
-            <div class="teamrow teamrow-away d-flex align-items-center">
-              <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
-              <span data-item="teamshort" class="ps-2 fw-semibold"></span>
-              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2 text-dim2"></i>
-              <span data-item="score" class="fw-semibold ms-auto"></span>
-              <span data-item="record" class="text-dim1 text-sm5 ms-auto"></span>
-            </div>
-            <div class="teamrow teamrow-home d-flex align-items-center">
-              <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
-              <span data-item="teamshort" class="ps-2 fw-semibold"></span>
-              <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2 text-dim2"></i>
-              <span data-item="score" class="fw-semibold ms-auto"></span>
-              <span data-item="record" class="text-dim1 text-sm5 ms-auto"></span>
-            </div>
-          </div>
-        </div>
-        <div class="statcol col-3">
-          <div class="d-flex flex-column justify-content-center text-sm5">
-            <span data-item="gameday" class="text-dim1 fw-semibold"></span>
-            <span data-item="gametime" class="text-dim1 fw-semibold"></span>
-            <span data-item="stateshort" class="fw-semibold"></span>
-            <span data-item="poss_loc" class="text-dim1 fw-semibold"></span>
-            <span data-item="poss_dd" class="text-dim1 fw-normal"></span>
-            <span data-item="spread" class="text-dim1 fw-normal"></span>
-          </div>
-        </div>
-      </div>
-      <div class="pickrow row align-items-center pt-0 pb-0 mx-0">
-        <div class="col-9 px-0 mb-3 ps-2">
-          <div class="pickcont row row-cols-3 rounded-end-3 mx-0 ps-2 pe-1 py-1">
-            <div class="col px-1">
-              <div class="pickitem d-flex align-items-center py-1 fw-medium" role="button" data-bs-toggle="modal" data-bs-target="#modalFormContainer" tabindex="0">
-                <img data-item="pick_logo" src="" class="object-fit-contain" style="height: 16px; width: 16px;">
-                <span data-item="player" class="ps-1 small"></span>
-                <span data-item="status" class="ps-1 small text-danger-emphasis d-none"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="pickdist col-3">
+  <div id="templates"></div>
 
-        </div>
-      </div>
-    </div>
-  </template>
-
-  <script src="scripts/global/data.js"></script>
-  <script src="scripts/schedule/js/procGames.js"></script>
-  <script src="scripts/schedule/js/forms.js"></script>
-  <script src="scripts/schedule/js/tblGames.js"></script>
-  <script src="scripts/schedule/js/main.js"></script>
-  <script>
-    var USING_LIVE = true;
-    let DATA = {
-      LOADED: false,
-      TBL_LOADED: false
-    };
-
-    sendData();
-  </script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- <script src="js/data.js"></script> -->
+  <!-- <script src="js/util.js"></script>
+  <script src="js/schedule/procGames.js"></script>
+  <script src="js/schedule/tblGames.js"></script>
+  <script src="js/schedule/forms.js"></script> -->
+  <script src="js/schedule/main.js" type="module"></script>
   <script>
 
-    var touchstartY = 0;
-    var touchendY = 0;
-    var tryRefresh = false;
-    var touchmoveMin = 125;
-
-    document.body.addEventListener('touchstart', function (event) {
-      if (window.scrollY === 0) {
-        tryRefresh = true;
-      } else {
-        tryRefresh = false;
-      }
-      touchstartY = event.changedTouches[0].screenY;
-    }, false);
-
-    document.body.addEventListener('touchend', function (event) {
-      touchendY = event.changedTouches[0].screenY;
-      handleGesture();
-    }, false);
-
-    function handleGesture() {
-      if (tryRefresh == false) return;
-      let diff = touchendY - touchstartY;
-      if (diff > touchmoveMin) {
-        sendData();
-      }
-    }
-
-
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
   </script>
 </body>
 

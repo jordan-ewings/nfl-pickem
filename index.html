@@ -9,27 +9,23 @@
   <meta name="theme-color" content="rgb(14, 14, 15)">
   <meta name="description" content="PICK 'EM">
   <title>PICK 'EM</title>
+
   <link rel="manifest" href="manifest.json">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link rel="stylesheet" href="styles/global.css">
-  <link rel="stylesheet" href="scripts/index/css/style.css">
-  <script src="scripts/global/components.js"></script>
+  <link rel="stylesheet" href="css/index.css">
+
+  <script src="vendor/jquery/jquery-3.7.1.min.js"></script>
   <script>
-    window.addEventListener('load', () => {
-      loadNav('standings');
+    $(document).ready(function () {
+      $('#nav-wrapper').load('components/nav.html');
+      $('#templates').load('components/index/templates.html');
     });
   </script>
-  <style>
-    #tblWeeklyContainer .table-responsive {
-      padding: 0 2px;
-    }
-  </style>
 </head>
 
-
 <body class="m-0 p-0 mx-auto" style="max-width: 600px;">
-  <nav id="navPlaceholder"></nav>
+  <div id="nav-wrapper"></div>
 
   <div id="main" class="container-fluid px-1 mt-4 mb-2">
     <div id="tblStandingsContainer" class="cont-card">
@@ -52,72 +48,12 @@
     </div>
   </div>
 
-  <template id="row-template">
-    <tr>
-      <td data-item="rank" class="text-end text-primary-emphasis text-sm5 fw-medium pe-0"></td>
-      <td data-item="player-cont" class="fw-medium text-start pe-4">
-        <div class="d-flex flex-row align-items-center py-0">
-          <span data-item="player" class="pe-2"></span>
-          <i data-item="change-up-icon" class="d-none fa-regular fa-circle-up fa-sm text-success-emphasis fa-bounce"></i>
-          <i data-item="change-down-icon" class="d-none fa-regular fa-circle-down fa-sm text-danger-emphasis fa-bounce"></i>
-          <span data-item="change" class="d-none text-sm5 ps-1"></span>
-        </div>
-      </td>
-      <td data-item="rec_week" class=""></td>
-      <td data-item="rec" class=""></td>
-      <td data-item="gb" class="text-dim1"></td>
-      <td data-item="pc_dog_pick" class="text-dim1"></td>
-      <td data-item="pc_dog_win" class="text-dim1"></td>
-    </tr>
-  </template>
-  <script src="scripts/global/data.js"></script>
-  <script src="scripts/index/js/main.js"></script>
-  <script>
+  <div id="templates"></div>
 
-    let touchstartX = 0;
-    let touchendX = 0;
-    let touchstartY = 0;
-    let touchendY = 0;
-
-    document.addEventListener('touchstart', function (event) {
-      touchstartX = event.changedTouches[0].screenX;
-      touchstartY = event.changedTouches[0].screenY;
-    }, false);
-
-    document.addEventListener('touchend', function (event) {
-      touchendX = event.changedTouches[0].screenX;
-      touchendY = event.changedTouches[0].screenY;
-      handleGesture(event);
-    }, false);
-
-    document.getElementById('main').style.transition = "transform 0.3s ease";
-
-    function handleGesture(e) {
-
-      let diffX = touchendX - touchstartX;
-      let diffY = touchendY - touchstartY;
-      let mvmtX = Math.abs(diffX);
-      let mvmtY = Math.abs(diffY);
-      let main = document.getElementById('main');
-
-      if (mvmtX < 200) {
-        main.style.transform = "translateX(0px)";
-        return;
-      }
-
-      if (mvmtX > mvmtY && diffX < 0) {
-        main.style.transform = "translateX(-100%)";
-        setTimeout(() => {
-          window.location.href = "schedule.html";
-        }, 300);
-      } else {
-        main.style.transform = "translateX(0px)";
-      }
-    }
-
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-  </script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- <script src="js/data.js"></script>
+  <script src="js/util.js"></script> -->
+  <script src="js/index/main.js" type="module"></script>
 </body>
 
 </html>

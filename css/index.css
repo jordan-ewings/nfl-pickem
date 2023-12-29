@@ -1,0 +1,84 @@
+@import url("main.css");
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background-color: var(--ios-bg-black);
+  z-index: 1000;
+}
+
+html {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+i {
+  animation-iteration-count: 1 !important;
+  animation-delay: 500ms !important;
+  -webkit-animation-iteration-count: 1 !important;
+  -webkit-animation-delay: 500ms !important;
+}
+
+.table td,
+.table th {
+  background-color: transparent !important;
+  color: var(--ios-text);
+  font-size: var(--font-sm3);
+  padding: 8px 6px;
+}
+
+.cont-card {
+  border-radius: 16px;
+  background-color: var(--ios-bg);
+  padding: 0px;
+}
+
+.cont-card-title {
+  font-size: var(--font-lg2);
+  font-weight: 500;
+  color: var(--ios-text);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--ios-bg-black);
+}
+
+.cont-card-body {
+  padding: 4px 4px;
+}
+
+
+
+/* .table td span[data-item="player"] {
+  font-size: var(--font-sm2);
+} */
+
+#tblStandingsContainer {
+  background-color: var(--ios-bg) !important;
+}
+
+
+
+.table thead th {
+  color: var(--ios-text2);
+  font-size: var(--font-sm5);
+  font-weight: 500;
+  border: none;
+  text-align: center;
+}
+
+
+
+.table tbody tr {
+  border-top: 1px dotted var(--ios-bg2);
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+}
+
+.table.shrunken {
+  max-height: 35dvh !important;
+  overflow-y: scroll;
+  display: inline-block;
+}

@@ -1,0 +1,188 @@
+@import url("main.css");
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background-color: var(--ios-bg-black);
+  z-index: 1000;
+}
+
+html {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.navbar {
+  background-color: var(--ios-bg-black);
+}
+
+#tblDetails {
+  background-color: var(--ios-bg-black);
+}
+
+.modal {
+  --bs-modal-bg: var(--ios-bg-black);
+}
+
+.modal-header {
+  padding-top: env(safe-area-inset-top) !important;
+  padding-bottom: 16px !important;
+}
+
+/* remove glow when focused */
+#modalFormMeta .form-select:focus, #modalFormMeta .form-select:active {
+  box-shadow: none !important;
+}
+
+#modalFormMeta .form-select.username-aligned {
+  font-weight: 500 !important;
+}
+
+.modal-footer {
+  /* padding-bottom: env(safe-area-inset-bottom) !important; */
+  padding: 0px 4px;
+  margin: 0 !important;
+  border-top: none !important;
+  background-color: none !important;
+}
+
+#modalInfo .info-item {
+  display: flex;
+  flex-direction: column;
+
+  text-align: center;
+}
+
+#modalInfo .info-item .item-label {
+  font-size: var(--font-sm5);
+  color: var(--ios-text3);
+}
+
+#modalInfo .info-item .item-value {
+  font-size: var(--font-sm3);
+  color: var(--ios-text1);
+  font-weight: 600;
+}
+
+#modalMessage {
+  margin: 0 !important;
+}
+
+.modal-body {
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+}
+
+#modalFormBody {
+  padding: 0 !important;
+}
+
+
+#modalFormGames {
+  padding: 0px 0px !important;
+  margin: 0 !important;
+}
+
+#modalFormGames .gamerow {
+  margin: 6px 4px 6px 4px !important;
+  padding: 10px 0px !important;
+  background-color: var(--ios-bg);
+  border: none;
+  border-left: 3px solid var(--ios-bg);
+}
+
+#modalFormGames .gamerow .statcol {
+  padding: 0 2px 0 12px !important;
+}
+
+.gamerow[data-picked="true"] {
+  border-left-color: var(--ios-separator) !important;
+}
+
+.gamerow.pick-changed {
+  border-left-color: var(--bs-primary) !important;
+  /* box-shadow: 0 0 2px 1px inset var(--bs-primary-border-subtle) !important; */
+}
+
+.gamerow.incorrect {
+  border-left-color: var(--bs-danger) !important;
+}
+
+.gamerow.correct {
+  border-left-color: var(--bs-success) !important;
+}
+
+#filterCont button {
+  margin: .4rem .75rem;
+  padding: .2rem 0;
+  border: none;
+}
+
+#filterCont button.active-week {
+  /* underline */
+  /* color: rgba(var(--bs-primary-rgb), 0.75) !important; */
+  /* color: var(--bs-primary-text-emphasis) !important; */
+  border-bottom: 2px solid var(--ios-text2) !important;
+  /* border-bottom: 2px solid rgba(var(--bs-primary-rgb), 0.5) !important; */
+}
+
+#filterCont button.active {
+  color: var(--ios-text) !important;
+  /* border: none !important; */
+  border-bottom-color: rgba(var(--bs-primary-rgb), .9) !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+
+
+.daterow {
+  background-color: var(--ios-bg) !important;
+  margin-bottom: 8px;
+}
+
+.daterow h6 {
+  color: var(--ios-text) !important;
+  font-weight: 600 !important;
+  padding: 16px 0px;
+  margin: 0;
+}
+
+.gamerow {
+  border-top: 1px dotted var(--ios-separator);
+}
+
+.teamcol {
+  border-right: 1px solid var(--ios-separator);
+}
+
+.pickcont {
+  background-color: var(--ios-bg-black) !important;
+}
+
+#modalFormMeta {
+  background-color: var(--ios-bg-black) !important;
+}
+
+.modfooter-sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 1000;
+}
+
+#tblDetails {
+  position: sticky;
+  top: env(safe-area-inset-top);
+  z-index: 1000;
+  /* box-shadow: 0 20px 10px -10px var(--ios-bg); */
+  /* border-bottom: 1px solid var(--ios-bg-black); */
+}
+
+/* make disabled */
+button.no-submit {
+  pointer-events: none;
+  opacity: .5;
+}

@@ -1,0 +1,50 @@
+<template id="tblrow-template">
+  <div class="tblrow mx-1">
+    <div class="gamerow row align-items-start pt-2 py-3 mx-0">
+      <div class="teamcol col-9">
+        <div class="d-flex flex-column row-gap-1">
+          <div class="teamrow teamrow-away d-flex align-items-center">
+            <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
+            <span data-item="teamshort" class="ps-2 fw-semibold"></span>
+            <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2 text-dim2"></i>
+            <span data-item="score" class="fw-semibold ms-auto"></span>
+            <span data-item="record" class="text-dim1 text-sm5 ms-auto"></span>
+          </div>
+          <div class="teamrow teamrow-home d-flex align-items-center">
+            <img data-item="logo" src="" class="object-fit-contain" style="height: 1.2rem; width: 1.2rem;">
+            <span data-item="teamshort" class="ps-2 fw-semibold"></span>
+            <i data-item="poss" class="fa-solid fa-football fa-sm object-fit-contain ps-2 text-dim2"></i>
+            <span data-item="score" class="fw-semibold ms-auto"></span>
+            <span data-item="record" class="text-dim1 text-sm5 ms-auto"></span>
+          </div>
+        </div>
+      </div>
+      <div class="statcol col-3">
+        <div class="d-flex flex-column justify-content-center text-sm5">
+          <span data-item="gameday" class="text-dim1 fw-semibold"></span>
+          <span data-item="gametime" class="text-dim1 fw-semibold"></span>
+          <span data-item="stateshort" class="fw-semibold"></span>
+          <span data-item="poss_loc" class="text-dim1 fw-semibold"></span>
+          <span data-item="poss_dd" class="text-dim1 fw-normal"></span>
+          <span data-item="spread" class="text-dim1 fw-normal"></span>
+        </div>
+      </div>
+    </div>
+    <div class="pickrow row align-items-center pt-0 pb-0 mx-0">
+      <div class="col-9 px-0 mb-3 ps-2">
+        <div class="pickcont row row-cols-3 rounded-end-3 mx-0 ps-2 pe-1 py-1">
+          <div class="col px-1">
+            <div class="pickitem d-flex align-items-center py-1 fw-medium" role="button" data-bs-toggle="modal" data-bs-target="#modalFormContainer" tabindex="0">
+              <img data-item="pick_logo" src="" class="object-fit-contain" style="height: 16px; width: 16px;">
+              <span data-item="player" class="ps-1 small"></span>
+              <span data-item="status" class="ps-1 small text-danger-emphasis d-none"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pickdist col-3">
+
+      </div>
+    </div>
+  </div>
+</template>
