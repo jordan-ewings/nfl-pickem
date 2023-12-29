@@ -13,6 +13,8 @@
 
   $('.navbar-nav a').each(function () {
     let href = $(this).attr('href');
+    console.log(origin + path);
+    console.log(origin + '/' + href);
     if (origin + path == origin + '/' + href) {
       $(this).addClass('active');
     } else {
