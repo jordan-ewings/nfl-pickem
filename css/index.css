@@ -31,34 +31,27 @@ i {
 }
 
 .cont-card {
-  border-radius: 16px;
-  background-color: var(--ios-bg);
-  padding: 0px;
+  margin: 0px 8px 20px 8px;
 }
 
 .cont-card-title {
-  font-size: var(--font-lg2);
-  font-weight: 500;
-  color: var(--ios-text);
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--ios-bg-black);
+  display: flex;
+  justify-content: space-between;
+  /* font-size: var(--font-lg1); */
+  font-weight: 300;
+  color: var(--ios-text1);
+  padding: 8px 16px;
+}
+
+.cont-card-info {
+  color: var(--ios-text2)
 }
 
 .cont-card-body {
-  padding: 4px 4px;
+  padding: 6px 2px;
+  background-color: var(--ios-bg);
+  border-radius: 12px;
 }
-
-
-
-/* .table td span[data-item="player"] {
-  font-size: var(--font-sm2);
-} */
-
-#tblStandingsContainer {
-  background-color: var(--ios-bg) !important;
-}
-
-
 
 .table thead th {
   color: var(--ios-text2);
@@ -68,12 +61,11 @@ i {
   text-align: center;
 }
 
-
-
 .table tbody tr {
-  border-top: 1px dotted var(--ios-bg2);
+  /* border-top: 1px dotted var(--ios-bg2); */
+  border-top: 1px solid var(--ios-bg2);
   border-bottom: none;
-  border-left: none;
+  border-left: 3px solid transparent;
   border-right: none;
 }
 
@@ -81,4 +73,8 @@ i {
   max-height: 35dvh !important;
   overflow-y: scroll;
   display: inline-block;
+}
+
+.active-row {
+  border-left: 3px solid var(--bs-primary) !important;
 }
