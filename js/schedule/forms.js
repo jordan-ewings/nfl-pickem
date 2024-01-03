@@ -1,19 +1,5 @@
 import { DATA } from './data.js';
-import { TBLGAMES } from './tblGames.js';
-
-/* ------------------------------------------------ */
-
-/* ------------------------------------------------ */
-
-// let modal = document.getElementById('modalFormContainer');
-// let modalHeader = modal.querySelector('.modal-header');
-// let modalFooter = modal.querySelector('.modal-footer');
-
-// let modalForm = modal.querySelector('#modalForm');
-// let modalFormMeta = modal.querySelector('#modalFormMeta');
-// let modalFormGames = modal.querySelector('#modalFormGames');
-
-// let modalMessage = modal.querySelector('#modalMessage');
+import * as tblGames from './tblGames.js';
 
 /* ------------------------------------------------ */
 
@@ -54,13 +40,7 @@ function createAlert(type, msg) {
 export function submitForm(e) {
 
   let modal = document.getElementById('modalFormContainer');
-  let modalHeader = modal.querySelector('.modal-header');
-  let modalFooter = modal.querySelector('.modal-footer');
-
   let modalForm = modal.querySelector('#modalForm');
-  let modalFormMeta = modal.querySelector('#modalFormMeta');
-  let modalFormGames = modal.querySelector('#modalFormGames');
-
   let modalMessage = modal.querySelector('#modalMessage');
 
   e.preventDefault();
@@ -68,7 +48,6 @@ export function submitForm(e) {
   let player = formData.get('player');
 
   let username = getUsername();
-  // let userLog = JSON.parse(localStorage.getItem('userLog')).filter((x) => x.submissions > 0);
   if (username == null || username == player) {
     updateUserLog(player);
     postForm();
@@ -80,7 +59,6 @@ export function submitForm(e) {
     confirmBtn.addEventListener('click', (e) => {
       let alert = e.target.closest('.alert');
       alert.remove();
-
       updateUserLog(player);
       postForm();
     });
@@ -101,15 +79,7 @@ export function submitForm(e) {
 function setupUserLog() {
 
   let modal = document.getElementById('modalFormContainer');
-  let modalHeader = modal.querySelector('.modal-header');
-  let modalFooter = modal.querySelector('.modal-footer');
-
   let modalForm = modal.querySelector('#modalForm');
-  let modalFormMeta = modal.querySelector('#modalFormMeta');
-  let modalFormGames = modal.querySelector('#modalFormGames');
-
-  let modalMessage = modal.querySelector('#modalMessage');
-
   let playerOptions = modalForm.querySelector('select[name="player"]').querySelectorAll('option');
   let playerNames = [];
   playerOptions.forEach((option) => {
@@ -169,15 +139,8 @@ function updateUserLog(player) {
 function postForm() {
 
   let modal = document.getElementById('modalFormContainer');
-  let modalHeader = modal.querySelector('.modal-header');
-  let modalFooter = modal.querySelector('.modal-footer');
-
   let modalForm = modal.querySelector('#modalForm');
-  let modalFormMeta = modal.querySelector('#modalFormMeta');
-  let modalFormGames = modal.querySelector('#modalFormGames');
-
   let modalMessage = modal.querySelector('#modalMessage');
-
   let formData = new FormData(modalForm);
 
   let submitBtn = modal.querySelector('[type="submit"]');
@@ -200,21 +163,14 @@ function postForm() {
     .then(result => {
       console.log(result);
       submitBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-      incorpFormData()
+      DATA.fetch()
         .then(() => {
+          tblGames.update();
           let modalBS = bootstrap.Modal.getInstance(modal);
           modalBS.hide();
           submitBtn.removeAttribute('disabled');
           submitBtn.innerHTML = 'Submit';
         });
-
-
-      // setTimeout(() => {
-      //   let modalBS = bootstrap.Modal.getInstance(modal);
-      //   modalBS.hide();
-      //   submitBtn.removeAttribute('disabled');
-      //   submitBtn.innerHTML = 'Submit';
-      // }, 300);
     })
     .catch(error => {
       console.log('error', error);
@@ -227,33 +183,9 @@ function postForm() {
       setTimeout(() => {
         submitBtn.removeAttribute('disabled');
         submitBtn.innerHTML = 'Submit';
-      }, 300);
+      }, 1000);
     });
 
-}
-
-/* ------------------------------------------------ */
-
-async function incorpFormData() {
-  // let player = resp.player;
-  // let gameids = Object.keys(resp);
-  // gameids = gameids.filter((x) => !isNaN(x));
-  // gameids.forEach((gameid) => {
-
-  //   let p = resp[gameid];
-  //   DATA.tblGames.games.forEach((g) => {
-  //     if (g.game_id != gameid) return;
-  //     g.responses.forEach((r) => {
-  //       if (r.player != player) return;
-  //       for (let key in p) {
-  //         r[key] = p[key];
-  //       }
-  //     });
-  //   });
-  // });
-
-  await DATA.get();
-  TBLGAMES.update();
 }
 
 /* ------------------------------------------------ */
@@ -266,18 +198,11 @@ function getItem(element, dataItem) {
 export function prepareForm(e) {
 
   let modal = document.getElementById('modalFormContainer');
-  let modalHeader = modal.querySelector('.modal-header');
-  let modalFooter = modal.querySelector('.modal-footer');
-
-  let modalForm = modal.querySelector('#modalForm');
-  let modalFormMeta = modal.querySelector('#modalFormMeta');
   let modalFormGames = modal.querySelector('#modalFormGames');
-
-  let modalMessage = modal.querySelector('#modalMessage');
-
   let playerSelect = modal.querySelector('#player');
   let playerValue = playerSelect.value;
   let f_pickitem = e.target.parentElement.classList.contains('pickitem');
+
   if (f_pickitem) {
     let pickitem = e.target.parentElement;
     console.log(pickitem);
@@ -429,8 +354,6 @@ function tblrowToInput(tblrow, playerValue) {
 function handlePickChange(e) {
 
   let modal = document.getElementById('modalFormContainer');
-
-
   let submitBtn = modal.querySelector('[type="submit"]');
   let noSubmit = submitBtn.classList.contains('no-submit');
   let formInputs = modal.querySelectorAll('input');

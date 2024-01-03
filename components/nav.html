@@ -10,8 +10,10 @@
 <script>
   let origin = window.location.origin;
   let path = window.location.pathname;
-  // limit path to after the last slash
   path = path.substring(path.lastIndexOf('/') + 1);
+  if (path == '') {
+    path = 'index.html';
+  }
 
   $('.navbar-nav a').each(function () {
     let href = $(this).attr('href');

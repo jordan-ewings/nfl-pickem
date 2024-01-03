@@ -1,91 +1,98 @@
 import { DATA } from './data.js';
 import { prepareForm } from './forms.js';
+import { getItem, createFromTemplate } from '../util.js';
 
 /* ------------------------------------------------ */
 
-console.log(DATA);
-export const TBLGAMES = {
-  send: (update = false) => {
-    updateTblrows(update);
-  },
-  update: (update = true) => {
-    updateTblrows(update);
-  }
+export const get = () => document.getElementById('tblGames');
+export const getRows = () => get().querySelectorAll('.tblrow');
+
+/* ------------------------------------------------ */
+
+const togglePicksBtn = document.getElementById('toggle-picks-btn');
+
+export function init() {
+
+  let tblGames = get();
+  let games = DATA.tblGames.games;
+  togglePicksBtn.innerHTML = 'Show Picks';
+  tblGames.innerHTML = '';
+
+  let days = games.map((x) => x.gameday_long);
+  days = days.filter((c, index) => days.indexOf(c) === index);
+
+  days.forEach((d) => {
+    let dayDiv = document.createElement('div');
+    dayDiv.classList.add('daterow')
+    dayDiv.classList.add('rounded-4');
+
+    let day = document.createElement('h6');
+    day.classList.add('text-center');
+    day.textContent = d;
+    dayDiv.appendChild(day);
+
+    games.filter((x) => x.gameday_long == d).forEach((g) => {
+      let tblrow = makeTblrow(g);
+      dayDiv.appendChild(tblrow);
+    });
+
+    tblGames.appendChild(dayDiv);
+  });
+
+  setProgressBars();
+
 }
 
 /* ------------------------------------------------ */
 
-function updateTblrows(update = false) {
+export function update() {
 
-  let tblGames = document.getElementById('tblGames');
   let games = DATA.tblGames.games;
+  let tblrows = getRows();
 
-  if (update == false) {
-    document.getElementById('toggle-picks-btn').innerHTML = 'Show Picks';
-    tblGames.innerHTML = '';
-    let days = games.map((x) => x.gameday_long);
-    days = days.filter((c, index) => days.indexOf(c) === index);
-    days.forEach((d) => {
-      let dayDiv = document.createElement('div');
-      dayDiv.classList.add('daterow')
-      dayDiv.classList.add('rounded-4');
-
-      let day = document.createElement('h6');
-      day.classList.add('text-center');
-      day.textContent = d;
-      dayDiv.appendChild(day);
-
-      games.filter((x) => x.gameday_long == d).forEach((g) => {
-        let tblrow = makeTblrow(g);
-        dayDiv.appendChild(tblrow);
-      });
-
-      tblGames.appendChild(dayDiv);
-    });
-  } else {
-    let tblrows = tblGames.getElementsByClassName('tblrow');
-    for (let i = 0; i < tblrows.length; i++) {
-      let tblrow = tblrows.item(i);
-      let game_id = tblrow.getAttribute('data-game-id');
-      let g = games.filter((x) => x.game_id == game_id)[0];
-      let newrow = makeTblrow(g);
-      let pickrow = tblrow.querySelector('.pickrow');
-      if (pickrow) {
-        if (pickrow.classList.contains('show')) {
-          newrow.getElementsByClassName('pickrow')[0].classList.add('show');
-        }
+  for (let i = 0; i < tblrows.length; i++) {
+    let tblrow = tblrows.item(i);
+    let game_id = tblrow.getAttribute('data-game-id');
+    let g = games.filter((x) => x.game_id == game_id)[0];
+    let newrow = makeTblrow(g);
+    let pickrow = tblrow.querySelector('.pickrow');
+    if (pickrow) {
+      if (pickrow.classList.contains('show')) {
+        newrow.getElementsByClassName('pickrow')[0].classList.add('show');
       }
-      tblrow.replaceWith(newrow);
     }
+    tblrow.replaceWith(newrow);
   }
 
+  setProgressBars();
+
+}
+
+/* ------------------------------------------------ */
+
+function setProgressBars() {
+
+  let games = DATA.tblGames.games;
   ['pre', 'in', 'post'].forEach((state) => {
     let num_games = games.filter((x) => x.state == state).length;
     let pc_games = Math.round(num_games / games.length * 100);
     document.getElementById('prog-' + state).style.width = pc_games + '%';
   });
 
-  // if no pickrows, disable toggle-picks-btn
-  let pickrows = tblGames.getElementsByClassName('pickrow');
+  let pickrows = get().getElementsByClassName('pickrow');
   if (pickrows.length == 0) {
-    document.getElementById('toggle-picks-btn').classList.add('disabled');
+    togglePicksBtn.classList.add('disabled');
   } else {
-    document.getElementById('toggle-picks-btn').classList.remove('disabled');
+    togglePicksBtn.classList.remove('disabled');
   }
+
 }
 
 /* ------------------------------------------------ */
 
-function getItem(element, dataItem) {
-  let item = element.querySelector('[data-item="' + dataItem + '"]');
-  return item;
-}
-
 function makeTblrow(g) {
 
-  let template = document.getElementById('tblrow-template');
-  let clone = template.content.cloneNode(true);
-  let tblrow = clone.querySelector('.tblrow');
+  let tblrow = createFromTemplate('tblrow-template');
   tblrow.setAttribute('data-game-id', g.game_id);
   tblrow.classList.add('game-' + g.state);
 
@@ -178,7 +185,6 @@ function makeTblrow(g) {
   let pickrow = tblrow.querySelector('.pickrow');
   pickrow.classList.add('collapse');
   pickrow.id = 'picks-' + g.game_id;
-  // pickrow.id = pickrow.id.replace('_', '-');
 
   let pcols = pickrow.querySelector('.row-cols-3');
   g.responses.forEach((p, index) => {

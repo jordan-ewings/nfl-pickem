@@ -1,18 +1,62 @@
-<template id="row-template">
+<template id="headStandings">
+  <thead>
+    <tr>
+      <th></th>
+      <th class="text-start">PLAYER</th>
+      <th>WK</th>
+      <th>TTL</th>
+      <th>GB</th>
+      <th>D%</th>
+      <th>DW%</th>
+    </tr>
+  </thead>
+</template>
+<template id="rowStandings">
   <tr>
-    <td data-item="rank" class="text-end text-primary-emphasis text-sm5 fw-medium pe-0"></td>
-    <td data-item="player-cont" class="fw-medium text-start pe-4">
+    <td data-item="rankLabel" class="text-end text-primary-emphasis text-sm5 fw-medium pe-0"></td>
+    <td class="fw-medium text-start pe-4">
       <div class="d-flex flex-row align-items-center py-0">
         <span data-item="player" class="pe-2"></span>
-        <i data-item="change-up-icon" class="d-none fa-regular fa-circle-up fa-sm text-success-emphasis fa-bounce"></i>
-        <i data-item="change-down-icon" class="d-none fa-regular fa-circle-down fa-sm text-danger-emphasis fa-bounce"></i>
-        <span data-item="change" class="d-none text-sm5 ps-1"></span>
+        <i data-item="rankChangeIcon" class="d-none fa-regular fa-sm fa-bounce"></i>
+        <!-- <i data-item="change-down-icon" class="d-none fa-regular fa-circle-down fa-sm text-danger-emphasis fa-bounce"></i> -->
+        <span data-item="rankChange" class="d-none text-sm5 ps-1"></span>
       </div>
     </td>
-    <td data-item="rec_week" class=""></td>
-    <td data-item="rec" class=""></td>
-    <td data-item="gb" class="text-dim1"></td>
-    <td data-item="pc_dog_pick" class="text-dim1"></td>
-    <td data-item="pc_dog_win" class="text-dim1"></td>
+    <td data-item="wk_record" class=""></td>
+    <td data-item="record" class=""></td>
+    <td data-item="games_back" class="text-dim1"></td>
+    <td data-item="dog_pct" class="text-dim1"></td>
+    <td data-item="dog_wpct" class="text-dim1"></td>
+  </tr>
+</template>
+
+<template id="headWeekly">
+  <thead>
+    <tr>
+      <th></th>
+      <th class="text-start">WEEK</th>
+      <th>WK</th>
+      <th>TTL</th>
+      <th>GB</th>
+      <th>D%</th>
+      <th>DW%</th>
+    </tr>
+  </thead>
+</template>
+<template id="rowWeekly">
+  <tr>
+    <td data-item="rankLabel" class="text-end text-primary-emphasis text-sm5 fw-medium pe-0"></td>
+    <td class="fw-medium text-start pe-4">
+      <div class="d-flex flex-row align-items-center py-0">
+        <span data-item="week_label" class="pe-2"></span>
+        <i data-item="rankChangeIcon" class="d-none fa-regular fa-sm fa-bounce"></i>
+        <!-- <span data-item="rankChange" class="d-none text-sm5 ps-1"></span> -->
+      </div>
+    </td>
+    <td data-item="wk_record" class=""></td>
+    <td data-item="record" class=""></td>
+    <td data-item="games_back" class="text-dim1"></td>
+    <td data-item="dog_pct" class="text-dim1"></td>
+    <td data-item="dog_wpct" class="text-dim1"></td>
   </tr>
 </template>

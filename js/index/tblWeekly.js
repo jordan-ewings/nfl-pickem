@@ -3,48 +3,66 @@ import { createFromTemplate, getItem, formatNumber, formatRecord } from '../util
 
 /* ------------------------------------------------ */
 
-export const get = () => document.getElementById('tblStandings');
+export const get = () => document.getElementById('tblWeekly');
 export const getRows = () => get().querySelectorAll('tbody tr');
-export const getPlayerRow = (player) => get().querySelector('tbody tr[data-player="' + player + '"]');
-export const getActiveRow = () => get().querySelector('tbody tr.active-row');
-export const getActivePlayer = () => (getActiveRow() == null) ? null : getActiveRow().getAttribute('data-player');
+export const getContainer = () => document.getElementById('tblWeeklyContainer');
+export const show = () => getContainer().classList.remove('d-none');
+export const hide = () => getContainer().classList.add('d-none');
 
 /* ------------------------------------------------ */
 
 export function init() {
 
   let tbl = get();
-  let thead = createFromTemplate('headStandings');
+  let thead = createFromTemplate('headWeekly');
   let tbody = document.createElement('tbody');
   tbl.innerHTML = '';
   tbl.appendChild(thead);
   tbl.appendChild(tbody);
 
-  let data = DATA.Stats;
-  let week = data[data.length - 1].week;
-  data = data.filter((x) => x.week == week);
-  data.sort((a, b) => {
-    if (a.rankOrder < b.rankOrder) return -1;
-    if (a.rankOrder > b.rankOrder) return 1;
-    return 0;
-  });
+  return;
+}
 
+/* ------------------------------------------------ */
 
+export function setPlayer(player) {
+
+  let tbl = get();
+  let tbody = tbl.querySelector('tbody');
+  tbody.innerHTML = '';
+
+  let data = getPlayerData(player);
   data.forEach((x) => {
     let row = createRow(x);
-    row.setAttribute('data-player', x.player);
-    row.setAttribute('role', 'button');
-
     tbody.appendChild(row);
   });
 
+  let info = getContainer().querySelector('.cont-card-info');
+  info.textContent = player;
+
+  return;
+}
+
+/* ------------------------------------------------ */
+
+function getPlayerData(player) {
+
+  let data = DATA.Stats;
+  data = data.filter((x) => x.player == player);
+  data.sort((a, b) => {
+    if (a.week < b.week) return -1;
+    if (a.week > b.week) return 1;
+    return 0;
+  });
+
+  return data;
 }
 
 /* ------------------------------------------------ */
 
 function createRow(x) {
 
-  let row = createFromTemplate('rowStandings');
+  let row = createFromTemplate('rowWeekly');
   let items = row.querySelectorAll('[data-item]');
   items.forEach((item) => {
     let dataItem = item.getAttribute('data-item');
@@ -65,9 +83,6 @@ function createRow(x) {
   if (x.rankChange != 0) {
     let color = x.rankChange > 0 ? 'text-success-emphasis' : 'text-danger-emphasis';
     let icon = x.rankChange > 0 ? 'fa-circle-up' : 'fa-circle-down';
-    let rankChange = getItem(row, 'rankChange');
-    rankChange.classList.remove('d-none');
-    rankChange.classList.add(color);
 
     let rankChangeIcon = getItem(row, 'rankChangeIcon');
     rankChangeIcon.classList.remove('d-none');

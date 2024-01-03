@@ -1,11 +1,12 @@
 import { DATA } from './data.js';
-import { TBLGAMES } from './tblGames.js';
+import * as tblGames from './tblGames.js';
 import { prepareForm, submitForm } from './forms.js';
 
 /* ------------------------------------------------ */
 
-await DATA.get();
-TBLGAMES.send();
+await DATA.fetch();
+
+tblGames.init();
 makeWeekButtons();
 document.getElementById("refresh-btn").classList.remove('d-none');
 document.getElementById("toggle-picks-btn").classList.remove('d-none');
@@ -31,8 +32,8 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
   let btn_html = btn.innerHTML;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm text-danger-emphasis" role="status" aria-hidden="true"></span>';
 
-  await DATA.get();
-  TBLGAMES.update();
+  await DATA.fetch();
+  tblGames.update();
 
   btn.innerHTML = '<i class="fa-solid fa-check text-success-emphasis"></i>';
   setTimeout(() => {
@@ -79,7 +80,7 @@ function makeWeekButtons() {
 function filterTable(week) {
 
   DATA.tblGames = DATA.full.filter((x) => x.week == week)[0];
-  TBLGAMES.send();
+  tblGames.init();
   console.log(DATA.tblGames);
 
   let fCont = document.getElementById('filterCont');

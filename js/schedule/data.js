@@ -5,7 +5,7 @@ import { getSheet } from '../util.js';
 export const DATA = {
   LOADED: false,
   TBL_LOADED: false,
-  get: getData,
+  fetch: getData,
   query: queryData,
 }
 
@@ -14,8 +14,6 @@ export const DATA = {
 var USING_LIVE = true;
 
 async function getData() {
-
-  if (DATA.LOADED == false) document.getElementById('view-loading').classList.remove('d-none');
 
   DATA['SeasonInfo'] = await getSheet('SeasonInfo');
   DATA['Games'] = await getSheet('Games');

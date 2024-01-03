@@ -3,12 +3,13 @@ import { getSheet } from '../util.js';
 /* ------------------------------------------------ */
 
 export const DATA = {
-  get: getPlayerStats,
+  fetch: getData,
+  Stats: [],
 }
 
 /* ------------------------------------------------ */
 
-async function getPlayerStats() {
+async function getData() {
 
   let data = await getSheet('PlayerStats');
 
@@ -29,6 +30,11 @@ async function getPlayerStats() {
     x.rank = rankVal;
     x.rankLabel = rankLabel;
     delete x.rankVal;
+
+    x.wk_record = x.wk_wins + '-' + x.wk_losses;
+    x.record = x.wins + '-' + x.losses;
+    // x.games_back = x.games_back == 0 ? '-' : x.games_back.toFixed(0);
+    x.week_label = 'Week ' + x.week;
   });
 
   data.forEach((x, i) => {
@@ -36,7 +42,7 @@ async function getPlayerStats() {
     let player = x.player;
     let rank = x.rank;
     if (week == 1) {
-      x.rankChange = 0;
+      x.rankChange = '-';
       return;
     }
     let prevWeek = week - 1;
@@ -46,7 +52,7 @@ async function getPlayerStats() {
     x.rankChange = rankChange;
   })
 
-  console.log(data);
+  console.log('DATA', data);
 
   DATA.Stats = data;
 }
