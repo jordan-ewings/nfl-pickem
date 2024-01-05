@@ -1,0 +1,94 @@
+@import url("main.css");
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background-color: var(--ios-bg-black);
+  z-index: 1000;
+}
+
+html {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.table td,
+.table th {
+  background-color: transparent !important;
+  color: var(--ios-text);
+  font-size: var(--font-sm3);
+  padding: 8px 6px;
+  text-align: left;
+}
+
+.cont-card {
+  margin: 0px 8px 20px 8px;
+}
+
+.cont-card-title {
+  display: flex;
+  justify-content: space-between;
+  /* font-size: var(--font-lg1); */
+  font-weight: 300;
+  color: var(--ios-text1);
+  padding: 8px 16px;
+}
+
+.cont-card-info {
+  color: var(--ios-text2)
+}
+
+.cont-card-body {
+  padding: 6px 2px;
+  background-color: var(--ios-bg);
+  border-radius: 12px;
+}
+
+.table thead th {
+  color: var(--ios-text2);
+  font-size: var(--font-sm5);
+  font-weight: 500;
+  border: none;
+  /* text-align: center; */
+}
+
+.table tbody td {
+  /* border-right: 1px solid var(--ios-bg2); */
+}
+
+.table tbody tr {
+  /* border-top: 1px dotted var(--ios-bg2); */
+  border-top: 1px solid var(--ios-bg2);
+  border-bottom: none;
+  border-left: 3px solid transparent;
+  border-right: none;
+}
+
+.active-row {
+  border-left: 3px solid var(--bs-primary) !important;
+}
+
+#filterCont button {
+  margin: .4rem .75rem;
+  padding: .2rem 0;
+  border: none;
+}
+
+#filterCont button.active-week {
+  /* underline */
+  /* color: rgba(var(--bs-primary-rgb), 0.75) !important; */
+  /* color: var(--bs-primary-text-emphasis) !important; */
+  border-bottom: 2px solid var(--ios-text2) !important;
+  /* border-bottom: 2px solid rgba(var(--bs-primary-rgb), 0.5) !important; */
+}
+
+#filterCont button.active {
+  color: var(--ios-text) !important;
+  /* border: none !important; */
+  border-bottom-color: rgba(var(--bs-primary-rgb), .9) !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}

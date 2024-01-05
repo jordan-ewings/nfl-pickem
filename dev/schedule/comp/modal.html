@@ -1,0 +1,66 @@
+<div class="modal fade" id="modalFormContainer" tabindex="-1" aria-labelledby="modalFormContainerLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <!-- spacer only when not sm-->
+      <div class="d-none d-sm-block py-2"></div>
+      <div class="modal-header border-0 flex-row">
+        <div>
+          <span id="modalTitle" class="modal-title fs-5 text-nowrap"></span>
+        </div>
+        <div id="modalInfo" class="row flex-fill mx-3 flex-nowrap">
+          <div class="col px-0 info-item">
+            <span class="item-label">TOTAL</span>
+            <span id="modalInfoTTL" class="item-value text-dim2">0</span>
+          </div>
+          <div class="col px-0 info-item">
+            <span class="item-label">OPEN</span>
+            <span id="modalInfoOPEN" class="item-value">0</span>
+          </div>
+          <div class="col px-0 info-item">
+            <span class="item-label">WINS</span>
+            <span id="modalInfoW" class="item-value text-success-emphasis">0</span>
+          </div>
+          <div class="col px-0 info-item">
+            <span class="item-label">LOSSES</span>
+            <span id="modalInfoL" class="item-value text-danger-emphasis">0</span>
+          </div>
+        </div>
+        <div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-body p-0 m-0">
+        <form id="modalForm">
+          <div id="modalFormBody" class="container m-0 pt-0">
+            <div id="modalFormMeta" class="container sticky-top w-100 pt-0 pb-3">
+              <div class="row mx-0 align-items-center">
+                <div class="col-9 ps-0">
+                  <select class="form-select m-0" name="player" id="player" required>
+                    <option selected>Player</option>
+                    <option value="Austin">Austin</option>
+                    <option value="Carly">Carly</option>
+                    <option value="Carter">Carter</option>
+                    <option value="John">John</option>
+                    <option value="Jordan">Jordan</option>
+                    <option value="Kayla">Kayla</option>
+                    <option value="Kristen">Kristen</option>
+                    <option value="Kristy">Kristy</option>
+                    <option value="Stella">Stella</option>
+                  </select>
+                </div>
+                <div class="col-3 pe-0">
+                  <button id="form-submit-btn" type="submit" class="no-submit btn btn-primary w-100 text-sm2 fw-medium">Submit</button>
+                </div>
+              </div>
+            </div>
+            <div id="modalFormGames" class="container pt-1">
+              <!-- game rows-->
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer modfooter-sticky">
+        <div id="modalMessage" class="w-100"></div>
+      </div>
+    </div>
+  </div>

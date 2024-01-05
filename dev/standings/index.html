@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="rgb(14, 14, 15)">
+  <meta name="description" content="PICK 'EM">
+  <title>PICK 'EM</title>
+  <link rel="icon" href="img/logo-512.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/logo-512.png">
+
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="/vendor/jquery/jquery-3.7.1.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#nav-wrapper').load('/components/nav.html');
+      $('#templates').load('comp/templates.html');
+    });
+  </script>
+</head>
+
+<body class="m-0 p-0 mx-auto" style="max-width: 700px;">
+  <div id="nav-wrapper"></div>
+
+  <div id="main" class="container-fluid p-0 mt-4 mb-2" style="max-width: 600px;">
+    <div id="tblStandingsContainer" class="cont-card">
+      <div class="cont-card-title">
+        <span>LEADERBOARD</span>
+      </div>
+      <div class="cont-card-body">
+        <div class="table-responsive">
+          <table id="tblStandings" class="table table-borderless align-middle text-center text-nowrap mb-0">
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tblWeeklyContainer" class="cont-card d-none">
+      <div class="cont-card-title">
+        <span>WEEKLY</span>
+        <span class="cont-card-info"></span>
+      </div>
+      <div class="cont-card-body">
+        <div class="table-responsive">
+          <table id="tblWeekly" class="table table-borderless align-middle text-center text-nowrap mb-0">
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- <div id="tblWeeklyContainer" class="d-none mt-3 border border-primary-subtle border-opacity-10 rounded-4 pb-1"> -->
+
+    <!-- </div> -->
+  </div>
+
+  <div id="templates"></div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="js/main.js" type="module"></script>
+</body>
+
+</html>
